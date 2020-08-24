@@ -42,8 +42,8 @@
 }
 .cp_iptxt i {
   position: absolute;
-  top: 11px;
-  left: 0;
+  top: 17px;
+  left: 5px;
   padding: 9px 8px;
   transition: 0.3s;
   color: #aaaaaa;
