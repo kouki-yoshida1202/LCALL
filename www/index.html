@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"
+    />
+    <script src="components/loader.js"></script>
+    <script src="lib/onsenui/js/onsenui.min.js"></script>
+    <script src="lib/onsenui/js/bower.js"></script>
+
+    <link rel="stylesheet" href="components/loader.css" />
+    <link rel="stylesheet" href="lib/onsenui/css/onsenui.css" />
+    <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:400,700|Noto+Sans+JP:400,700"
+      rel="stylesheet"
+    />
+    <script src="lib/onsenui/js/loadingoverlay.min.js"></script>
+
+    <script></script>
+    <style></style>
+  </head>
+  <body>
+    <ons-navigator id="myNavigator"></ons-navigator>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-auth.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyB9J4lT9H_4i5y5qhXGJLvytpgZ1eYZa0g",
+        authDomain: "lcall-test.firebaseapp.com",
+        databaseURL: "https://lcall-test.firebaseio.com",
+        projectId: "lcall-test",
+        storageBucket: "lcall-test.appspot.com",
+        messagingSenderId: "25727766698",
+        appId: "1:25727766698:web:eda81d5fdea8286c7380d3",
+        measurementId: "G-5F1ZM5T0MW"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+      ons.ready(function() {
+        var myNavigator = document.getElementById("myNavigator");
+        // ログインチェック
+        var loginUser = firebase.auth().currentUser;
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            myNavigator.pushPage("html/homePage.html");
+          } else {
+            // No user is signed in.
+            myNavigator.pushPage("html/loginPage.html");
+          }
+        });
+      });
+
+      if (ons.platform.isIPhoneX()) {
+        document.documentElement.setAttribute("onsflag-iphonex-portrait", "");
+        document.documentElement.setAttribute("onsflag-iphonex-landscape", "");
+      }
+      function showLoad() {
+        $("body").LoadingOverlay("show", {
+          image: "",
+          fontawesome: "fa fa-spinner fa-spin fa-small"
+        });
+      }
+
+      function hideLoad() {
+        $("body").LoadingOverlay("hide");
+      }
+    </script>
+  </body>
+</html>

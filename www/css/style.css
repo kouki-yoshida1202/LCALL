@@ -1,0 +1,165 @@
+/**/
+.cp_iptxt {
+  margin: 7px 3%;
+  font-size: 0.8em;
+}
+#call-page .select-input {
+  font-size: 0.8em;
+}
+
+.cp_iptxt i {
+  padding: 7px 15px;
+  color: #515c6f;
+}
+.cp_iptxt ons-select {
+  margin: 0px;
+}
+
+.page__content {
+  background-color: #f5f6f8 !important;
+}
+
+.cp_iptxt {
+  position: relative;
+  margin: 15px 3%;
+}
+.cp_iptxt input {
+  font: 15px/24px sans-serif;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 8px 0;
+  padding: 0.3em;
+  transition: 0.3s;
+  border: 1px solid #898989;
+  border-radius: 4px;
+  outline: none;
+}
+.cp_iptxt input:focus {
+  border-color: #ff9831;
+}
+.cp_iptxt input {
+  padding-left: 40px;
+}
+.cp_iptxt i {
+  position: absolute;
+  top: 11px;
+  left: 0;
+  padding: 9px 8px;
+  transition: 0.3s;
+  color: #aaaaaa;
+}
+.cp_iptxt input:focus + i {
+  color: #ff9831;
+}
+
+.tabbar__icon > .fa {
+  font-size: 0.8em;
+}
+:checked + .tabbar__button {
+  color: #ff9831;
+}
+
+.cp_iptxt ons-select {
+  font: 15px/24px sans-serif;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 8px 0;
+  padding: 0.3em;
+  transition: 0.3s;
+  border: 1px solid #515c6f;
+  border-radius: 4px;
+  outline: none;
+}
+.cp_iptxt ons-select:focus {
+  border-color: #ff9831;
+}
+.cp_iptxt ons-select {
+  padding-left: 40px;
+}
+
+.fa-spinner {
+  font-size: 40px;
+  color: #0799d7;
+}
+
+p,
+h4,
+.navy-font,
+ons-toolbar > .center {
+  color: #515c6f;
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
+}
+
+.light-navy-font,
+#chat-detail-page ons-card {
+  color: #515c6f;
+  font-size: 0.8em;
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
+}
+
+#chat-page > .page__content,
+#tweet-page > .page__content {
+  background: white !important;
+}
+
+.search-input {
+  height: 35px;
+  border-radius: 10px;
+}
+
+#tweet-page .left {
+  align-items: baseline;
+  padding-top: 20px;
+}
+
+#tweet-page .list-item__center {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.send-area {
+  padding: 0 5px;
+  box-sizing: border-box;
+  line-height: 49px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  border-top: solid 1px #ccc;
+}
+
+.send-area ons-input {
+  display: inline-block;
+  position: relative;
+  width: calc(100% - 60px);
+}
+
+.send-area input {
+  vertical-align: middle;
+  position: relative;
+  width: 98%;
+}
+
+#chat-detail-page .right {
+  margin-right: -5px;
+}
+#chat-detail-page .left {
+  margin-left: -5px;
+}
+#chat-detail-page .right ons-card {
+  border-radius: 50px 50px 0px 50px;
+}
+#chat-detail-page .left ons-card {
+  border-radius: 50px 50px 50px 0px;
+}
+
+#chat-detail-page .popover__content {
+  width: 300px;
+}
+
+#chat-detail-page .popover__content .text-input {
+  text-align: right;
+}

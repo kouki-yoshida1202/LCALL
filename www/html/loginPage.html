@@ -1,0 +1,348 @@
+<ons-page id="first-page">
+  <style>
+    ::placeholder {
+      color: white;
+    }
+
+    .cp_iptxt {
+      margin: 12px 7%;
+    }
+  </style>
+  <div
+    class="content"
+    style="text-align: center;background-image: url(img/login_backimage.jpg) !important;height:100% !important;"
+  >
+    <div
+      style="position:absolute;top:0;left:0;background-color:rgba(0,0,0,0.6);height:100%;width:100%;"
+    >
+      <div
+        style="height:40%;display:flex;align-items: center;text-align: center;"
+      >
+        <img
+          src="img/LCALL.png"
+          alt=""
+          style="width:40%;height:auto;margin:0 auto;"
+        />
+      </div>
+      <div class="cp_iptxt">
+        <input
+          type="email"
+          placeholder="Email"
+          id="login_mailaddress"
+          style="border-radius: 35px; padding:1em;padding-left:65px;border:none;background-color:rgba(255,255,255,0.3);color:white;"
+        />
+        <i
+          class="fas fa-envelope fa-lg fa-fw"
+          aria-hidden="true"
+          style="padding:19px 20px;color:white;"
+        ></i>
+      </div>
+      <div class="cp_iptxt">
+        <input
+          type="password"
+          placeholder="Password"
+          id="login_password"
+          style="border-radius: 35px; padding:1em;padding-left:65px;border:none;background-color:rgba(255,255,255,0.3);color:white;"
+        />
+        <i
+          class="fas fa-unlock-alt fa-lg fa-fw"
+          aria-hidden="true"
+          style="padding:19px 20px;color:white;"
+        ></i>
+      </div>
+      <div class="cp_iptxt">
+        <p
+          style="text-align: right;color:white;font-weight: 300;"
+          onclick="showPasswordReminderModal();"
+        >
+          パスワードを忘れた方 >
+        </p>
+      </div>
+      <div class="cp_iptxt" style="margin-top:10%;">
+        <ons-button
+          class="button--large--cta"
+          style="margin: 0 auto;border-radius: 35px;padding:0.5em;background-color:#ff9831;"
+          ripple
+          onclick="loginCheck($('#login_mailaddress').val(),$('#login_password').val());"
+        >
+          Login
+        </ons-button>
+      </div>
+      <div class="cp_iptxt">
+        <p
+          style="text-align:center;color:white;"
+          onclick="showCreateUserModal();"
+        >
+          <span
+            style="border-bottom:1px solid white;padding:0.5em 1em;font-weight: 300;"
+          >
+            アカウント登録
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <ons-modal id="newAccountCreate" direction="up" animation="fade">
+    <ons-card>
+      <ons-icon
+        icon="fa-times-circle"
+        style="color:gray;float:right;font-size: 1.5em;"
+        onclick="hideCreateUserModal();"
+      ></ons-icon>
+      <div class="title"></div>
+      <div class="content">
+        <div style="text-align: center; margin-top: 30px;">
+          <p>
+            <ons-input
+              id="newMailaddress"
+              modifier="underbar"
+              type="email"
+              placeholder="MailAddress"
+              style="padding:1.2em;"
+              float
+            ></ons-input>
+          </p>
+          <p>
+            <ons-input
+              id="newPassword"
+              modifier="underbar"
+              type="password"
+              placeholder="Password"
+              style="padding:1.2em;"
+              float
+            ></ons-input>
+          </p>
+          <p style="margin-top: 2em;">
+            <ons-button
+              class="button--cta"
+              onclick="newUserCreate($('#newMailaddress').val(),$('#newPassword').val())"
+              style="border-radius: 35px;padding:0.5em 1em;"
+              ripple
+              >新規アカウント登録</ons-button
+            >
+          </p>
+        </div>
+      </div>
+    </ons-card>
+  </ons-modal>
+  <ons-modal id="passwordReminder" direction="up" animation="fade">
+    <ons-card>
+      <ons-icon
+        icon="fa-times-circle"
+        style="color:gray;float:right;font-size: 1.5em;"
+        onclick="hidePasswordReminderModal();"
+      ></ons-icon>
+      <div class="title"></div>
+      <div class="content">
+        <div style="text-align: center; margin-top: 30px;">
+          <p>
+            <ons-input
+              id="updateMailaddress"
+              modifier="underbar"
+              type="email"
+              placeholder="MailAddress"
+              style="padding:1.2em;"
+              float
+            ></ons-input>
+          </p>
+          <p style="margin-top: 2em;">
+            <ons-button
+              class="button--cta"
+              onclick="passwordReminder($('#updateMailaddress').val())"
+              style="border-radius: 35px;padding:0.5em 1em;"
+              ripple
+              >パスワード再設定をする</ons-button
+            >
+          </p>
+        </div>
+      </div>
+    </ons-card>
+  </ons-modal>
+
+  <script>
+    function loginCheck(email, password) {
+      showLoad();
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(function(user) {
+          console.log(user);
+          if (firebase.auth().currentUser.emailVerified) {
+            // メールアドレスの認証ができている
+            // ログイン
+            firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                console.log("There's a user", user);
+              } else {
+                console.log("No user");
+              }
+            });
+            myNavigator.replacePage("html/homePage.html");
+            hideLoad();
+          } else {
+            // メルアド認証ができていない場合
+            firebase.auth().currentUser.sendEmailVerification();
+            // もう一度メールを送信して、認証アラートを出す
+            ons.notification.alert({
+              title: "ログイン失敗",
+              message:
+                "メールアドレス認証が済んでおりません。登録したメールアドレスに認証メールが届いておりますので、ご確認ください。"
+            });
+            hideLoad();
+          }
+        })
+        .catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
+          // ...
+          ons.notification.alert({
+            title: "ログイン失敗",
+            message: "メールアドレスかパスワードが間違っております。"
+          });
+          hideLoad();
+        });
+    }
+    function showCreateUserModal() {
+      var modal = document.querySelector("#newAccountCreate");
+      modal.show();
+      // setTimeout(function() {
+      //   modal.hide();
+      // }, 2000);
+    }
+
+    function hideCreateUserModal() {
+      var modal = document.querySelector("#newAccountCreate");
+      modal.hide();
+    }
+
+    function showPasswordReminderModal() {
+      var modal = document.querySelector("#passwordReminder");
+      modal.show();
+      // setTimeout(function() {
+      //   modal.hide();
+      // }, 2000);
+    }
+
+    function hidePasswordReminderModal() {
+      var modal = document.querySelector("#passwordReminder");
+      modal.hide();
+    }
+
+    function newUserCreate(email, password) {
+      if (email == "") {
+        ons.notification.alert({
+          message: "メールアドレスが未入力です"
+        });
+      } else if (password == "") {
+        ons.notification.alert({
+          message: "パスワードが未入力です。"
+        });
+      } else if (password.length < 6) {
+        ons.notification.alert({
+          message: "パスワードは6文字以上でお願いします"
+        });
+      } else {
+        showLoad();
+        var mailcheck = MailCheck(email);
+        if (mailcheck) {
+          firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(function() {
+              var user = firebase.auth().currentUser;
+              user
+                .sendEmailVerification()
+                .then(function() {
+                  // Email sent.
+                  ons.notification.alert({
+                    title: "メール送信",
+                    message: "認証メールを送信しました。"
+                  });
+                  hideCreateUserModal();
+                  hideLoad();
+                })
+                .catch(function(error) {
+                  // An error happened.
+                  hideLoad();
+                });
+            })
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              console.log(errorCode);
+              console.log(errorMessage);
+              ons.notification.alert({
+                title: "登録失敗",
+                message:
+                  "アカウント登録に失敗しました。既にメールアドレスが使用されている可能性があります。"
+              });
+              hideLoad();
+              // ...
+            });
+        } else {
+          ons.notification.alert({
+            title: "登録失敗",
+            message: "メールアドレスの形式が正しくありません。"
+          });
+          hideLoad();
+        }
+      }
+    }
+
+    function passwordReminder(email) {
+      showLoad();
+      var auth = firebase.auth();
+
+      auth
+        .sendPasswordResetEmail(email)
+        .then(function() {
+          // Email sent.
+          ons.notification.alert({
+            title: "メール送信",
+            message: "パスワード再設定メールを送信しました。ご確認ください。"
+          });
+          hidePasswordReminderModal();
+          hideLoad();
+        })
+        .catch(function(error) {
+          // An error happened.
+          ons.notification.alert({
+            title: "メール送信失敗",
+            message:
+              "パスワード再設定メールの送信に失敗しました。再度メールアドレスをお確かめください。"
+          });
+          hideLoad();
+        });
+    }
+    // -------------------------------------------------------------------
+    // メールアドレスチェック関数
+    // -------------------------------------------------------------------
+    function MailCheck(mail) {
+      var mail_regex1 = new RegExp(
+        "(?:[-!#-'*+/-9=?A-Z^-~]+\.?(?:\.[-!#-'*+/-9=?A-Z^-~]+)*|\"(?:[!#-\[\]-~]|\\\\[\x09 -~])*\")@[-!#-'*+/-9=?A-Z^-~]+(?:\.[-!#-'*+/-9=?A-Z^-~]+)*"
+      );
+      var mail_regex2 = new RegExp("^[^\@]+\@[^\@]+$");
+      if (mail.match(mail_regex1) && mail.match(mail_regex2)) {
+        // 全角チェック
+        if (
+          mail.match(
+            /[^a-zA-Z0-9\!\"\#\$\%\&\'\(\)\=\~\|\-\^\\\@\[\;\:\]\,\.\/\\\<\>\?\_\`\{\+\*\} ]/
+          )
+        ) {
+          return false;
+        }
+        // 末尾TLDチェック（〜.co,jpなどの末尾ミスチェック用）
+        if (!mail.match(/\.[a-z]+$/)) {
+          return false;
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
+</ons-page>

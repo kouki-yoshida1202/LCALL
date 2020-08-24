@@ -1,0 +1,103 @@
+<ons-page id="chat-detail-page">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button>戻る</ons-back-button>
+    </div>
+    <div class="center">メッセージ</div>
+    <div class="right">
+      <ons-toorbar-button
+        ripple
+        onclick="showPopover(this);"
+        style="line-height: 25px;color:#ff9831;"
+        >日程調整</ons-button
+      >
+    </div>
+  </ons-toolbar>
+
+  <div class="content" sytle="background-color:white;">
+    <ons-list id="chats">
+      <ons-list-item modifier="nodivider">
+        <div class="right">
+          <ons-card style="background-color:#1DA1F2;color:white;"
+            >テキストが入ります。</ons-card
+          >
+        </div>
+      </ons-list-item>
+      <ons-list-item modifier="nodivider">
+        <div class="left">
+          <ons-card style="background-color:#f5f6f8;"
+            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</ons-card
+          >
+        </div>
+      </ons-list-item>
+      <ons-list-item modifier="nodivider">
+        <div class="right">
+          <ons-card style="background-color:#1DA1F2;color:white;"
+            >テキストが入ります。テキストが入ります。</ons-card
+          >
+        </div>
+      </ons-list-item>
+    </ons-list>
+  </div>
+
+  <div class="send-area">
+    <ons-input id="message" placeholder="メッセージ"></ons-input>
+    <ons-button id="send" modifier="quiet">送信</ons-button>
+  </div>
+
+  <ons-popover direction="down" id="popover" cancelable>
+    <div style="padding: 10px; text-align: center;">
+      <ons-row>
+        <ons-col
+          width="100%"
+          style="text-align: right;"
+          vertical-align="center"
+        >
+          <ons-icon icon="fa-times-circle" onclick="hidePopover()"></ons-icon>
+        </ons-col>
+      </ons-row>
+      <ons-row style="padding:20px 10px;">
+        <ons-col width="30%" vertical-align="center">
+          日時
+        </ons-col>
+        <ons-col vertical-align="center" width="70%" style="text-align: right;">
+          <ons-input type="date" style="margin-bottom:5px;"></ons-input>
+          <br>
+          <ons-input type="time"></ons-input>
+        </ons-col>
+      </ons-row>
+      <ons-row style="padding:20px 10px;">
+        <ons-col vertical-align="center" width="30%">
+          飲食時間
+        </ons-col>
+        <ons-col vertical-align="center" width="70%" style="text-align: right;">
+          <ons-select id="choose-sel" onchange="editSelects(event)">
+            <option value="basic">60分</option>
+            <option value="material">90分</option>
+            <option value="underbar">120分</option>
+            <option value="underbar">180分</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+      <p style="padding:10px;">
+        <ons-button
+          modifier="large"
+          style="border-radius: 10px;background-color:#ff9831;"
+          ripple
+          >日程を提案する</ons-button
+        >
+      </p>
+      
+    </div>
+  </ons-popover>
+
+  <script>
+    var showPopover = function(target) {
+      document.getElementById("popover").show(target);
+    };
+
+    var hidePopover = function() {
+      document.getElementById("popover").hide();
+    };
+  </script>
+</ons-page>
