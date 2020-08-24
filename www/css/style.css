@@ -19,6 +19,10 @@
   background-color: #f5f6f8 !important;
 }
 
+.bottom-bar {
+  height: 49px;
+}
+
 .cp_iptxt {
   position: relative;
   margin: 15px 3%;
@@ -106,6 +110,21 @@ ons-toolbar > .center {
   background: white !important;
 }
 
+#search-page > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#call-page2 > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+#call-page3 > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+  background: white !important;
+}
+
 .search-input {
   height: 35px;
   border-radius: 10px;
@@ -162,4 +181,17 @@ ons-toolbar > .center {
 
 #chat-detail-page .popover__content .text-input {
   text-align: right;
+}
+
+.back-button__icon,
+.back-button__label {
+  fill: #ff9831;
+  color: #ff9831;
+}
+
+.button--large--cta,
+ons-bottom-toolbar {
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
 }

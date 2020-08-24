@@ -16,7 +16,7 @@
   <div style="margin-top:15x;margin-bottom:7px;">
     <ons-row>
       <ons-col>
-        <h4 style="padding-left:20px;">キャストを呼ぶ</h4>
+        <h4 style="padding-left:15px;">キャストを呼ぶ</h4>
       </ons-col>
     </ons-row>
     <div style="background-color:white;padding:10px;">
@@ -100,7 +100,7 @@
                 class="button--large--cta"
                 style="margin: 0 auto;border-radius: 35px;padding:0.3em;background-color:#ff9831;"
                 ripple
-                onclick=""
+                onclick="myNavigator.bringPageTop('html/call/callPage2.html');"
               >
                 キャストを呼ぶ
               </ons-button>
@@ -114,67 +114,56 @@
   <div style="margin-top:25px;margin-bottom:7px;">
     <ons-row>
       <ons-col width="80%">
-        <h4 style="padding-left:20px;">本日マッチング可能なキャスト</h4>
+        <h4 style="padding-left:15px;">本日マッチング可能なキャスト</h4>
       </ons-col>
       <ons-col
         vertical-align="center"
         width="20%"
-        style="font-size:0.8em;color:#ff9831;"
+        style="font-size:0.8em;color:#ff9831;text-align: right;padding-right:15px;"
       >
         See All >
       </ons-col>
     </ons-row>
-    <ons-carousel
-      auto-refresh
-      swipeable
-      overscrollable
-      item-width="130px"
-      id="carousel"
-      style="padding-right:50px;"
-    >
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:200px;position: relative;">
-          <img
-            src="img/image61.jpg"
-            alt=""
-            style="width:100%;height:200px;object-fit:cover;border-radius: 10px;"
-          />
-          <div
-            style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;"
-          >
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
+    <ons-row style="padding-right:10px;padding-left:10px;">
+      <ons-carousel auto-refresh swipeable overscrollable item-width="130px" id="carousel" style="padding-right:50px;">
+        <ons-carousel-item style="margin:5px;">
+          <div style="height:200px;position: relative;">
+            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+              <p style="margin:0px;color:white;">はなこ</p>
+              <p style="margin:0px;color:white;">¥3000/h</sp>
+            </div>
           </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
+        </ons-carousel-item>
+        <ons-carousel-item style="margin:5px;">
+          <div style="height:200px;position: relative;">
+            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+              <p style="margin:0px;color:white;">はなこ</p>
+              <p style="margin:0px;color:white;">¥3000/h</sp>
+            </div>
           </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
+        </ons-carousel-item>
+        <ons-carousel-item style="margin:5px;">
+          <div style="height:200px;position: relative;">
+            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+              <p style="margin:0px;color:white;">はなこ</p>
+              <p style="margin:0px;color:white;">¥3000/h</sp>
+            </div>
           </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
+        </ons-carousel-item>
+        <ons-carousel-item style="margin:5px;">
+          <div style="height:200px;position: relative;">
+            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+              <p style="margin:0px;color:white;">はなこ</p>
+              <p style="margin:0px;color:white;">¥3000/h</sp>
+            </div>
           </div>
-        </div>
-      </ons-carousel-item>
-    </ons-carousel>
+        </ons-carousel-item>
+      </ons-carousel>
+    </ons-row>
   </div>
   <div style="margin-top:25px;margin-bottom:7px;">
     <ons-row>
