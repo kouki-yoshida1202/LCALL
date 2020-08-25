@@ -175,12 +175,19 @@ ons-toolbar > .center {
   border-radius: 50px 50px 50px 0px;
 }
 
-#chat-detail-page .popover__content {
+#chat-detail-page .popover__content,
+#search-page .popover__content {
   width: 300px;
 }
 
-#chat-detail-page .popover__content .text-input {
+#chat-detail-page .popover__content .text-input,
+#search-page .popover__content .select-input {
   text-align: right;
+}
+
+#search-page .popover__content .select-input,
+#search-page .popover__content ons-col {
+  font-size: 0.9em;
 }
 
 .back-button__icon,
@@ -194,4 +201,12 @@ ons-bottom-toolbar {
   font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
     "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
     "MS PGothic", sans-serif !important;
+}
+
+#womanPageCarender ons-col {
+  color: #515c6f;
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
+  font-size: 0.8em;
 }
