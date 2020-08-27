@@ -3,10 +3,20 @@
     <ons-fab modifier="mini" ripple>
       <ons-icon icon="fa-ellipsis-h"></ons-icon>
     </ons-fab>
-    <ons-speed-dial-item>
+    <ons-speed-dial-item
+      onclick="myNavigator.bringPageTop('html/mypage/mypageProfileEdit.html');"
+    >
       <ons-icon
         icon="fa-user-edit"
         style="font-size:0.8em;transform:translate(2px,-2px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
+    <ons-speed-dial-item
+      onclick="myNavigator.bringPageTop('html/mypage/mypageImformation.html');"
+    >
+      <ons-icon
+        icon="fa-info"
+        style="font-size:0.8em;transform:translate(0px,-1px);"
       ></ons-icon>
     </ons-speed-dial-item>
     <ons-speed-dial-item onclick="logoutOpen();">
@@ -47,14 +57,13 @@
       </ons-row>
     </div>
   </div>
-  <div style="position:absolute;right:10;top:10;"></div>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
     <p style="text-align: center;font-size:1.0em;">たなかたろう　32才</p>
     <p class="light-navy" style="font-size:0.8em;">
       テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。
     </p>
   </ons-card>
-  <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
+  <ons-card style="width:85%;margin:0 auto;margin-top:20px;margin-bottom:30px;">
     <ons-list-item>
       <div class="left">
         <i class="fas fa-male fa-fw" style="color:#ff9831;"></i>
@@ -144,7 +153,6 @@
       </div>
     </ons-list-item>
   </ons-card>
-
   <script>
     function logoutOpen() {
       ons.notification.confirm({

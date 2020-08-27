@@ -7,7 +7,7 @@
     <div class="right">
       <ons-toorbar-button
         ripple
-        onclick="showPopover(this);"
+        onclick="showChatPopover(this);"
         style="line-height: 25px;color:#ff9831;"
         >日程調整</ons-button
       >
@@ -45,7 +45,7 @@
     <ons-button id="send" modifier="quiet">送信</ons-button>
   </div>
 
-  <ons-popover direction="down" id="popover" cancelable>
+  <ons-popover direction="down" id="chatPopover" cancelable>
     <div style="padding: 10px; text-align: center;">
       <ons-row>
         <ons-col
@@ -53,7 +53,7 @@
           style="text-align: right;"
           vertical-align="center"
         >
-          <ons-icon icon="fa-times-circle" onclick="hidePopover()"></ons-icon>
+          <ons-icon icon="fa-times-circle" onclick="hideChatPopover()"></ons-icon>
         </ons-col>
       </ons-row>
       <ons-row style="padding:20px 10px;">
@@ -92,12 +92,12 @@
   </ons-popover>
 
   <script>
-    var showPopover = function(target) {
-      document.getElementById("popover").show(target);
+    var showChatPopover = function(target) {
+      document.getElementById("chatPopover").show(target);
     };
 
-    var hidePopover = function() {
-      document.getElementById("popover").hide();
+    var hideChatPopover = function() {
+      document.getElementById("chatPopover").hide();
     };
   </script>
 </ons-page>

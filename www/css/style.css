@@ -19,6 +19,10 @@
   background-color: #f5f6f8 !important;
 }
 
+.bottom-bar {
+  height: 49px;
+}
+
 .cp_iptxt {
   position: relative;
   margin: 15px 3%;
@@ -42,8 +46,8 @@
 }
 .cp_iptxt i {
   position: absolute;
-  top: 11px;
-  left: 0;
+  top: 17px;
+  left: 5px;
   padding: 9px 8px;
   transition: 0.3s;
   color: #aaaaaa;
@@ -106,6 +110,21 @@ ons-toolbar > .center {
   background: white !important;
 }
 
+#search-page > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#call-page2 > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+#call-page3 > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+  background: white !important;
+}
+
 .search-input {
   height: 35px;
   border-radius: 10px;
@@ -156,10 +175,44 @@ ons-toolbar > .center {
   border-radius: 50px 50px 50px 0px;
 }
 
-#chat-detail-page .popover__content {
+#chat-detail-page .popover__content,
+#search-page .popover__content {
   width: 300px;
 }
 
-#chat-detail-page .popover__content .text-input {
+#chat-detail-page .popover__content .text-input,
+#search-page .popover__content .select-input {
   text-align: right;
+}
+
+#search-page .popover__content .select-input,
+#search-page .popover__content ons-col {
+  font-size: 0.9em;
+}
+
+.back-button__icon,
+.back-button__label {
+  fill: #ff9831;
+  color: #ff9831;
+}
+
+.button--large--cta,
+ons-bottom-toolbar {
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
+}
+
+#womanPageCarender ons-col {
+  color: #515c6f;
+  font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
+    "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif !important;
+  font-size: 0.8em;
+}
+
+#mypageProfileEdit-page > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+  background: white !important;
 }
