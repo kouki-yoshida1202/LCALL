@@ -1,12 +1,22 @@
-<ons-page id="second-page">
+<ons-page id="myPage">
   <ons-speed-dial position="top right" direction="down">
     <ons-fab modifier="mini" ripple>
       <ons-icon icon="fa-ellipsis-h"></ons-icon>
     </ons-fab>
-    <ons-speed-dial-item>
+    <ons-speed-dial-item
+      onclick="myNavigator.bringPageTop('html/mypage/mypageProfileEdit.html');"
+    >
       <ons-icon
         icon="fa-user-edit"
         style="font-size:0.8em;transform:translate(2px,-2px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
+    <ons-speed-dial-item
+      onclick="myNavigator.bringPageTop('html/mypage/mypageImformation.html');"
+    >
+      <ons-icon
+        icon="fa-info"
+        style="font-size:0.8em;transform:translate(0px,-1px);"
       ></ons-icon>
     </ons-speed-dial-item>
     <ons-speed-dial-item onclick="logoutOpen();">
@@ -18,6 +28,7 @@
   </ons-speed-dial>
   <div style="height:350px;position: relative;">
     <img
+      id="image"
       src="img/manSample.jpeg"
       alt=""
       style="width:100%;height:350px;object-fit:cover;"
@@ -48,12 +59,14 @@
     </div>
   </div>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
-    <p style="text-align: center;font-size:1.0em;">たなかたろう　32才</p>
-    <p class="light-navy" style="font-size:0.8em;">
+    <p id="myPageUserName" style="text-align: center;font-size:1.0em;">
+      たなかたろう&emsp;32才
+    </p>
+    <p id="myPageText" class="light-navy" style="font-size:0.8em;">
       テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。
     </p>
   </ons-card>
-  <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
+  <ons-card style="width:85%;margin:0 auto;margin-top:20px;margin-bottom:30px;">
     <ons-list-item>
       <div class="left">
         <i class="fas fa-male fa-fw" style="color:#ff9831;"></i>
@@ -61,9 +74,7 @@
       <div class="center navy-font">
         身長
       </div>
-      <div class="right light-navy-font">
-        172
-      </div>
+      <div id="myPageHeight" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -72,9 +83,7 @@
       <div class="center navy-font">
         居住地
       </div>
-      <div class="right light-navy-font">
-        宇都宮
-      </div>
+      <div id="myPageAddress" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -83,9 +92,7 @@
       <div class="center navy-font">
         出身地
       </div>
-      <div class="right light-navy-font">
-        埼玉
-      </div>
+      <div id="myPageBirthPlace" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -94,9 +101,7 @@
       <div class="center navy-font">
         仕事
       </div>
-      <div class="right light-navy-font">
-        不動産関係
-      </div>
+      <div id="myPageWork" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -105,9 +110,7 @@
       <div class="center navy-font">
         おさけ
       </div>
-      <div class="right light-navy-font">
-        ときどき飲む
-      </div>
+      <div id="myPageAlcohol" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -116,9 +119,7 @@
       <div class="center navy-font">
         たばこ
       </div>
-      <div class="right light-navy-font">
-        吸わない
-      </div>
+      <div id="myPageTobacco" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -127,9 +128,7 @@
       <div class="center navy-font">
         髪型
       </div>
-      <div class="right light-navy-font">
-        ショート
-      </div>
+      <div id="myPageHairStyle" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -138,13 +137,37 @@
       <div class="center navy-font">
         髪の色
       </div>
-      <div class="right light-navy-font">
-        黒
-      </div>
+      <div id="myPageHairColor" class="right light-navy-font"></div>
     </ons-list-item>
   </ons-card>
-
+  <img id="image" src="" alt="" />
+  <input id="imgSample" type="file" />
+  <ons-button onclick="imgSaveTest();">画像保存</ons-button>
   <script>
+    var user = firebase.auth().currentUser;
+    ref = firebase
+      .storage()
+      .ref()
+      .child("profilePicture/" + user["uid"]);
+    ref.getDownloadURL().then(url => {
+      document.getElementById("image").src = url;
+    });
+    function imgSaveTest() {
+      var user = firebase.auth().currentUser;
+      var imgs = document.querySelector("#imgSample");
+      var uploads = [];
+      for (var file of imgs.files) {
+        //選択したファイルのファイル名を使うが、場合によってはかぶるので注意
+        var storageRef = firebase
+          .storage()
+          .ref("profilePicture/" + user["uid"]);
+        uploads.push(storageRef.put(file));
+      }
+      //すべての画像のアップロード完了を待つ
+      Promise.all(uploads).then(function() {
+        console.log("アップロード完了");
+      });
+    }
     function logoutOpen() {
       ons.notification.confirm({
         message: "ログアウトしますか？",
@@ -173,6 +196,65 @@
             });
           });
       });
+    }
+    document.addEventListener(
+      "init",
+      function(event) {
+        if (event.target.matches("#myPage")) {
+          // ons.notification.alert("ページ1が初期化されました");
+          // コンテンツを準備...
+          var user = firebase.auth().currentUser;
+          console.log(user);
+          if (user) {
+            // User is signed in.
+            console.log(user["uid"]);
+            userInfo(user.uid);
+          } else {
+            // No user is signed in.
+          }
+        }
+      },
+      false
+    );
+    function loginUser() {
+      firebase.auth().onAuthStateChanged(function(user) {
+        console.log(user);
+        if (user) {
+          console.log(user);
+        } else {
+        }
+      });
+    }
+
+    function userInfo(userId) {
+      var docRef = db.collection("users").doc(userId);
+
+      docRef
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            console.log("Document data:", doc.data());
+            console.log(doc.data().height);
+            $("#myPageUserName").html(
+              doc.data().userName + "&emsp;" + doc.data().old + "才"
+            );
+            $("#myPageText").html(doc.data().text);
+            $("#myPageHeight").html(doc.data().height);
+            $("#myPageTobacco").html(doc.data().Tobacco);
+            $("#myPageAddress").html(doc.data().address);
+            $("#myPageAlcohol").html(doc.data().alcohol);
+            $("#myPageBirthPlace").html(doc.data().birthplace);
+            $("#myPageHairColor").html(doc.data().haircolor);
+            $("#myPageHairStyle").html(doc.data().hairstyle);
+            $("#myPageWork").html(doc.data().work);
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
     }
   </script>
 </ons-page>

@@ -1,0 +1,186 @@
+<ons-page id="mypageProfileEdit-page">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">その他</div>
+    <div class="right">
+      <ons-toorbar-button ripple onclick="" style="line-height: 25px;color:#ff9831;padding-right:8px;">
+        保存
+      </ons-button>
+    </div>
+  </ons-toolbar>
+
+  <ons-row style="padding-top:30px;">
+    <ons-col vertical-align="center" style="text-align: center;">
+      <img
+        src="img/manSample.jpeg"
+        alt=""
+        style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+      />
+      <br />
+      <p style="color:#0799d7;">写真を変更する</p>
+    </ons-col>
+  </ons-row>
+  <ons-list>
+    <ons-list-header>基本情報</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          表示名
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            placeholder="テキストが入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          年齢
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            type="tel"
+            placeholder="数字が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          自己紹介
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <textarea
+            class="textarea textarea--transparent"
+            rows="5"
+            placeholder="自己紹介が入ります"
+            style="width:90%;"
+          ></textarea>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <ons-list style="margin-bottom:30px;">
+    <ons-list-header>追加情報</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          身長(cm)
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            placeholder="数字が入ります"
+            type="tel"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          居住地
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            placeholder="居住地が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          出身地
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            placeholder="出身地が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          仕事(職業)
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+            placeholder="仕事が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          おさけ
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;">
+            <option value="basic">飲まない</option>
+            <option value="material">ときどき飲む</option>
+            <option value="underbar">よく飲む</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          たばこ
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;">
+            <option value="basic">吸わない</option>
+            <option value="material">ときどき吸う</option>
+            <option value="underbar">吸う</option></ons-select
+          >
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          髪型
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;">
+            <option value="basic">ショート</option>
+            <option value="material">ベリーショート</option>
+            <option value="underbar">坊主</option>
+            <option value="underbar">ミディアム</option>
+            <option value="underbar">ロング</option>
+            <option value="underbar">その他</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          髪の色
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;">
+            <option value="basic">黒</option>
+            <option value="material">茶</option>
+            <option value="underbar">金</option>
+            <option value="underbar">その他</option></ons-select
+          >
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+</ons-page>

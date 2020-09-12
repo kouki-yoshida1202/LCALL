@@ -133,7 +133,7 @@
     <div style="padding: 10px; text-align: center;">
       <ons-row>
         <ons-col width="100%" style="text-align: right;" vertical-align="center">
-          <ons-icon icon="fa-times-circle" onclick="hideChatPopover()"></ons-icon>
+          <ons-icon icon="fa-times-circle" onclick="hideSearchPopover()"></ons-icon>
         </ons-col>
       </ons-row>
       <ons-row style="padding:20px 10px;">
@@ -152,43 +152,31 @@
       </ons-row>
       <ons-row style="padding:20px 10px;">
         <ons-col vertical-align="center" width="50%">
-          スケジュール
+          たばこ
         </ons-col>
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
           <ons-select id="choose-sel" onchange="editSelects(event)">
             <option value="basic">指定なし</option>
-            <option value="material">90分</option>
-            <option value="underbar">120分</option>
-            <option value="underbar">180分</option>
+            <option value="material">吸う</option>
+            <option value="underbar">付き合い程度</option>
+            <option value="underbar">吸わない</option>
           </ons-select>
         </ons-col>
       </ons-row>
       <ons-row style="padding:20px 10px;">
         <ons-col vertical-align="center" width="50%">
-          最近入会
+          おさけ
         </ons-col>
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
           <ons-select id="choose-sel" onchange="editSelects(event)">
             <option value="basic">指定なし</option>
-            <option value="material">90分</option>
-            <option value="underbar">120分</option>
-            <option value="underbar">180分</option>
+            <option value="material">飲む</option>
+            <option value="underbar">ときどき飲む</option>
+            <option value="underbar">飲まない</option>
           </ons-select>
         </ons-col>
       </ons-row>
-      <ons-row style="padding:20px 10px;">
-        <ons-col vertical-align="center" width="50%">
-          最近ログイン
-        </ons-col>
-        <ons-col vertical-align="center" width="50%" style="text-align: right;">
-          <ons-select id="choose-sel" onchange="editSelects(event)">
-            <option value="basic">指定なし</option>
-            <option value="material">90分</option>
-            <option value="underbar">120分</option>
-            <option value="underbar">180分</option>
-          </ons-select>
-        </ons-col>
-      </ons-row>
+      
       <p style="padding:10px;">
         <ons-button modifier="large" style="border-radius: 10px;background-color:#ff9831;font-size: 0.9em;" ripple>検索する</ons-button>
       </p>

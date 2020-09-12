@@ -210,3 +210,9 @@ ons-bottom-toolbar {
     "MS PGothic", sans-serif !important;
   font-size: 0.8em;
 }
+
+#mypageProfileEdit-page > .page__content {
+  padding-right: 10px;
+  padding-left: 10px;
+  background: white !important;
+}

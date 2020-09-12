@@ -37,6 +37,9 @@
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-auth.js"></script>
 
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-storage.js"></script>
+
     <script>
       // Your web app's Firebase configuration
       var firebaseConfig = {
@@ -52,15 +55,23 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       firebase.analytics();
+      var db = firebase.firestore();
+      var storage = firebase.storage();
+
       ons.ready(function() {
         var myNavigator = document.getElementById("myNavigator");
         // ログインチェック
-        var loginUser = firebase.auth().currentUser;
-        firebase.auth().onAuthStateChanged(function(user) {
+        // myNavigator.pushPage("html/homePage.html");
+        firebase.auth().onAuthStateChanged(user => {
           if (user) {
-            myNavigator.pushPage("html/homePage.html");
+            if (!user.emailVerified) {
+              // メアド確認終わってない
+              myNavigator.pushPage("html/loginPage.html");
+            } else {
+              // メアド確認終わってる
+              myNavigator.pushPage("html/homePage.html");
+            }
           } else {
-            // No user is signed in.
             myNavigator.pushPage("html/loginPage.html");
           }
         });
