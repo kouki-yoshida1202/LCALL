@@ -1,4 +1,4 @@
-<ons-page id="first-page">
+<ons-page id="loginPage">
   <style>
     ::placeholder {
       color: white;
@@ -98,7 +98,7 @@
               modifier="underbar"
               type="email"
               placeholder="MailAddress"
-              style="padding:1.2em;"
+              style="padding:1.2em;width:80%;"
               float
             ></ons-input>
           </p>
@@ -108,7 +108,7 @@
               modifier="underbar"
               type="password"
               placeholder="Password"
-              style="padding:1.2em;"
+              style="padding:1.2em;width:80%;"
               float
             ></ons-input>
           </p>
@@ -116,10 +116,16 @@
             <ons-button
               class="button--cta"
               onclick="newUserCreate($('#newMailaddress').val(),$('#newPassword').val())"
-              style="border-radius: 35px;padding:0.5em 1em;"
+              style="border-radius: 35px;padding:0.5em 1em;width:80%;"
               ripple
               >新規アカウント登録</ons-button
             >
+          </p>
+          <p
+            style="text-align: right;color:#0799d7;"
+            onclick="womanUserCreatePageJump()"
+          >
+            ※女性ユーザーの新規登録はこちら >
           </p>
         </div>
       </div>
@@ -158,51 +164,101 @@
       </div>
     </ons-card>
   </ons-modal>
-
   <script>
+    setTimeout(function() {
+      let loginPage = document.querySelector("#loginPage");
+      original_main_height = loginPage.clientHeight;
+    }, 100);
+
+    //ソフトウェアキーボード表示処理
+    window.addEventListener("keyboardWillShow", event => {
+      //画面の高さをキーボードの高さを差し引いた値とする
+      $("#loginPage").animate(
+        { height: original_main_height - event.keyboardHeight + "px" },
+        100
+      );
+    });
+
+    //ソフトウェアキーボード非表示処理
+    window.addEventListener("keyboardWillHide", () => {
+      //画面の高さを元の高さに戻す
+      $("#loginPage").animate({ height: original_main_height + "px" }, 100);
+    });
+    function womanUserCreatePageJump() {
+      ons.notification
+        .prompt({
+          message: "女性会員作成専用パスコードを入力してください。"
+        })
+        .then(function(pass) {
+          if (pass == "123") {
+            myNavigator.bringPageTop("html/womanUserCreatePage.html");
+          } else {
+            ons.notification.alert({
+              message: "パスコードが違います。"
+            });
+          }
+        });
+    }
     function loginCheck(email, password) {
       showLoad();
       firebase
         .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(function(user) {
-          console.log(user);
-          if (firebase.auth().currentUser.emailVerified) {
-            // メールアドレスの認証ができている
-            // ログイン
-            firebase.auth().onAuthStateChanged(function(user) {
-              if (user) {
-                console.log("There's a user", user);
+        .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(function() {
+          firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(function(user) {
+              if (firebase.auth().currentUser.emailVerified) {
+                // メールアドレスの認証ができている
+                // 永続性を持たせる
+                var user = firebase.auth().currentUser;
+                db.collection("users")
+                  .doc(user.uid)
+                  .get()
+                  .then(function(user) {
+                    if (user.data().sex == "man") {
+                      myNavigator.replacePage("html/homePage.html");
+                    } else if (user.data().sex == "woman") {
+                      myNavigator.replacePage("html/womanHomePage.html");
+                    } else {
+                      ons.notification.alert({
+                        title: "ログイン失敗",
+                        message: "性別が取得できませんでした。"
+                      });
+                    }
+                  });
+                hideLoad();
               } else {
-                console.log("No user");
+                // メルアド認証ができていない場合
+                firebase.auth().currentUser.sendEmailVerification();
+                // もう一度メールを送信して、認証アラートを出す
+                ons.notification.alert({
+                  title: "ログイン失敗",
+                  message:
+                    "メールアドレス認証が済んでおりません。登録したメールアドレスに認証メールが届いておりますので、ご確認ください。"
+                });
+                hideLoad();
               }
+            })
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              console.log(errorCode);
+              console.log(errorMessage);
+              // ...
+              ons.notification.alert({
+                title: "ログイン失敗",
+                message: "メールアドレスかパスワードが間違っております。"
+              });
+              hideLoad();
             });
-            myNavigator.replacePage("html/homePage.html");
-            hideLoad();
-          } else {
-            // メルアド認証ができていない場合
-            firebase.auth().currentUser.sendEmailVerification();
-            // もう一度メールを送信して、認証アラートを出す
-            ons.notification.alert({
-              title: "ログイン失敗",
-              message:
-                "メールアドレス認証が済んでおりません。登録したメールアドレスに認証メールが届いておりますので、ご確認ください。"
-            });
-            hideLoad();
-          }
         })
         .catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
-          console.log(errorCode);
-          console.log(errorMessage);
-          // ...
-          ons.notification.alert({
-            title: "ログイン失敗",
-            message: "メールアドレスかパスワードが間違っております。"
-          });
-          hideLoad();
         });
     }
     function showCreateUserModal() {
@@ -257,12 +313,43 @@
                 .sendEmailVerification()
                 .then(function() {
                   // Email sent.
-                  ons.notification.alert({
-                    title: "メール送信",
-                    message: "認証メールを送信しました。"
-                  });
-                  hideCreateUserModal();
-                  hideLoad();
+                  db.collection("users")
+                    .doc(user.uid)
+                    .set(
+                      {
+                        username: "",
+                        address: "",
+                        alcohol: "",
+                        birthplace: "",
+                        haircolor: "",
+                        hairstyle: "",
+                        height: "",
+                        old: "",
+                        sex: "man",
+                        text: "",
+                        tobacco: "",
+                        work: "",
+                        class: "",
+                        salaly: 0,
+                        point: 0,
+                        createDate: formatDateYYYYMMDDHHMM(new Date()),
+                        loginDate: formatDateYYYYMMDDHHMM(new Date())
+                      },
+                      { merge: true }
+                    )
+                    .then(function() {
+                      ons.notification.alert({
+                        title: "メール送信",
+                        message: "認証メールを送信しました。"
+                      });
+                      hideCreateUserModal();
+                      hideLoad();
+                    })
+                    .catch(function(error) {
+                      // An error happened.
+                      console.log(error);
+                      hideLoad();
+                    });
                 })
                 .catch(function(error) {
                   // An error happened.

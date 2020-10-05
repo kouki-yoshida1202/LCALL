@@ -4,7 +4,10 @@
       <ons-back-button></ons-back-button>
     </div>
   </ons-toolbar>
-  <ons-bottom-toolbar style="background-color:#ff9831; text-align: center;color:white;line-height: 35px;" onclick="myNavigator.bringPageTop('html/call/callPage3.html');">
+  <ons-bottom-toolbar
+    style="background-color:#ff9831; text-align: center;color:white;line-height: 35px;"
+    onclick="callPageJump3Check();"
+  >
     次に進む(2/4)
   </ons-bottom-toolbar>
   <!-- 本日マッチング可能なキャスト部分 -->
@@ -16,7 +19,9 @@
     </ons-row>
     <ons-row>
       <ons-col>
-        <p class="light-navy-font"style="padding-left:5px;">あなたに最適なキャストをマッチングします。キャストに希望があればマッチング希望をしてください。<br>※マッチングできない場合もございます。</p>
+        <p class="light-navy-font" style="padding-left:5px;">
+          あなたに最適なキャストをマッチングします。キャストに希望があればマッチング希望をしてください。<br />※マッチングできない場合もございます。
+        </p>
       </ons-col>
     </ons-row>
   </div>
@@ -27,63 +32,244 @@
         <h4 style="padding-left:5px;">希望日時にマッチング可能なキャスト</h4>
       </ons-col>
     </ons-row>
-    <ons-row>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-    </ons-row>
-    <ons-row>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-    </ons-row>
+    <div
+      class="item-label"
+      id="callPage2WomanList"
+      class="item-label"
+      style="display: flex;justify-content: flex-start;flex-wrap: wrap;padding-right:3%;padding-left:3%;"
+    ></div>
   </div>
+  <input type="hidden" id="callPage2CallTime" />
+  <input type="hidden" id="callPage2CallPlace" />
+  <input type="hidden" id="callPage2CallNumberPeople" />
+  <input type="hidden" id="callPage2CallHours" />
+  <input type="hidden" id="callPage2StartTime" />
+  <input type="hidden" id="callPage2EndTime" />
+  <script>
+    var womanUserIdArray = [];
+    function callPage2WomanGet() {
+      $("#callPage2WomanList").empty();
+      var callTime = $("#callPage2CallTime").val();
+      var callPlace = $("#callPage2CallPlace").val();
+      var callNumberPeople = $("#callPage2CallNumberPeople").val();
+      var callHours = Number($("#callPage2CallHours").val());
+      // var nowDateTime = ;
+      if (callTime == "afterNow") {
+        var startTime = new Date();
+        var endTime = new Date();
+        endTime.setHours(endTime.getHours() + callHours);
+        startTime = Number(getCurrentTime(startTime));
+        endTime = Number(getCurrentTime(endTime));
+      } else if (callTime == "afterOneHour") {
+      } else if (callTime == "afterOneHour") {
+      } else if (callTime == "afterTwoHour") {
+      } else if (callTime == "afterThreeHour") {
+      } else if (callTime == "afterCustomHour") {
+      }
+      $("#callPage2StartTime").val(startTime);
+      $("#callPage2EndTime").val(endTime);
+      db.collectionGroup("shift")
+        // .doc()
+        // .collection("shift")
+        .orderBy("endTime")
+        // .orderBy("loginDate", "desc")
+        .where("endTime", ">", endTime)
+        .get()
+        .then(function(womanUsers) {
+          if (womanUsers.size > 0) {
+            var nowDataCount = 1;
+            womanUsers.forEach(womanUser => {
+              if (womanUser.data().startTime < startTime) {
+                var womanlist =
+                  `
+                <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
+                  <img id="callPage2Image_` +
+                  nowDataCount +
+                  `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                  <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                    <p id="callPage2UserName_` +
+                  nowDataCount +
+                  `"class="callPageUserName"style="margin:0px;color:white;"></p>
+                    <p id="callPage2Salaly_` +
+                  nowDataCount +
+                  `"style="margin:0px;color:white;"></p>
+                  </div>
+                  <div id="checkMark_` +
+                  nowDataCount +
+                  `" style="position: absolute;top:10px;right:10px;display:none;">
+                    <i class="far fa-check-circle" style="color:#ff9831;"></i>
+                  </div>
+                </div>
+              `;
+                $("#callPage2WomanList").append(womanlist);
+                callPage2WomanIndicate(
+                  womanUser.data().userId,
+                  nowDataCount,
+                  womanUsers.size
+                );
+                nowDataCount++;
+              }
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    //時刻取得（yyyymmddhhmmss）
+    function getCurrentTime(now) {
+      var res =
+        "" +
+        now.getFullYear() +
+        padZero(now.getMonth() + 1) +
+        padZero(now.getDate()) +
+        padZero(now.getHours()) +
+        padZero(now.getMinutes());
+      return res;
+    }
+
+    //先頭ゼロ付加
+    function padZero(num) {
+      return (num < 10 ? "0" : "") + num;
+    }
+    function callPage2WomanIndicate(womanUserId, nowDataCount, dataSize) {
+      db.collection("users")
+        .doc(womanUserId)
+        .get()
+        .then(function(womanUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + womanUserId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#callPage2Image_" + nowDataCount).attr("src", url);
+              $("#callPage2Image_" + nowDataCount).click(function() {
+                if (!$(this).hasClass("clickON")) {
+                  $(this).addClass("clickON");
+                  $(this)
+                    .parent()
+                    .css("background", "#333333");
+                  $(this).animate({ opacity: "0.6" }, 250);
+                  $("#checkMark_" + nowDataCount).fadeIn(250);
+                  womanUserIdArray.push(womanUserId);
+                } else {
+                  $(this)
+                    .parent()
+                    .css("background", "none");
+                  $(this).animate({ opacity: "1.0" }, 250);
+                  $(this).removeClass("clickON");
+                  $("#checkMark_" + nowDataCount).fadeOut(250);
+                  var idx = womanUserIdArray.indexOf(womanUserId);
+                  if (idx >= 0) {
+                    womanUserIdArray.splice(idx, 1);
+                  }
+                }
+              });
+              $("#callPage2Salaly_" + nowDataCount).html(
+                "¥" + womanUserResult.data().salaly + "/h"
+              );
+              $("#callPage2UserName_" + nowDataCount).html(
+                womanUserResult.data().username
+              );
+              if (nowDataCount == dataSize) {
+                hideLoad();
+                syoryaku("callPageUserName", 6);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+
+    function callPageJump3Check() {
+      var callTime = $("#callPage2CallTime").val();
+      var callPlace = $("#callPage2CallPlace").val();
+      var callNumberPeople = Number($("#callPage2CallNumberPeople").val());
+      var callHours = Number($("#callPage2CallHours").val());
+
+      if (womanUserIdArray.length > callNumberPeople) {
+        ons.notification.alert({
+          message: "選択したキャスト人数が設定人数を超えています。"
+        });
+      } else if (womanUserIdArray.length < callNumberPeople) {
+        ons.notification.confirm({
+          message:
+            "選択した人数が設定人数より少ないため、足りない人数はランダムで選択されます。",
+          title: "確認",
+          buttonLabels: ["Cancel", "OK"],
+          callback: function(buttonIndex) {
+            if (buttonIndex == 1) {
+              var startTime = Number($("#callPage2StartTime").val());
+              var endTime = Number($("#callPage2EndTime").val());
+              db.collectionGroup("shift")
+                .orderBy("endTime")
+                .where("endTime", ">", endTime)
+                .get()
+                .then(function(womanUsers) {
+                  if (womanUsers.size > 0) {
+                    womanUsers.forEach(womanUser => {
+                      if (womanUser.data().startTime < startTime) {
+                        if (
+                          womanUserIdArray.length < callNumberPeople &&
+                          womanUserIdArray.indexOf(womanUser.data().userId) < 0
+                        ) {
+                          womanUserIdArray.push(womanUser.data().userId);
+                        } else {
+                          callPageJump3();
+                        }
+                      }
+                    });
+                  }
+                });
+            }
+          }
+        });
+      } else {
+        callPageJump3();
+      }
+    }
+
+    function callPageJump3() {
+      var callTime = $("#callPage2CallTime").val();
+      var callPlace = $("#callPage2CallPlace").val();
+      var callNumberPeople = $("#callPage2CallNumberPeople").val();
+      var callHours = $("#callPage2CallHours").val();
+      var startTime = Number($("#callPage2StartTime").val());
+      var endTime = Number($("#callPage2EndTime").val());
+      if (
+        callTime != "" &&
+        callPlace != "" &&
+        callNumberPeople != "" &&
+        callHours != ""
+      ) {
+        myNavigator.bringPageTop("html/call/callPage3.html");
+        setTimeout(function() {
+          $("#callPage3CallTime").val(callTime);
+          $("#callPage3CallPlace").val(callPlace);
+          $("#callPage3CallNumberPeople").val(callNumberPeople);
+          $("#callPage3CallHours").val(callHours);
+          $("#callPage3StartTime").val(startTime);
+          $("#callPage3EndTime").val(endTime);
+        }, 500);
+      } else {
+        ons.notification.alert({
+          message: "エラーが発生しました。再度やり直してください。"
+        });
+      }
+    }
+  </script>
 </ons-page>

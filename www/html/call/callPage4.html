@@ -1,4 +1,10 @@
 <ons-page id="call-page4">
+  <style>
+    #call-page4 .back-button__icon {
+      fill: white;
+      color: white;
+    }
+  </style>
   <div
     style="position: relative;text-align: center;background-image: url(img/146485_s.jpg) !important;height:150px !important;width:100%;background-size: cover !important;"
   >
@@ -28,11 +34,9 @@
         <i class="far fa-clock fa-fw" style="color:#ff9831;"></i>
       </div>
       <div class="center light-navy-font">
-        日時
+        開始日時
       </div>
-      <div class="right light-navy-font">
-        60分後
-      </div>
+      <div id="callPage4CallDateTime" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -41,8 +45,8 @@
       <div class="center light-navy-font">
         飲食時間
       </div>
-      <div class="right light-navy-font">
-        2時間
+      <div id="callPage4ListHours" class="right light-navy-font">
+        0時間
       </div>
     </ons-list-item>
     <ons-list-item>
@@ -52,9 +56,7 @@
       <div class="center light-navy-font">
         場所
       </div>
-      <div class="right light-navy-font">
-        宇都宮
-      </div>
+      <div id="callPage4ListPlace" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -63,8 +65,8 @@
       <div class="center light-navy-font">
         呼ぶ人数
       </div>
-      <div class="right light-navy-font">
-        2人
+      <div id="callPage4ListPeople" class="right light-navy-font">
+        0人
       </div>
     </ons-list-item>
     <ons-list-item>
@@ -74,19 +76,10 @@
       <div class="center light-navy-font">
         <span class="list-item__title navy-font">キャスト希望</span>
         <span
+          id="callCastImage"
           class="list-item__subtitle light-navy-font"
           style="height:45px;overflow: hidden;margin-top:5px;"
         >
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;"
-          />
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;"
-          />
         </span>
       </div>
     </ons-list-item>
@@ -117,41 +110,210 @@
       <ons-col style="text-align: right;">
         <ons-button
           style="background-color: #ff9831;color:white;font-weight: bold;font-size:0.8em;padding:4px 20px;"
+          onclick="partyInsertCheck()"
         >
           予約を確定する
         </ons-button>
       </ons-col>
     </ons-row>
   </ons-bottom-toolbar>
+  <input type="hidden" id="callPage4CallTime" />
+  <input type="hidden" id="callPage4CallPlace" />
+  <input type="hidden" id="callPage4CallNumberPeople" />
+  <input type="hidden" id="callPage4CallHours" />
+  <input type="hidden" id="callPage4StartTime" />
+  <input type="hidden" id="callPage4EndTime" />
+  <input type="hidden" id="callPage4NeedPoint" />
   <script>
-    function logoutOpen() {
+    var needPointArray = [];
+    var womanPointGetArray = [];
+    function partyInsertCheck() {
       ons.notification.confirm({
-        message: "ログアウトしますか？",
-        title: "確認",
-        buttonLabels: ["Cancel", "OK"],
+        message: "確定するとポイントが引かれます",
+        title: "注意",
+        buttonLabels: ["キャンセル", "確定"],
         callback: function(buttonIndex) {
           if (buttonIndex == 1) {
-            logout();
+            partyInsert();
           }
         }
       });
     }
-
-    function logout() {
-      firebase.auth().onAuthStateChanged(user => {
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            myNavigator.resetToPage("html/loginPage.html");
-          })
-          .catch(error => {
+    function partyInsert() {
+      var callTime = $("#callPage4CallTime").val();
+      var callPlace = $("#callPage4CallPlace").val();
+      var callNumberPeople = $("#callPage4CallNumberPeople").val();
+      var callHours = $("#callPage4CallHours").val();
+      var startTime = $("#callPage4StartTime").val();
+      var endTime = $("#callPage4EndTime").val();
+      var needPoint = $("#callPage4NeedPoint").val();
+      var myUserId = firebase.auth().currentUser.uid;
+      womanUserIdArray.push(myUserId);
+      womanUserIdArray.sort();
+      var joinUsersId = womanUserIdArray;
+      db.collection("users")
+        .doc(myUserId)
+        .get()
+        .then(function(myResult) {
+          var myPointNow = myResult.data().point;
+          var myPointAfter = Number(myPointNow) - Number(needPoint);
+          if (myPointAfter < 0) {
             ons.notification.alert({
-              title: "ログイン失敗",
-              message: `ログアウト時にエラーが発生しました (${error})`
+              message:
+                "所持ポイントが足りません。マイページからチャージしてください。"
             });
+            return;
+          } else {
+            return myPointAfter;
+          }
+        })
+        .then(function(myPointAfter) {
+          db.collection("users")
+            .doc(myUserId)
+            .set(
+              {
+                point: myPointAfter
+              },
+              { merge: true }
+            );
+          db.collection("partyRoom")
+            .doc()
+            .set(
+              {
+                startTime: startTime,
+                endTime: endTime,
+                callNumberPeople: callNumberPeople,
+                callHours: callHours,
+                callPlace: callPlace,
+                callTime: callTime,
+                joinUsersId: joinUsersId,
+                createTime: new Date()
+              },
+              { merge: true }
+            )
+            .then(function() {
+              womanPointGetArray.forEach(element => {
+                var womanUserId = element[0];
+                var getPoint = element[1];
+                db.collection("users")
+                  .doc(womanUserId)
+                  .get()
+                  .then(function(womanResult) {
+                    var pointNow = womanResult.data().point;
+                    var pointAfter = Number(pointNow) + Number(getPoint);
+                    db.collection("users")
+                      .doc(womanUserId)
+                      .set(
+                        {
+                          point: pointAfter
+                        },
+                        { merge: true }
+                      )
+                      .then(function() {
+                        ons.notification.alert({
+                          message: "予約が完了しました"
+                        });
+                      });
+                  });
+              });
+            })
+            .catch(function(error) {
+              console.log(error);
+              ons.notification.alert({
+                message: "失敗しました"
+              });
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+          ons.notification.alert({
+            message: "失敗しました"
           });
-      });
+        });
+    }
+
+    function callPage4Get() {
+      var callTime = $("#callPage4CallTime").val();
+      var callPlace = $("#callPage4CallPlace").val();
+      var callNumberPeople = $("#callPage4CallNumberPeople").val();
+      var callHours = $("#callPage4CallHours").val();
+      var startTime = $("#callPage4StartTime").val();
+      var endTime = $("#callPage4EndTime").val();
+
+      $("#callPage4ListPeople").html(callNumberPeople + "人");
+      $("#callPage4ListHours").html(callHours + "時間");
+      $("#callPage4ListPlace").html(callPlace);
+      startTime = strIns(startTime, 4, "/");
+      startTime = strIns(startTime, 7, "/");
+      startTime = strIns(startTime, 10, " ");
+      startTime = strIns(startTime, 13, ":");
+
+      $("#callPage4CallDateTime").html(startTime);
+      $("#callCastImage").empty();
+      for (var i = 0; i < callNumberPeople; i++) {
+        var callCastList =
+          `
+          <img
+            id="callCastImage_` +
+          i +
+          `"
+            class="list-item__thumbnail"
+            src="img/userSampleImageMan.png"
+            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;"
+          />
+        `;
+        $("#callCastImage").append(callCastList);
+      }
+
+      for (var j = 0; j < womanUserIdArray.length; j++) {
+        db.collection("users")
+          .doc(womanUserIdArray[j])
+          .get()
+          .then(function(womanResult) {
+            var rank = womanResult.data().rank;
+            if (rank == "S") {
+              var hourlyWage = 10000;
+            } else if (rank == "A") {
+              var hourlyWage = 5000;
+            } else if (rank == "B") {
+              var hourlyWage = 3000;
+            } else if (rank == "C") {
+              var hourlyWage = 1500;
+            }
+            needPointArray.push(hourlyWage * Number(callHours));
+            womanPointGetArray.push([
+              womanUserIdArray[j],
+              hourlyWage * Number(callHours)
+            ]);
+            if (j == womanUserIdArray.length - 1) {
+              var sum = 0;
+              needPointArray.forEach(function(elm) {
+                sum += elm;
+              });
+              $("#callPage4NeedPoint").val(sum);
+            }
+          });
+        firebase
+          .storage()
+          .ref()
+          .child("profilePicture/" + womanUserIdArray[j])
+          .getDownloadURL()
+          .then(url => {
+            // 画像取得できた
+            return url;
+          })
+          .catch(function() {
+            // 画像取得できないとき
+            url = "img/userSampleImageMan.png";
+            return url;
+          })
+          .then(function(url) {
+            $("#callCastImage_" + j).attr("src", url);
+            if (j + 1 == womanUserIdArray.length) {
+              hideLoad();
+            }
+          });
+      }
     }
   </script>
 </ons-page>

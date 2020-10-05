@@ -4,6 +4,7 @@
       class="center"
       id="toolbar-title"
       style="display:flex;align-items: center;"
+      onclick="window.location='index.html';"
     >
       <img
         src="img/callLogo.png"
@@ -26,13 +27,14 @@
             <div class="cp_iptxt">
               <ons-select
                 class="select"
-                style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
+                style="border-radius:50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
               >
-                <select class="select-input light-navy-font">
-                  <option>今すぐ呼ぶ</option>
-                  <option>1時間後</option>
-                  <option>2時間後</option>
-                  <option>日時指定</option>
+                <select id="callTime"class="select-input light-navy-font">
+                  <option value="afterNow">今すぐ呼ぶ</option>
+                  <option value="afterOneHour">1時間後</option>
+                  <option value="afterTwoHour">2時間後</option>
+                  <option value="afterThreeHour">3時間後</option>
+                  <option value="afterCustomHour">時間指定</option>
                 </select>
               </ons-select>
               <i class="far fa-clock fa-lg fa-fw" aria-hidden="true"></i>
@@ -42,12 +44,14 @@
             <ons-col>
               <div class="cp_iptxt">
                 <ons-select
+                id="callPlace"
                   class="select"
                   style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
                 >
                   <select class="select-input light-navy-font">
-                    <option>宇都宮</option>
-                    <option>Opt 2</option>
+                    <option>宇都宮西口</option>
+                    <option>宇都宮東口</option>
+                    <option>宇都宮郊外</option>
                   </select>
                 </ons-select>
                 <i class="fas fa-map-marker-alt fa-lg fa-fw" aria-hidden="true"></i>
@@ -60,14 +64,16 @@
             <ons-col>
               <div class="cp_iptxt">
                 <ons-select
+                id="callNumberPeople"
                   class="select"
                   style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
                 >
                   <select class="select-input light-navy-font">
-                    <option>2人</option>
-                    <option>3人</option>
-                    <option>4人</option>
-                    <option>5人</option>
+                    <option value="1">1人</option>
+                    <option value="2">2人</option>
+                    <option value="3">3人</option>
+                    <option value="4">4人</option>
+                    <option value="5">5人</option>
                   </select>
                 </ons-select>
                 <i class="fas fa-user-friends fa-lg fa-fw" aria-hidden="true"></i>
@@ -78,14 +84,15 @@
             <ons-col>
               <div class="cp_iptxt">
                 <ons-select
+                id="callHours"
                   class="select"
                   style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
                 >
                   <select class="select-input light-navy-font">
-                    <option>1時間</option>
-                    <option>2時間</option>
-                    <option>3時間</option>
-                    <option>4時間</option>
+                    <option value="1">1時間</option>
+                    <option value="2">2時間</option>
+                    <option value="3">3時間</option>
+                    <option value="4">4時間</option>
                   </select>
                 </ons-select>
                 <i class="fas fa-phone-volume fa-lg fa-fw" aria-hidden="true"></i>
@@ -100,7 +107,7 @@
                 class="button--large--cta"
                 style="margin: 0 auto;border-radius: 35px;padding:0.3em;background-color:#ff9831;"
                 ripple
-                onclick="myNavigator.bringPageTop('html/call/callPage2.html');"
+                onclick="callPage2Jump()"
               >
                 キャストを呼ぶ
               </ons-button>
@@ -120,49 +127,14 @@
         vertical-align="center"
         width="20%"
         style="font-size:0.8em;color:#ff9831;text-align: right;padding-right:15px;"
-        onclick="myNavigator.bringPageTop('html/other/todayCastPage.html');"
+        onclick="searchAfterTodayCheck();"
       >
         See All >
       </ons-col>
     </ons-row>
     <ons-row style="padding-right:10px;padding-left:10px;">
-      <ons-carousel auto-refresh swipeable overscrollable item-width="130px" id="carousel" style="padding-right:50px;">
-        <ons-carousel-item style="margin:5px;"　onclick="myNavigator.bringPageTop('html/other/womanPage.html');">
-          <div style="height:200px;position: relative;">
-            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-              <p style="margin:0px;color:white;">はなこ</p>
-              <p style="margin:0px;color:white;">¥3000/h</sp>
-            </div>
-          </div>
-        </ons-carousel-item>
-        <ons-carousel-item style="margin:5px;">
-          <div style="height:200px;position: relative;">
-            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-              <p style="margin:0px;color:white;">はなこ</p>
-              <p style="margin:0px;color:white;">¥3000/h</sp>
-            </div>
-          </div>
-        </ons-carousel-item>
-        <ons-carousel-item style="margin:5px;">
-          <div style="height:200px;position: relative;">
-            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-              <p style="margin:0px;color:white;">はなこ</p>
-              <p style="margin:0px;color:white;">¥3000/h</sp>
-            </div>
-          </div>
-        </ons-carousel-item>
-        <ons-carousel-item style="margin:5px;">
-          <div style="height:200px;position: relative;">
-            <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-            <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-              <p style="margin:0px;color:white;">はなこ</p>
-              <p style="margin:0px;color:white;">¥3000/h</sp>
-            </div>
-          </div>
-        </ons-carousel-item>
+      <ons-carousel class="todayCastList"auto-refresh swipeable overscrollable item-width="130px" id="carousel" style="padding-right:50px;">
+        
       </ons-carousel>
     </ons-row>
   </div>
@@ -174,4 +146,136 @@
       </ons-col>
     </ons-row>
   </div>
+  <script>
+    document.addEventListener(
+        "init",
+        function (event) {
+          if (event.target.matches("#call-page")) {
+            todayCastGet();
+          }
+        }
+    );
+
+    function searchAfterTodayCheck() {
+        myNavigator.bringPageTop('html/search/searchAfterPage.html');
+        showLoad();
+        setTimeout(function () {
+          searchTodayCast();
+        }, 500);
+      }
+    function todayCastGet(){
+      
+      $(".todayCastList").empty();
+      var todayDate = Number(formatDate(new Date()));
+      db.collectionGroup("shift")
+        // .orderBy("endTime")
+        .orderBy("loginDate", "desc")
+        .where("date", "==", todayDate)
+        .limit(4)
+        .get()
+        .then(function (womanUsers) {
+          if (womanUsers.size > 0) {
+            var nowDataCount = 1;
+            womanUsers.forEach(womanUser => {
+                var womanlist =
+                  `
+                <ons-carousel-item style="margin:5px;">
+                  <div style="height:200px;position: relative;">
+                    <img id="callPage1Image_`+nowDataCount+`"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p id="callPage1UserName_`+nowDataCount+`"style="margin:0px;color:white;"> </p>
+                      <p id="callPage1Salaly_`+nowDataCount+`"style="margin:0px;color:white;">¥0/h</sp>
+                    </div>
+                  </div>
+                </ons-carousel-item>
+              `;
+                $(".todayCastList").append(womanlist);
+                callPage1WomanIndicate(
+                  womanUser.data().userId,
+                  nowDataCount,
+                  womanUsers.size
+                );
+                nowDataCount++;
+              
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    function callPage2Jump(){
+      myNavigator.bringPageTop('html/call/callPage2.html');
+      showLoad();
+      var callTime = $('#callTime').val();
+      var callPlace = $('#callPlace').val();
+      var callNumberPeople = $('#callNumberPeople').val();
+      var callHours = $('#callHours').val();
+      setTimeout(function(){
+        $('#callPage2CallTime').val(callTime);
+        $('#callPage2CallPlace').val(callPlace);
+        $('#callPage2CallNumberPeople').val(callNumberPeople);
+        $('#callPage2CallHours').val(callHours);
+        callPage2WomanGet();
+      },500);
+    }
+
+    
+
+    // 日付をYYYYMMDDの書式で返すメソッド
+    function formatDate(dt) {
+      var y = dt.getFullYear();
+      var m = ('00' + (dt.getMonth() + 1)).slice(-2);
+      var d = ('00' + dt.getDate()).slice(-2);
+      return (y + '' + m + '' + d);
+    }
+    
+
+    function callPage1WomanIndicate(womanUserId, nowDataCount, dataSize) {
+        db.collection("users")
+          .doc(womanUserId)
+          .get()
+          .then(function (womanUserResult) {
+            firebase
+              .storage()
+              .ref()
+              .child("profilePicture/" + womanUserId)
+              .getDownloadURL()
+              .then(url => {
+                // 画像取得できた
+                return url;
+              })
+              .catch(function () {
+                // 画像取得できないとき
+                url = "img/userSampleImageMan.png";
+                return url;
+              })
+              .then(function (url) {
+                $("#callPage1Image_" + nowDataCount).attr("src", url);
+                // $("#callPage1Image_" + nowDataCount).click(function () {
+                // });
+                $("#callPage1Image_" + nowDataCount).click(function () {
+                  otherPageJump(womanUserId);
+                });
+                $("#callPage1Salaly_" + nowDataCount).html(
+                  "¥" + womanUserResult.data().salaly + "/h"
+                );
+                $("#callPage1UserName_" + nowDataCount).html(
+                  womanUserResult.data().username
+                );
+                if (nowDataCount == dataSize) {
+                  hideLoad();
+                  syoryaku("callPageUserName", 6);
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+  </script>
 </ons-page>

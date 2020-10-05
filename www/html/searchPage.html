@@ -1,15 +1,17 @@
 <ons-page id="search-page">
   <style>
-    .searchPagePtag{
-      font-size:0.8em;
+    .searchPagePtag {
+      font-size: 0.8em;
       font-weight: 400;
     }
-    </style>
+  </style>
   <ons-toolbar>
     <div class="center navy-font" id="toolbar-title">
       <ons-button
-        style="margin: 0 auto;border-radius: 35px;padding:0px 18%;background-color:#ff9831;font-size:0.8em;" ripple
-        onclick="showSearchPopover(this);">
+        style="margin: 0 auto;border-radius: 35px;padding:0px 18%;background-color:#ff9831;font-size:0.8em;"
+        ripple
+        onclick="showSearchPopover(this);"
+      >
         絞り込み検索
       </ons-button>
     </div>
@@ -18,122 +20,55 @@
   <div style="margin-top:10px;margin-bottom:7px;">
     <ons-row>
       <ons-col width="80%">
-        <h4 style="padding-left:5px;">本日マッチング可能なキャスト</h4>
+        <h4 id="searchTitle1" style="padding-left:5px;"></h4>
       </ons-col>
-      <ons-col vertical-align="center" width="20%" style="font-size:0.8em;color:#ff9831;text-align: right;padding-right:5px;" >
+      <ons-col
+        id="seeAllButton"
+        vertical-align="center"
+        width="20%"
+        style="font-size:0.8em;color:#ff9831;text-align: right;padding-right:5px;"
+      >
         See All >
       </ons-col>
     </ons-row>
-    <ons-carousel auto-refresh swipeable overscrollable item-width="100px" id="carousel" style="padding-right:50px;">
-      <ons-carousel-item style="margin:5px;"onclick="myNavigator.bringPageTop('html/other/womanPage.html');">
-        <div style="height:170px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:170px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p class="searchPagePtag" style="margin:0px;color:white;">はなこ</p>
-            <p class="searchPagePtag" style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:170px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:170px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p class="searchPagePtag" style="margin:0px;color:white;">はなこ</p>
-            <p class="searchPagePtag" style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:170px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:170px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p class="searchPagePtag" style="margin:0px;color:white;">はなこ</p>
-            <p class="searchPagePtag" style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-carousel-item>
-      <ons-carousel-item style="margin:5px;">
-        <div style="height:170px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:170px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p class="searchPagePtag" style="margin:0px;color:white;">はなこ</p>
-            <p class="searchPagePtag" style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-carousel-item>
+    <ons-carousel
+      class="todayCastList"
+      auto-refresh
+      swipeable
+      overscrollable
+      item-width="100px"
+      id="searchBox1"
+      style="padding-right:50px;"
+    >
     </ons-carousel>
   </div>
   <!-- 在籍キャスト -->
   <div style="margin-top:25px;margin-bottom:7px;">
     <ons-row>
       <ons-col width="100%">
-        <h4 style="padding-left:5px;">在籍キャスト</h4>
+        <h4 id="searchTitle2" style="padding-left:5px;"></h4>
       </ons-col>
     </ons-row>
-    <ons-row>
-      <ons-col style="padding:5px;"onclick="myNavigator.bringPageTop('html/other/womanPage.html');">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-    </ons-row>
-    <ons-row>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-      <ons-col style="padding:5px;">
-        <div style="height:200px;position: relative;">
-          <img src="img/image61.jpg" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-          <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-            <p style="margin:0px;color:white;">はなこ</p>
-            <p style="margin:0px;color:white;">¥3000/h</sp>
-          </div>
-        </div>
-      </ons-col>
-    </ons-row>
+    <div
+      class="item-label"
+      id="searchPageZaiseki"
+      class="item-label"
+      style="display: flex;justify-content: flex-start;flex-wrap: wrap;padding-right:3%;padding-left:3%;"
+    ></div>
   </div>
+
   <ons-popover direction="down" id="searchPopover" cancelable>
     <div style="padding: 10px; text-align: center;">
       <ons-row>
-        <ons-col width="100%" style="text-align: right;" vertical-align="center">
-          <ons-icon icon="fa-times-circle" onclick="hideChatPopover()"></ons-icon>
+        <ons-col
+          width="100%"
+          style="text-align: right;"
+          vertical-align="center"
+        >
+          <ons-icon
+            icon="fa-times-circle"
+            onclick="hideSearchPopover()"
+          ></ons-icon>
         </ons-col>
       </ons-row>
       <ons-row style="padding:20px 10px;">
@@ -141,12 +76,12 @@
           キャストクラス
         </ons-col>
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
-          <ons-select id="choose-sel" onchange="editSelects(event)">
-            <option value="basic">指定なし</option>
-            <option value="material">Sランク</option>
-            <option value="underbar">Aランク</option>
-            <option value="underbar">Bランク</option>
-            <option value="underbar">Cランク</option>
+          <ons-select id="searchCastRank" onchange="editSelects(event)">
+            <option>指定なし</option>
+            <option value="S">Sランク</option>
+            <option value="A">Aランク</option>
+            <option value="B">Bランク</option>
+            <option value="C">Cランク</option>
           </ons-select>
         </ons-col>
       </ons-row>
@@ -155,11 +90,12 @@
           たばこ
         </ons-col>
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
-          <ons-select id="choose-sel" onchange="editSelects(event)">
-            <option value="basic">指定なし</option>
-            <option value="material">吸う</option>
-            <option value="underbar">付き合い程度</option>
-            <option value="underbar">吸わない</option>
+          <ons-select id="searchCastTobacco" onchange="editSelects(event)">
+            <option>指定なし</option>
+            <option value="smokerOnPaper">吸う(紙タバコ)</option>
+            <option value="smokerOnDenshi">吸う(電子タバコ)</option>
+            <option value="smokerMiddle">禁煙者の前では吸わない</option>
+            <option value="smokerOff">吸わない</option>
           </ons-select>
         </ons-col>
       </ons-row>
@@ -168,28 +104,369 @@
           おさけ
         </ons-col>
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
-          <ons-select id="choose-sel" onchange="editSelects(event)">
-            <option value="basic">指定なし</option>
-            <option value="material">飲む</option>
-            <option value="underbar">ときどき飲む</option>
-            <option value="underbar">飲まない</option>
+          <ons-select id="searchCastAlcohol" onchange="editSelects(event)">
+            <option>指定なし</option>
+            <option value="alcoholOn">よく飲む</option>
+            <option value="alcoholMiddle">ときどき飲む</option>
+            <option value="alcoholOff">飲まない</option>
           </ons-select>
         </ons-col>
       </ons-row>
-      
+
       <p style="padding:10px;">
-        <ons-button modifier="large" style="border-radius: 10px;background-color:#ff9831;font-size: 0.9em;" ripple>検索する</ons-button>
+        <ons-button
+          modifier="large"
+          style="border-radius: 10px;background-color:#ff9831;font-size: 0.9em;"
+          ripple
+          onclick="searchAfterCheck();"
+          >検索する</ons-button
+        >
       </p>
-  
     </div>
   </ons-popover>
   <script>
-    var showSearchPopover = function (target) {
+    setTimeout(function() {
+      var myUserId = firebase.auth().currentUser.uid;
+      db.collection("users")
+        .doc(myUserId)
+        .get()
+        .then(function(myUserResult) {
+          var mySex = myUserResult.data().sex;
+          if (mySex == "man") {
+            // 自分が男性の場合
+            $("#searchTitle2").html("在籍キャスト");
+            $("#searchTitle1").html("本日マッチング可能なキャスト");
+            $("#seeAllButton").click(function() {
+              searchAfterTodayCheck();
+            });
+            zaisekiCast();
+          } else {
+            // 自分が女性の場合
+            db.collection("users")
+              .where("sex", "==", "man")
+              .get()
+              .then(function(allUser) {
+                var allUserSize = allUser.size;
+                $("#searchTitle2").html("総勢" + allUserSize + "名の会員様");
+                $("#searchTitle1").html("現在ログイン中の会員様");
+                $("#seeAllButton").click(function() {
+                  searchAfterNowLoginCheck();
+                });
+                nowLoginGet();
+                zaisekiCast();
+              });
+          }
+        });
+    }, 500);
+
+    function nowLoginGet() {
+      $(".todayCastList").empty();
+      var now = new Date();
+      var before15min_unix = now.getTime() - 900000; //ミリ秒なので(900秒*1000)
+      var before15min = formatDateYYYYMMDDHHMM(new Date(before15min_unix));
+      db.collection("users")
+        .orderBy("loginDate", "desc")
+        .where("sex", "==", "man")
+        .where("loginDate", ">=", before15min)
+        .limit(4)
+        .get()
+        .then(function(manLoginUsers) {
+          console.log(manLoginUsers.size);
+          if (manLoginUsers.size > 0) {
+            var nowDataCount = 1;
+            manLoginUsers.forEach(manLoginUser => {
+              var manlist =
+                `
+                <ons-carousel-item style="margin:5px;">
+                  <div style="height:200px;position: relative;">
+                    <img id="callPage1Image_` +
+                nowDataCount +
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p id="callPage1UserName_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;"> </p>
+                      <p id="callPage1Salaly_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;">¥0/h</sp>
+                    </div>
+                  </div>
+                </ons-carousel-item>
+              `;
+              console.log(manlist);
+              $(".todayCastList").append(manlist);
+              callPage1ManIndicate(
+                manLoginUser.id,
+                nowDataCount,
+                manLoginUsers.size
+              );
+              nowDataCount++;
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function todayCastGet() {
+      $(".todayCastList").empty();
+      var todayDate = Number(formatDate(new Date()));
+      db.collectionGroup("shift")
+        // .orderBy("endTime")
+        .orderBy("loginDate", "desc")
+        .where("date", "==", todayDate)
+        .limit(4)
+        .get()
+        .then(function(womanUsers) {
+          if (womanUsers.size > 0) {
+            var nowDataCount = 1;
+            womanUsers.forEach(womanUser => {
+              var womanlist =
+                `
+                <ons-carousel-item style="margin:5px;">
+                  <div style="height:200px;position: relative;">
+                    <img id="callPage1Image_` +
+                nowDataCount +
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p id="callPage1UserName_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;"> </p>
+                      <p id="callPage1Salaly_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;">¥0/h</sp>
+                    </div>
+                  </div>
+                </ons-carousel-item>
+              `;
+              $(".todayCastList").append(womanlist);
+              callPage1WomanIndicate(
+                womanUser.data().userId,
+                nowDataCount,
+                womanUsers.size
+              );
+              nowDataCount++;
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function callPage1WomanIndicate(womanUserId, nowDataCount, dataSize) {
+      db.collection("users")
+        .doc(womanUserId)
+        .get()
+        .then(function(womanUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + womanUserId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#callPage1Image_" + nowDataCount).attr("src", url);
+              // $("#callPage1Image_" + nowDataCount).click(function () {
+              // });
+              $("#callPage1Image_" + nowDataCount).click(function() {
+                otherPageJump(womanUserId);
+              });
+              $("#callPage1Salaly_" + nowDataCount).html(
+                "¥" + womanUserResult.data().salaly + "/h"
+              );
+              $("#callPage1UserName_" + nowDataCount).html(
+                womanUserResult.data().username
+              );
+              if (nowDataCount == dataSize) {
+                hideLoad();
+                syoryaku("callPageUserName", 6);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function callPage1ManIndicate(manUserId, nowDataCount, dataSize) {
+      db.collection("users")
+        .doc(manUserId)
+        .get()
+        .then(function(manUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + manUserId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#callPage1Image_" + nowDataCount).attr("src", url);
+              // $("#callPage1Image_" + nowDataCount).click(function () {
+              // });
+              $("#callPage1Image_" + nowDataCount).click(function() {
+                otherPageJump(manUserId);
+              });
+              $("#callPage1Salaly_" + nowDataCount).html(
+                "¥" + manUserResult.data().salaly + "/h"
+              );
+              $("#callPage1UserName_" + nowDataCount).html(
+                manUserResult.data().username
+              );
+              if (nowDataCount == dataSize) {
+                hideLoad();
+                syoryaku("callPageUserName", 6);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function searchAfterCheck() {
+      myNavigator.bringPageTop("html/search/searchAfterPage.html");
+      var alcohol = $("#searchCastAlcohol").val();
+      var tobacco = $("#searchCastTobacco").val();
+      var rank = $("#searchCastRank").val();
+      showLoad();
+      setTimeout(function() {
+        searchAfter(rank, tobacco, alcohol);
+      }, 500);
+    }
+    var showSearchPopover = function(target) {
       document.getElementById("searchPopover").show(target);
     };
 
-    var hideSearchPopover = function () {
+    var hideSearchPopover = function() {
       document.getElementById("searchPopover").hide();
     };
+
+    function zaisekiCast() {
+      $("#searchPageZaiseki").empty();
+      var myUserId = firebase.auth().currentUser.uid;
+      db.collection("users")
+        .doc(myUserId)
+        .get()
+        .then(function(myUserResult) {
+          var mySex = myUserResult.data().sex;
+          if (mySex == "man") {
+            var searchSex = "woman";
+          } else {
+            var searchSex = "man";
+          }
+          return searchSex;
+        })
+        .then(function(searchSex) {
+          db.collection("users")
+            .where("sex", "==", searchSex)
+            .orderBy("loginDate", "desc")
+            .limit(20)
+            .get()
+            .then(function(userWomanResults) {
+              console.log(userWomanResults.size);
+              if (userWomanResults.size > 0) {
+                var nowDataCount = 1;
+                userWomanResults.forEach(userWomanResult => {
+                  var womanlist =
+                    `
+                <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
+                  <img id="searchPageImage_` +
+                    nowDataCount +
+                    `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                  <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                    <p id="searchPageUserName_` +
+                    nowDataCount +
+                    `"class="searchPageUserName"style="margin:0px;color:white;"></p>`;
+                  if (searchSex == "man") {
+                    womanlist += `</div>
+                      </div>
+                    `;
+                  } else {
+                    womanlist +=
+                      `<p id="searchPageSalaly_` +
+                      nowDataCount +
+                      `"style="margin:0px;color:white;"></p>
+                        </div>
+                      </div>
+                    `;
+                  }
+
+                  $("#searchPageZaiseki").append(womanlist);
+                  searchPageWomanIndicate(
+                    userWomanResult.id,
+                    nowDataCount,
+                    userWomanResults.size
+                  );
+                  nowDataCount++;
+                });
+              }
+            });
+        });
+    }
+
+    function searchPageWomanIndicate(womanUserId, nowDataCount, dataSize) {
+      console.log(womanUserId);
+      db.collection("users")
+        .doc(womanUserId)
+        .get()
+        .then(function(womanUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + womanUserId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#searchPageImage_" + nowDataCount).attr("src", url);
+              $("#searchPageImage_" + nowDataCount).click(function() {
+                otherPageJump(womanUserId);
+              });
+              $("#searchPageSalaly_" + nowDataCount).html(
+                "¥" + womanUserResult.data().salaly + "/h"
+              );
+              $("#searchPageUserName_" + nowDataCount).html(
+                womanUserResult.data().username
+              );
+              if (nowDataCount == dataSize) {
+                hideLoad();
+                syoryaku("searchPageUserName", 6);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
   </script>
 </ons-page>

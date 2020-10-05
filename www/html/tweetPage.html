@@ -1,137 +1,259 @@
 <ons-page id="tweet-page">
+  <style>
+    #tweetFab {
+      background-color: #ff9831;
+    }
+
+    #tweetModal ons-col {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+  </style>
   <ons-toolbar>
     <div class="center" id="toolbar-title">つぶやき</div>
   </ons-toolbar>
+  <ons-pull-hook id="tweetPagePullHook">
+    Pull to refresh
+  </ons-pull-hook>
+  <ons-fab id="tweetFab" position="bottom right" onclick="tweetModalShow();">
+    <ons-icon icon="md-comment"></ons-icon>
+  </ons-fab>
   <div>
-    <ons-list>
-      <ons-list-item
-        onclick="myNavigator.bringPageTop('html/other/womanPage.html');"
-      >
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入ります</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入ります入</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りますつぶやきが入りますつぶやきが入りますつぶ</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りま</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りま</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りま</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span class="list-item__subtitle light-navy-font"
-            >つぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りますつぶやきが入りまつぶやきが入りま</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20</span>
-        </div>
-      </ons-list-item>
-    </ons-list>
+    <ons-list id="tweetList"> </ons-list>
   </div>
+  <ons-modal id="tweetModal" direction="up">
+    <ons-card>
+      <ons-row>
+        <ons-col class="navy-font" vertical-align="center" width="90%">
+          ※女性会員ページにのみ表示されます
+        </ons-col>
+        <ons-col vertical-align="center" style="text-align: right;">
+          <i
+            class="fas fa-times-circle"
+            onclick="tweetModalHide()"
+            style="color:gray;"
+          ></i>
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col vertical-align="center">
+          <textarea
+            id="tweetInputText"
+            class="textarea textarea--transparent"
+            rows="10"
+            placeholder="つぶやきを記入してください(130文字以内)"
+            maxlength="130"
+          ></textarea>
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col vertical-align="center">
+          <ons-button
+            modifier="large"
+            class="large-button-orange"
+            onclick="tweetInsert()"
+            >つぶやく</ons-button
+          >
+        </ons-col>
+      </ons-row>
+    </ons-card>
+  </ons-modal>
+  <script>
+    ons.ready(function() {
+      var pullHook = document.getElementById("tweetPagePullHook");
+      pullHook.onAction = function(done) {
+        tweetGet();
+        setTimeout(() => {
+          done();
+        }, 3000);
+      };
+      pullHook.addEventListener("changestate", function(event) {
+        var message = "";
+
+        switch (event.state) {
+          case "initial":
+            message = '<i class="fas fa-spinner" style="font-size:1.3em;"></i>';
+            break;
+          case "preaction":
+            message = '<i class="fas fa-spinner" style="font-size:1.3em;"></i>';
+            break;
+          case "action":
+            message =
+              '<i class="fas fa-spinner fa-spin" style="font-size:1.3em;"></i>';
+            break;
+        }
+
+        pullHook.innerHTML = message;
+      });
+    });
+    function tweetModalShow() {
+      var modal = document.querySelector("#tweetModal");
+      modal.show();
+    }
+    function tweetModalHide() {
+      var modal = document.querySelector("#tweetModal");
+      modal.hide();
+    }
+    setTimeout(function() {
+      tweetGet();
+    }, 500);
+
+    function tweetGet() {
+      $("#tweetList").empty();
+      var user = firebase.auth().currentUser;
+      var userId = user.uid;
+      db.collection("users")
+        .doc(userId)
+        .get()
+        .then(function(userResult) {
+          var sex = userResult.data().sex;
+          if (sex == "woman") {
+            var userSex = "man";
+          } else {
+            var userSex = "woman";
+          }
+          db.collection("tweet")
+            .where("userSex", "==", userSex)
+            .orderBy("createTime", "desc")
+            .limit(20)
+            .get()
+            .then(function(tweetResults) {
+              if (tweetResults.size > 0) {
+                var nowDataCount = 0;
+                tweetResults.forEach(tweetResult => {
+                  var tweetlist =
+                    `
+                    <ons-list-item id="tweetlist_` +
+                    nowDataCount +
+                    `">
+                      <div class="left">
+                        <img id="tweetImage_` +
+                    nowDataCount +
+                    `"class="list-item__thumbnail" src="img/userSampleImageMan.png"
+                          style="width:45px;height:45px;border-radius: 50%;object-fit:cover;" />
+                      </div>
+                      <div class="center">
+                        <span id="tweetUserName_` +
+                    nowDataCount +
+                    `" class="list-item__title navy-font" style="padding-bottom:5px;"></span>
+                        <span id="tweetText_` +
+                    nowDataCount +
+                    `" class="tweetText list-item__subtitle light-navy-font"></span>
+                      </div>
+                      <div class="right">
+                        <span id="tweetTime_` +
+                    nowDataCount +
+                    `" class="list-item__subtitle light-navy-font"></span>
+                      </div>
+                    </ons-list-item>
+                  `;
+                  $("#tweetList").append(tweetlist);
+                  tweetIndicate(
+                    tweetResult.data(),
+                    nowDataCount,
+                    tweetResults.size
+                  );
+                  nowDataCount++;
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        });
+    }
+    function tweetIndicate(tweetResult, nowDataCount, dataSize) {
+      db.collection("users")
+        .doc(tweetResult.userId)
+        .get()
+        .then(function(womanUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + tweetResult.userId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#tweetImage_" + nowDataCount).attr("src", url);
+              $("#tweetlist_" + nowDataCount).click(function() {
+                otherPageJump(tweetResult.userId);
+              });
+              $("#tweetText_" + nowDataCount).html(tweetResult.tweet);
+              $("#tweetUserName_" + nowDataCount).html(
+                womanUserResult.data().username
+              );
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function tweetInsert() {
+      showLoad();
+      var tweetInputText = $("#tweetInputText").val();
+
+      if (tweetInputText == "" || tweetInputText == null) {
+        hideLoad();
+        ons.notification.alert({
+          message: "つぶやき内容を記入してください"
+        });
+      } else {
+        var user = firebase.auth().currentUser;
+        var userId = user.uid;
+        db.collection("users")
+          .doc(userId)
+          .get()
+          .then(function(userResult) {
+            var sex = userResult.data().sex;
+            return sex;
+          })
+          .then(function(sex) {
+            db.collection("tweet")
+              .doc()
+              .set(
+                {
+                  userId: userId,
+                  userSex: sex,
+                  tweet: tweetInputText,
+                  createTime: new Date()
+                },
+                { merge: true }
+              )
+              .then(function() {
+                hideLoad();
+                $("#tweetInputText").val("");
+                tweetModalHide();
+                ons.notification.alert({
+                  message: "つぶやきました"
+                });
+              })
+              .catch(function(error) {
+                console.log(error);
+                hideLoad();
+                ons.notification.alert({
+                  message: "失敗しました"
+                });
+              });
+          })
+          .catch(function(error) {
+            console.log(error);
+            hideLoad();
+            ons.notification.alert({
+              message: "失敗しました"
+            });
+          });
+      }
+    }
+  </script>
 </ons-page>

@@ -1,50 +1,46 @@
-<ons-page id="chat-detail-page">
+<ons-page id="chatDetailPage">
+  <style>
+    #chatDetailPage .page__background{
+      background-color: white !important;
+    }
+  </style>
+  
   <ons-toolbar>
-    <div class="left">
-      <ons-back-button>戻る</ons-back-button>
+    <div class="left" style="padding-left:8px;">
+      <ons-back-button></ons-back-button>
     </div>
     <div class="center">メッセージ</div>
     <div class="right">
       <ons-toorbar-button
         ripple
         onclick="showChatPopover(this);"
-        style="line-height: 25px;color:#ff9831;"
+        style="line-height: 25px;color:#ff9831;padding-right:8px;"
         >日程調整</ons-button
       >
     </div>
   </ons-toolbar>
 
   <div class="content" sytle="background-color:white;">
-    <ons-list id="chats">
-      <ons-list-item modifier="nodivider">
-        <div class="right">
-          <ons-card style="background-color:#1DA1F2;color:white;"
-            >テキストが入ります。</ons-card
-          >
-        </div>
-      </ons-list-item>
-      <ons-list-item modifier="nodivider">
-        <div class="left">
-          <ons-card style="background-color:#f5f6f8;"
-            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</ons-card
-          >
-        </div>
-      </ons-list-item>
-      <ons-list-item modifier="nodivider">
-        <div class="right">
-          <ons-card style="background-color:#1DA1F2;color:white;"
-            >テキストが入ります。テキストが入ります。</ons-card
-          >
-        </div>
-      </ons-list-item>
+    <ons-list id="chats" style="background-image:none;">
+      
+      
     </ons-list>
   </div>
-
-  <div class="send-area">
-    <ons-input id="message" placeholder="メッセージ"></ons-input>
-    <ons-button id="send" modifier="quiet">送信</ons-button>
-  </div>
-
+  <ons-bottom-toolbar id="chatDetailBottom" style="line-height: 35px;height:50px">
+    <ons-row style="padding-top:5px;">
+      <ons-col width="80%" style="text-align: center;font-size:1.0em;" vertical-align="center">
+        <ons-input id="chatCommentInput"
+          style="background-color: #efeff4;width:90%;line-height: 31px;padding-top:0px;padding-bottom:0px;"
+          placeholder="コメント入力欄">
+        </ons-input>
+      </ons-col>
+      <ons-col width="20%" style="text-align: center;" vertical-align="center">
+        <ons-button class="large-button-orange" style="font-size:1.0em;padding-top:0px;padding-bottom:0px;height:33px;"
+          onclick="chatSubmit()">送信
+        </ons-button>
+      </ons-col>
+    </ons-row>
+  </ons-bottom-toolbar>
   <ons-popover direction="down" id="chatPopover" cancelable>
     <div style="padding: 10px; text-align: center;">
       <ons-row>
@@ -90,8 +86,27 @@
       
     </div>
   </ons-popover>
-
+  <input type="hidden" id="chatDetailPageUserId">
   <script>
+    setTimeout(function () {
+        let chatDetailPage = document.querySelector("#chatDetailPage");
+        original_main_height = chatDetailPage.clientHeight;
+      }, 100);
+
+      //ソフトウェアキーボード表示処理
+      window.addEventListener("keyboardWillShow", event => {
+        //画面の高さをキーボードの高さを差し引いた値とする
+        $("#chatDetailPage").animate(
+          { height: original_main_height - event.keyboardHeight + "px" },
+          100
+        );
+      });
+
+      //ソフトウェアキーボード非表示処理
+      window.addEventListener("keyboardWillHide", () => {
+        //画面の高さを元の高さに戻す
+        $("#chatDetailPage").animate({ height: original_main_height + "px" }, 100);
+      });
     var showChatPopover = function(target) {
       document.getElementById("chatPopover").show(target);
     };
@@ -99,5 +114,161 @@
     var hideChatPopover = function() {
       document.getElementById("chatPopover").hide();
     };
+    function chatDetailGet(){
+      showLoad();
+      $('#chats').empty();
+      var chatDetailPageUserId = $('#chatDetailPageUserId').val();
+      var myUserId = firebase.auth().currentUser.uid;
+      var usersArray = [myUserId, chatDetailPageUserId];
+      usersArray.sort();
+      db.collection("message")
+        .where("usersId", "==", usersArray)
+        .get()
+        .then(function (messages) {
+          if (messages.size > 0) {
+            chatIndicate(messages);
+          }else{
+            hideLoad();
+          }
+        })
+        .catch(function(error){
+          console.log(error);
+          hideLoad();
+        });
+    }
+
+    function chatIndicate(messages){
+      var myUserId = firebase.auth().currentUser.uid;
+      messages.forEach(message => {
+        var messageId = message.id;
+        db.collection("message")
+          .doc(messageId)
+          .collection("chatContents")
+          .orderBy("createTime", "asc")
+          .get()
+          .then(function (messages) {
+            var nowDataCounter = 0;
+            messages.forEach(message => {
+              var sendChat = message.data().sendChat;
+              var catchChat = message.data().catchChat;
+              var text = message.data().text;
+              var createTime = message.data().createTime;
+              if (sendChat == myUserId) {
+                // 自分の投稿
+                var messagelist = `
+                        <ons-list-item modifier="nodivider">
+                          <div class="right">
+                            <ons-card style="background-color:#1DA1F2;color:white;">
+                              `+ text + `
+                            </ons-card>
+                          </div>
+                        </ons-list-item>
+                      `;
+                $('#chats').append(messagelist);
+              } else {
+                // 相手の投稿
+                var messagelist = `
+                        <ons-list-item modifier="nodivider">
+                          <div class="left">
+                            <ons-card style="background-color:#f5f6f8;"
+                              >
+                              `+ text + `
+                            </ons-card>
+                          </div>
+                        </ons-list-item>
+                      `;
+                $('#chats').append(messagelist);
+              }
+              nowDataCounter++
+              if(nowDataCounter==messages.size){
+                hideLoad();
+              }
+            });
+          });
+      });
+    }
+    function chatSubmit(){
+      showLoad();
+      var chatText = $('#chatCommentInput').val();
+      if(chatText==""||chatText==null){
+        hideLoad();
+        ons.notification.alert({
+          "message":"未入力です"
+        })
+      }else{
+        var catchUserId = $('#chatDetailPageUserId').val();
+        var sendUserId = firebase.auth().currentUser.uid;
+        var usersArray = [catchUserId,sendUserId];
+        usersArray.sort();
+        db.collection("message")
+          .where("usersId", "==", usersArray)
+          .get()
+          .then(function (messageRoom) {
+            if(messageRoom.size>0){
+              // 既にチャットルームが存在する場合
+              chatAddCreate(messageRoom, sendUserId, catchUserId, chatText);
+            }else{
+              db.collection("message")
+                .add({
+                  usersId: usersArray,
+                  newestTime: new Date(),
+                  newestText: chatText
+                })
+                .then(function (setResult) {
+                  db.collection("message")
+                    .doc(setResult.id)
+                    .collection("chatContents")
+                    .doc()
+                    .set({
+                      sendChat: sendUserId,
+                      catchChat: catchUserId,
+                      createTime: new Date(),
+                      text: chatText
+                    }, { merge: true })
+                    .then(function () {
+                      hideLoad();
+                      chatDetailGet();
+                    });
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+              
+            }
+          });
+        
+      }
+    }
+
+    function chatAddCreate(messages,sendUserId,catchUserId,chatText){
+      messages.forEach(message => {
+        var docId = message.id;
+        db.collection("message")
+          .doc(docId)
+          .collection("chatContents")
+          .doc()
+          .set({
+            sendChat: sendUserId,
+            catchChat: catchUserId,
+            createTime: new Date(),
+            text: chatText
+          }, { merge: true })
+          .then(function () {
+            db.collection("message")
+              .doc(docId)
+              .set({
+                newestTime: new Date(),
+                newestText: chatText
+              }, { merge: true })
+              .then(function () {
+                hideLoad();
+                chatDetailGet();
+              });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      });
+    }
   </script>
 </ons-page>

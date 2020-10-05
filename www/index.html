@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -24,8 +24,11 @@
     />
     <script src="lib/onsenui/js/loadingoverlay.min.js"></script>
 
+    <script src="lib/onsenui/js/main.min.js"></script>
+    <link rel="stylesheet" href="lib/onsenui/css/main.min.css" />
+    <script src="lib/onsenui/js/locales-all.min.js"></script>
+    <script src="lib/onsenui/js/ja.js"></script>
     <script></script>
-    <style></style>
   </head>
   <body>
     <ons-navigator id="myNavigator"></ons-navigator>
@@ -36,6 +39,9 @@
     https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-auth.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-storage.js"></script>
 
     <script>
       // Your web app's Firebase configuration
@@ -52,16 +58,70 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       firebase.analytics();
-
+      var db = firebase.firestore();
+      var storage = firebase.storage();
+      document.addEventListener("init", function() {
+        var user = firebase.auth().currentUser;
+        db.collection("users")
+          .doc(user.uid)
+          .get()
+          .then(function(user) {
+            var sex = user.data().sex;
+            if (sex == "woman") {
+              var calendarEl = document.getElementById("calendar");
+              var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridMonth",
+                locale: "ja",
+                selectable: true, // 選択不可
+                height: 500,
+                selectLongPressDelay: 0,
+                dateClick: function(info) {
+                  $("#selectDate").val(info.dateStr);
+                }
+              });
+              calendar.render();
+            }
+          });
+      });
       ons.ready(function() {
         var myNavigator = document.getElementById("myNavigator");
         // ログインチェック
-        var loginUser = firebase.auth().currentUser;
-        firebase.auth().onAuthStateChanged(function(user) {
+        firebase.auth().onAuthStateChanged(user => {
           if (user) {
-            myNavigator.pushPage("html/homePage.html");
+            if (!user.emailVerified) {
+              // メアド確認終わってない
+              myNavigator.pushPage("html/loginPage.html");
+            } else {
+              // メアド確認終わってる
+              db.collection("users")
+                .doc(user.uid)
+                .set(
+                  {
+                    loginDate: formatDateYYYYMMDDHHMM(new Date())
+                  },
+                  { merge: true }
+                )
+                .then(function() {
+                  var user = firebase.auth().currentUser;
+                  db.collection("users")
+                    .doc(user.uid)
+                    .get()
+                    .then(function(user) {
+                      if (user.data().sex == "man") {
+                        myNavigator.replacePage("html/homePage.html");
+                      } else if (user.data().sex == "woman") {
+                        myNavigator.replacePage("html/womanHomePage.html");
+                      } else {
+                        ons.notification.alert({
+                          title: "ログイン失敗",
+                          message: "性別が取得できませんでした。"
+                        });
+                        myNavigator.pushPage("html/loginPage.html");
+                      }
+                    });
+                });
+            }
           } else {
-            // No user is signed in.
             myNavigator.pushPage("html/loginPage.html");
           }
         });
@@ -76,10 +136,101 @@
           image: "",
           fontawesome: "fa fa-spinner fa-spin fa-small"
         });
+        setTimeout(function() {
+          hideLoad();
+        }, 5000);
       }
 
       function hideLoad() {
         $("body").LoadingOverlay("hide");
+      }
+      // dataURIをBlobに変換する関数
+      function toBlob(dataURI) {
+        const byteString = atob(dataURI.split(",")[1]);
+        const mimeType = dataURI.match(/(:)([a-z\/]+)(;)/)[2];
+        for (
+          var i = 0, l = byteString.length, content = new Uint8Array(l);
+          l > i;
+          i++
+        ) {
+          content[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([content], {
+          type: mimeType
+        });
+      }
+
+      // 文字列挿入関数
+      function strIns(str, idx, val) {
+        var res = str.slice(0, idx) + val + str.slice(idx);
+        return res;
+      }
+
+      function otherPageJump(userId) {
+        db.collection("users")
+          .doc(userId)
+          .get()
+          .then(function(userResult) {
+            var sex = userResult.data().sex;
+            if (sex == "woman") {
+              myNavigator.bringPageTop("html/other/womanPage.html");
+              setTimeout(() => {
+                womanInfoGet(userId);
+              }, 500);
+            } else if (sex == "man") {
+              myNavigator.bringPageTop("html/other/manPage.html");
+              setTimeout(() => {
+                manInfoGet(userId);
+              }, 500);
+            }
+          });
+      }
+      function formatDateYYYYMMDDHHMM(dt) {
+        var year = dt.getFullYear();
+        var month = ("00" + (dt.getMonth() + 1)).slice(-2);
+        var day = ("00" + dt.getDate()).slice(-2);
+        var hours = ("00" + dt.getHours()).slice(-2);
+        var minute = ("00" + dt.getMinutes()).slice(-2);
+        return Number(year + "" + month + "" + day + "" + hours + "" + minute);
+      }
+      function syoryaku(className, number) {
+        $(className).each(function() {
+          var txt = $(this).text();
+          if (txt.length > number) {
+            txt = txt.substr(0, number);
+            $(this).text(txt + "…");
+          }
+        });
+      }
+
+      function chatPageJump(partnerUserId) {
+        myNavigator.bringPageTop("html/chat/chatDetailPage.html");
+        setTimeout(function() {
+          $("#chatDetailPageUserId").val(partnerUserId);
+          setTimeout(function() {
+            chatDetailGet();
+          }, 200);
+        }, 500);
+      }
+
+      function jikanCulc(create_date) {
+        //「月」を取得する
+        var createTime = new Date(create_date * 1000);
+        var MM = createTime.getMonth() + 1;
+        //「日」を取得する
+        var DD = createTime.getDate();
+        //「時」を取得する
+        var hh = createTime.getHours();
+        //「分」を取得する
+        var mm = createTime.getMinutes();
+        if (hh < 10) {
+          hh = "0" + hh;
+        }
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+        var time = MM + "月" + DD + "日 " + hh + ":" + mm;
+        return time;
       }
     </script>
   </body>

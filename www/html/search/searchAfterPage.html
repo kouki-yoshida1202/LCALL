@@ -1,0 +1,183 @@
+<ons-page id="searchAfterPage">
+  <style>
+    .searchPagePtag {
+      font-size: 0.8em;
+      font-weight: 400;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left navy-font">
+      <ons-back-button></ons-back-button>
+    </div>
+    <div class="center navy-font" id="toolbar-title"></div>
+  </ons-toolbar>
+  <!-- 在籍キャスト -->
+  <div style="margin-top:25px;margin-bottom:7px;">
+    <!-- <ons-row>
+      <ons-col width="100%">
+        <h4 style="padding-left:5px;">検索結果</h4>
+      </ons-col>
+    </ons-row> -->
+    <div
+      class="item-label"
+      id="searchAfterPageList"
+      class="item-label"
+      style="display: flex;justify-content: flex-start;flex-wrap: wrap;padding-right:3%;padding-left:3%;"
+    ></div>
+  </div>
+  <script>
+    function searchAfter(rank, tobacco, alcohol) {
+      $("#searchAfterPageList").empty();
+      if (rank == "S" || rank == "A" || rank == "B" || rank == "C") {
+        var search = db
+          .collection("users")
+          .where("sex", "==", "woman")
+          .where("rank", "==", rank);
+      } else {
+        var search = db.collection("users").where("sex", "==", "woman");
+      }
+
+      if (
+        tobacco == "smokerOnPaper" ||
+        tobacco == "smokerOnDenshi" ||
+        tobacco == "smokerMiddle" ||
+        tobacco == "smokerOff"
+      ) {
+        var search = search.where("tobacco", "==", tobacco);
+      }
+      if (
+        alcohol == "alcoholOn" ||
+        alcohol == "alcoholMiddle" ||
+        alcohol == "alcoholOff"
+      ) {
+        var search = search.where("alcohol", "==", alcohol);
+      }
+
+      search
+        .orderBy("loginDate", "desc")
+        .limit(50)
+        .get()
+        .then(function(userWomanResults) {
+          if (userWomanResults.size > 0) {
+            var nowDataCount = 1;
+            userWomanResults.forEach(userWomanResult => {
+              var womanlist =
+                `
+                <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
+                  <img id="searchAfterPageImage_` +
+                nowDataCount +
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                  <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                    <p id="searchAfterPageUserName_` +
+                nowDataCount +
+                `"class="searchAfterPageUserName"style="margin:0px;color:white;"></p>
+                    <p id="searchAfterPageSalaly_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;"></p>
+                  </div>
+                </div>
+              `;
+              $("#searchAfterPageList").append(womanlist);
+              searchPageWomanIndicate(
+                userWomanResult.id,
+                nowDataCount,
+                userWomanResults.size
+              );
+              nowDataCount++;
+            });
+          } else {
+            hideLoad();
+          }
+        });
+    }
+    function searchTodayCast() {
+      $("#searchAfterPageList").empty();
+      var todayDate = Number(formatDate(new Date()));
+      db.collectionGroup("shift")
+        // .orderBy("endTime")
+        .orderBy("loginDate", "desc")
+        .where("date", "==", todayDate)
+        .get()
+        .then(function(womanUsers) {
+          if (womanUsers.size > 0) {
+            var nowDataCount = 1;
+            womanUsers.forEach(womanUser => {
+              var womanlist =
+                `
+                <ons-carousel-item style="margin:5px;">
+                  <div style="height:200px;position: relative;">
+                    <img id="callPage1Image_` +
+                nowDataCount +
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p id="callPage1UserName_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;"> </p>
+                      <p id="callPage1Salaly_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;">¥0/h</sp>
+                    </div>
+                  </div>
+                </ons-carousel-item>
+              `;
+              $("#searchAfterPageList").append(womanlist);
+              searchPageWomanIndicate(
+                womanUser.data().userId,
+                nowDataCount,
+                womanUsers.size
+              );
+              nowDataCount++;
+            });
+          } else {
+            hideLoad();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function searchPageWomanIndicate(womanUserId, nowDataCount, dataSize) {
+      db.collection("users")
+        .doc(womanUserId)
+        .get()
+        .then(function(womanUserResult) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + womanUserId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#searchAfterPageImage_" + nowDataCount).attr("src", url);
+              $("#searchAfterPageImage_" + nowDataCount).click(function() {
+                otherPageJump(womanUserId);
+              });
+              $("#searchAfterPageSalaly_" + nowDataCount).html(
+                "¥" + womanUserResult.data().salaly + "/h"
+              );
+              $("#searchAfterPageUserName_" + nowDataCount).html(
+                womanUserResult.data().username
+              );
+              if (nowDataCount == dataSize) {
+                hideLoad();
+                syoryaku("searchAfterPageUserName", 6);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  </script>
+</ons-page>

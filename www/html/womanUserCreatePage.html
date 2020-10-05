@@ -1,0 +1,252 @@
+<ons-page id="womanUserCreatePage">
+  <style>
+    #womanUserCreatePage .cp_iptxt i {
+      top: 11px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">新規登録</div>
+  </ons-toolbar>
+
+  <ons-list style="padding-top:11px;">
+    <ons-list-item>
+      <ons-row>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: left;padding:0px 3%;"
+        >
+          ユーザー名
+        </ons-col>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: right;"
+        >
+          <div class="cp_iptxt">
+            <input
+              type="text"
+              placeholder="表示名を入力してください"
+              id="newWomanUserName"
+            />
+            <i class="fas fa-user fa-lg fa-fw" aria-hidden="true"></i>
+          </div>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: left;padding:0px 3%;"
+        >
+          メールアドレス
+        </ons-col>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: right;"
+        >
+          <div class="cp_iptxt">
+            <input
+              type="email"
+              placeholder="メールアドレスを入力してください"
+              id="newWomanMailAddress"
+            />
+            <i class="fas fa-envelope fa-lg fa-fw" aria-hidden="true"></i>
+          </div>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: left;padding:0px 3%;"
+        >
+          パスワード
+        </ons-col>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: right;"
+        >
+          <div class="cp_iptxt">
+            <input
+              type="password"
+              placeholder="6文字以上"
+              id="newWomanPassword"
+            />
+            <i class="fas fa-unlock-alt fa-lg fa-fw" aria-hidden="true"></i>
+          </div>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: left;padding:0px 3%;"
+        >
+          パスワード再確認
+        </ons-col>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: right;"
+        >
+          <div class="cp_iptxt">
+            <input
+              type="password"
+              placeholder="確認のため再度"
+              id="newWomanPasswordCheck"
+            />
+            <i class="fas fa-unlock-alt fa-lg fa-fw" aria-hidden="true"></i>
+          </div>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <div class="cp_iptxt" style="margin-top:20px;margin-bottom:50px;">
+    <ons-button
+      class="button--large--cta"
+      style="margin: 0 auto;border-radius: 10px;padding:0.5em;background-color:#ff9831;width:90%"
+      ripple
+      onclick="newUserCreate()"
+    >
+      新規登録
+    </ons-button>
+  </div>
+  <script>
+    setTimeout(function() {
+      let womanUserCreatePage = document.querySelector("#womanUserCreatePage");
+      original_main_height = womanUserCreatePage.clientHeight;
+    }, 100);
+
+    //ソフトウェアキーボード表示処理
+    window.addEventListener("keyboardWillShow", event => {
+      //画面の高さをキーボードの高さを差し引いた値とする
+      $("#womanUserCreatePage").animate(
+        { height: original_main_height - event.keyboardHeight + "px" },
+        100
+      );
+    });
+
+    //ソフトウェアキーボード非表示処理
+    window.addEventListener("keyboardWillHide", () => {
+      //画面の高さを元の高さに戻す
+      $("#womanUserCreatePage").animate(
+        { height: original_main_height + "px" },
+        100
+      );
+    });
+    function newUserCreate() {
+      var userName = $("#newWomanUserName").val();
+      var mailAddress = $("#newWomanMailAddress").val();
+      var password = $("#newWomanPassword").val();
+      var passwordCheck = $("#newWomanPasswordCheck").val();
+      if (userName.trim() == "") {
+        ons.notification.alert({
+          message: "ユーザー名が未入力です"
+        });
+      } else if (mailAddress.trim() == "") {
+        ons.notification.alert({
+          message: "メールアドレスが未入力です"
+        });
+      } else if (password.trim() == "") {
+        ons.notification.alert({
+          message: "パスワードが未入力です。"
+        });
+      } else if (password.length < 6) {
+        ons.notification.alert({
+          message: "パスワードは6文字以上でお願いします"
+        });
+      } else if (password != passwordCheck) {
+        ons.notification.alert({
+          message: "再確認パスワードが異なります。"
+        });
+      } else {
+        showLoad();
+        var mailcheck = MailCheck(mailAddress);
+        if (mailcheck) {
+          firebase
+            .auth()
+            .createUserWithEmailAndPassword(mailAddress, password)
+            .then(function() {
+              var user = firebase.auth().currentUser;
+              user
+                .sendEmailVerification()
+                .then(function() {
+                  // Email sent.
+                  db.collection("users")
+                    .doc(user.uid)
+                    .set(
+                      {
+                        username: userName,
+                        address: "",
+                        alcohol: "",
+                        birthplace: "",
+                        haircolor: "",
+                        hairstyle: "",
+                        height: "",
+                        old: "",
+                        sex: "woman",
+                        text: "",
+                        tobacco: "",
+                        work: "",
+                        salaly: 0,
+                        point: 0,
+                        class: "C",
+                        createDate: formatDateYYYYMMDDHHMM(new Date()),
+                        loginDate: formatDateYYYYMMDDHHMM(new Date())
+                      },
+                      { merge: true }
+                    )
+                    .then(function() {
+                      ons.notification.alert({
+                        title: "メール送信",
+                        message:
+                          "認証メールを送信しました。メールに記載のURLを押下することで登録が完了します。"
+                      });
+                      hideLoad();
+                    })
+                    .catch(function(error) {
+                      // An error happened.
+                      console.log(error);
+                      hideLoad();
+                    });
+                })
+                .catch(function(error) {
+                  // An error happened.
+                  console.log(error);
+                  hideLoad();
+                });
+            })
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              ons.notification.alert({
+                title: "登録失敗",
+                message:
+                  "アカウント登録に失敗しました。既にメールアドレスが使用されている可能性があります。"
+              });
+              hideLoad();
+            });
+        } else {
+          ons.notification.alert({
+            title: "登録失敗",
+            message: "メールアドレスの形式が正しくありません。"
+          });
+          hideLoad();
+        }
+      }
+    }
+  </script>
+</ons-page>

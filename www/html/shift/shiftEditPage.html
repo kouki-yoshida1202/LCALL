@@ -1,0 +1,334 @@
+<ons-page id="shiftEditPage">
+  <style>
+    #shiftEditPage .page__content {
+      background-color: white !important;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left" style="display:flex;align-items: center;">
+      <ons-back-button></ons-back-button>
+    </div>
+    <div
+      class="center"
+      id="shiftEditPageTitle"
+      style="display:flex;align-items: center;justify-content: center;"
+    ></div>
+  </ons-toolbar>
+  <!--キャストを呼ぶ部分 -->
+  <ons-list-header>開始時刻と終了時刻</ons-list-header>
+
+  <ons-list-item>
+    <ons-row>
+      <ons-col width="30%" vertical-align="center">開始時刻</ons-col>
+      <ons-col width="70%" vertical-align="center">
+        <ons-input
+          id="shiftEditPageStartTime"
+          placeholder="必須"
+          type="time"
+          value="18:00"
+        ></ons-input>
+      </ons-col>
+    </ons-row>
+  </ons-list-item>
+  <ons-list-item>
+    <ons-row>
+      <ons-col vertical-align="center" width="30%" style="text-align: left;">
+        終了時刻
+      </ons-col>
+      <ons-col vertical-align="center" width="70%" style="text-align: right;">
+        <ons-input
+          id="shiftEditPageEndTime"
+          placeholder="必須"
+          type="time"
+          value="23:00"
+        ></ons-input>
+      </ons-col>
+    </ons-row>
+  </ons-list-item>
+  <ons-list-header>
+    繰り返し設定<span style="margin-left:5px;font-size:0.9em;"
+      >※2週間後まで設定します</span
+    >
+  </ons-list-header>
+  <ons-list-item>
+    <ons-row>
+      <ons-col width="30%" vertical-align="center">間隔</ons-col>
+      <ons-col width="70%" vertical-align="center">
+        <ons-select id="shiftEditPageRepeat" class="shiftEditPageRepeat">
+          <option value="繰り返さない">繰り返さない</option>
+          <option value="毎日">毎日</option>
+          <option value="毎週">毎週</option>
+          <!-- <option value="隔週">隔週</option>
+          <option value="毎月">毎月</option> -->
+        </ons-select>
+      </ons-col>
+    </ons-row>
+  </ons-list-item>
+
+  <input type="hidden" id="shiftEditPageSelectDate" />
+  <div style="padding:0.5rem;margin-top:1rem;margin-bottom:1rem;">
+    <ons-button
+      modifier="large"
+      class="large-button-orange"
+      onclick="scheduleEdit();"
+      >登録</ons-button
+    >
+  </div>
+  <div>
+    <ons-list-header>
+      現在の予定<span style="margin-left:5px;font-size:0.9em;"></span>
+    </ons-list-header>
+    <div id="shiftList"></div>
+  </div>
+
+  <script>
+    var user = firebase.auth().currentUser;
+    function getSchedule(selectDate) {
+      $("#shiftEditPageTitle").html(selectDate);
+      $("#shiftEditPageSelectDate").val(selectDate.replace(/-/g, ""));
+
+      $("#shiftList").empty();
+
+      console.log(selectDate.replace(/-/g, ""));
+      db.collection("users")
+        .doc(user.uid)
+        .collection("shift")
+        .where("date", "==", Number(selectDate.replace(/-/g, "")))
+        .orderBy("startTime", "asc")
+        .get()
+        .then(function(shiftAll) {
+          if (shiftAll.size > 0) {
+            var nowDataCount = 0;
+            showLoad();
+            shiftAll.forEach(shift => {
+              var shiftSize = shiftAll.size;
+
+              nowDataCount++;
+              var shiftlist =
+                `
+              <ons-list-item>
+                <ons-row>
+                  <input type="hidden" id="shiftId_` +
+                nowDataCount +
+                `" />
+                  <ons-col id="shiftTime_` +
+                nowDataCount +
+                `"width="70%" vertical-align="center"></ons-col>
+                  <ons-col width="30%" vertical-align="center"style="text-align:center;">
+                    <ons-button id="shiftDeleteButton_` +
+                nowDataCount +
+                `" class="large-button-gray">削除</ons-button>
+                  </ons-col>
+                </ons-row>
+              </ons-list-item>
+            `;
+              $("#shiftList").append(shiftlist);
+              shiftIndicate(shift, nowDataCount, shiftSize);
+            });
+          }
+        })
+        .catch(function(error) {
+          hideLoad();
+          console.log(error);
+        });
+    }
+
+    function shiftIndicate(shiftData, nowDataCount, shiftSize) {
+      var startTime = String(shiftData.data().startTime).slice(-4);
+      var endTime = String(shiftData.data().endTime).slice(-4);
+      startTime = strIns(startTime, 2, ":");
+      endTime = strIns(endTime, 2, ":");
+      $("#shiftTime_" + nowDataCount).html(startTime + " ~ " + endTime);
+      $("#shiftDeleteButton_" + nowDataCount).click(function() {
+        shiftDelete(shiftData.id);
+      });
+      if (nowDataCount == shiftSize) {
+        hideLoad();
+      }
+    }
+
+    function shiftDelete(shiftId) {
+      showLoad();
+      db.collection("users")
+        .doc(user.uid)
+        .collection("shift")
+        .doc(shiftId)
+        .delete()
+        .then(function() {
+          hideLoad();
+          ons.notification.alert({
+            message: "削除しました。"
+          });
+          getSchedule($("#shiftEditPageTitle").html());
+          myShiftDateGet();
+        })
+        .catch(function(error) {
+          console.log(error);
+          hideLoad();
+          ons.notification.alert({
+            message: "削除失敗しました。"
+          });
+        });
+    }
+    function scheduleEdit() {
+      showLoad();
+      var date = $("#shiftEditPageSelectDate").val();
+      var user = firebase.auth().currentUser;
+      var shiftEditPageStartTime = $("#shiftEditPageStartTime").val();
+      var startTime = String(shiftEditPageStartTime).replace(":", "");
+      var shiftEditPageEndTime = $("#shiftEditPageEndTime").val();
+      var endTime = String(shiftEditPageEndTime).replace(":", "");
+      var shiftEditPageRepeat = $("#shiftEditPageRepeat").val();
+
+      if (Number(startTime) >= Number(endTime)) {
+        hideLoad();
+        ons.notification.alert({
+          message: "開始時間が終了時間より後になっています。"
+        });
+        return;
+      }
+      if (Number(endTime) - Number(startTime) < 100) {
+        hideLoad();
+        ons.notification.alert({
+          message: "1時間以上の予定を登録してください。"
+        });
+        return;
+      }
+      var nowDataCount = 0;
+      if (shiftEditPageRepeat == "繰り返さない") {
+        var date = Number(date);
+        var startDateTime = Number(String(date) + String(startTime));
+        var endDateTime = Number(String(date) + String(endTime));
+        shiftInputCheck(date, startDateTime, endDateTime, 0, 0);
+      } else if (shiftEditPageRepeat == "毎日") {
+        for (var i = 0; i < 14; i++) {
+          var dateFormat = new Date($("#shiftEditPageTitle").html());
+          dateFormat.setDate(dateFormat.getDate() + i);
+          var y = dateFormat.getFullYear();
+          var m = ("00" + (dateFormat.getMonth() + 1)).slice(-2);
+          var d = ("00" + dateFormat.getDate()).slice(-2);
+          var result = y + m + d;
+          var date = Number(result);
+          var startDateTime = Number(String(date) + String(startTime));
+          var endDateTime = Number(String(date) + String(endTime));
+          shiftInputCheck(date, startDateTime, endDateTime, nowDataCount, 13);
+          nowDataCount++;
+        }
+      } else if (shiftEditPageRepeat == "毎週") {
+        for (var i = 0; i < 15; i += 7) {
+          var dateFormat = new Date($("#shiftEditPageTitle").html());
+          dateFormat.setDate(dateFormat.getDate() + i);
+          var y = dateFormat.getFullYear();
+          var m = ("00" + (dateFormat.getMonth() + 1)).slice(-2);
+          var d = ("00" + dateFormat.getDate()).slice(-2);
+          var result = y + m + d;
+          var date = Number(result);
+          var startDateTime = Number(String(date) + String(startTime));
+          var endDateTime = Number(String(date) + String(endTime));
+          shiftInputCheck(date, startDateTime, endDateTime, nowDataCount, 14);
+          nowDataCount += 7;
+        }
+      }
+    }
+    function shiftInputCheck(date, startTime, endTime, nowDataCount, roopSize) {
+      var shiftDB = db
+        .collection("users")
+        .doc(user.uid)
+        .collection("shift")
+        .where("date", "==", date);
+      shiftDB
+        .orderBy("startTime")
+        .startAt(startTime)
+        .endAt(endTime)
+        .get()
+        .then(function(shiftStartCheck) {
+          if (shiftStartCheck.size > 0) {
+            hideLoad();
+            ons.notification.alert({
+              message: date + "日は既に予定が登録されています。"
+            });
+          } else {
+            shiftDB
+              .orderBy("endTime")
+              .startAt(startTime)
+              .endAt(endTime)
+              .get()
+              .then(function(shiftEndCheck) {
+                if (shiftEndCheck.size > 0) {
+                  hideLoad();
+                  ons.notification.alert({
+                    message: date + "日は既に予定が登録されています。"
+                  });
+                } else {
+                  shiftDB
+                    .where("startTime", "<=", startTime)
+                    .get()
+                    .then(function(shiftChecks) {
+                      if (shiftChecks.size > 0) {
+                        shiftChecks.forEach(shiftCheck => {
+                          if (endTime <= shiftCheck.data().endTime) {
+                            hideLoad();
+                            ons.notification.alert({
+                              message: date + "日は既に予定が登録されています。"
+                            });
+                          } else {
+                            shiftInput(
+                              date,
+                              startTime,
+                              endTime,
+                              nowDataCount,
+                              roopSize
+                            );
+                          }
+                        });
+                      } else {
+                        shiftInput(
+                          date,
+                          startTime,
+                          endTime,
+                          nowDataCount,
+                          roopSize
+                        );
+                      }
+                    });
+                }
+              });
+          }
+        });
+    }
+    function shiftInput(date, startTime, endTime, nowDataCount, roopSize) {
+      db.collection("users")
+        .doc(user.uid)
+        .collection("shift")
+        .doc()
+        .set(
+          {
+            userId: user.uid,
+            date: date,
+            startTime: startTime,
+            endTime: endTime
+          },
+          { merge: true }
+        )
+        .then(function() {
+          if (nowDataCount == roopSize) {
+            setTimeout(function() {
+              hideLoad();
+              ons.notification.alert({
+                message: "登録しました。"
+              });
+              getSchedule($("#shiftEditPageTitle").html());
+              myShiftDateGet();
+            }, 1000);
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+          hideLoad();
+          ons.notification.alert({
+            message: "登録失敗しました。"
+          });
+        });
+    }
+  </script>
+</ons-page>

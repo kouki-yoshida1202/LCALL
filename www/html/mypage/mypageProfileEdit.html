@@ -1,20 +1,28 @@
-<ons-page id="mypageProfileEdit-page">
+<ons-page id="mypageProfileEditPage">
   <ons-toolbar>
     <div class="left">
       <ons-back-button> </ons-back-button>
     </div>
-    <div class="center">その他</div>
+    <div class="center">プロフィール編集</div>
+    <div class="right"onclick="profileEdit();">
+      <ons-toorbar-button ripple style="line-height: 25px;color:#ff9831;padding-right:8px;" >
+        保存
+      </ons-button>
+    </div>
   </ons-toolbar>
 
   <ons-row style="padding-top:30px;">
     <ons-col vertical-align="center" style="text-align: center;">
       <img
-        src="img/manSample.jpeg"
+      id="myImageEdit"
+        src="img/userSampleImageMan.png"
         alt=""
         style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
       />
       <br />
-      <p style="color:#0799d7;">写真を変更する</p>
+      <!-- <input id="myImageInput" type="file" hidden/> -->
+      <input type="hidden" id="profileImageEditStatus" val="0">
+      <p style="color:#0799d7;" onclick="profileCamera();">写真を変更する</p>
     </ons-col>
   </ons-row>
   <ons-list>
@@ -25,7 +33,11 @@
           表示名
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
-          <ons-input></ons-input>
+          <ons-input
+          id="myUserNameEdit"
+            placeholder="テキストが入ります"
+            style="width:90%;"
+          ></ons-input>
         </ons-col>
       </ons-row>
     </ons-list-item>
@@ -35,7 +47,14 @@
           年齢
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
-          <ons-input></ons-input>
+          <ons-select style="width:90%;" id="myOldEdit">
+            <script>
+              var i;
+              for (i = 18; i<=100;i++) {
+                $('#myOldEdit > select').append('<option value="' + i + '">' + i + '</option>');
+              }
+            </script>
+          </ons-select>
         </ons-col>
       </ons-row>
     </ons-list-item>
@@ -46,36 +65,356 @@
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
           <textarea
+          id="myTextEdit"
             class="textarea textarea--transparent"
             rows="5"
-            placeholder="Textarea"
+            placeholder="自己紹介が入ります"
             style="width:90%;"
           ></textarea>
         </ons-col>
       </ons-row>
     </ons-list-item>
   </ons-list>
-  <ons-list>
+  <ons-list style="margin-bottom:30px;">
     <ons-list-header>追加情報</ons-list-header>
     <ons-list-item>
       <ons-row>
         <ons-col vertical-align="center" width="20%" style="text-align: left;">
-          表示名
+          身長(cm)
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
-          <ons-input></ons-input>
+          <ons-select style="width:90%;" id="myHeightEdit">
+            <script>
+              var i;
+              for (i = 140; i <= 200; i++) {
+                $('#myHeightEdit > select').append('<option value="' + i + '">' + i + '</option>');
+              }
+            </script>
+          </ons-select>
         </ons-col>
       </ons-row>
     </ons-list-item>
     <ons-list-item>
       <ons-row>
         <ons-col vertical-align="center" width="20%" style="text-align: left;">
-          年齢
+          居住地
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
-          <ons-input></ons-input>
+          <ons-input
+          id="myAddressEdit"
+            placeholder="居住地が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          出身地
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;" id="myBirthPlaceEdit">
+            <option value="北海道">北海道</option>
+            <option value="青森県">青森県</option>
+            <option value="岩手県">岩手県</option>
+            <option value="宮城県">宮城県</option>
+            <option value="秋田県">秋田県</option>
+            <option value="山形県">山形県</option>
+            <option value="福島県">福島県</option>
+            <option value="茨城県">茨城県</option>
+            <option value="栃木県">栃木県</option>
+            <option value="群馬県">群馬県</option>
+            <option value="埼玉県">埼玉県</option>
+            <option value="千葉県">千葉県</option>
+            <option value="東京都">東京都</option>
+            <option value="神奈川県">神奈川県</option>
+            <option value="新潟県">新潟県</option>
+            <option value="富山県">富山県</option>
+            <option value="石川県">石川県</option>
+            <option value="福井県">福井県</option>
+            <option value="山梨県">山梨県</option>
+            <option value="長野県">長野県</option>
+            <option value="岐阜県">岐阜県</option>
+            <option value="静岡県">静岡県</option>
+            <option value="愛知県">愛知県</option>
+            <option value="三重県">三重県</option>
+            <option value="滋賀県">滋賀県</option>
+            <option value="京都府">京都府</option>
+            <option value="大阪府">大阪府</option>
+            <option value="兵庫県">兵庫県</option>
+            <option value="奈良県">奈良県</option>
+            <option value="和歌山県">和歌山県</option>
+            <option value="鳥取県">鳥取県</option>
+            <option value="島根県">島根県</option>
+            <option value="岡山県">岡山県</option>
+            <option value="広島県">広島県</option>
+            <option value="山口県">山口県</option>
+            <option value="徳島県">徳島県</option>
+            <option value="香川県">香川県</option>
+            <option value="愛媛県">愛媛県</option>
+            <option value="高知県">高知県</option>
+            <option value="福岡県">福岡県</option>
+            <option value="佐賀県">佐賀県</option>
+            <option value="長崎県">長崎県</option>
+            <option value="熊本県">熊本県</option>
+            <option value="大分県">大分県</option>
+            <option value="宮崎県">宮崎県</option>
+            <option value="鹿児島県">鹿児島県</option>
+            <option value="沖縄県">沖縄県</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          仕事(職業)
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-input
+          id="myWorkEdit"
+            placeholder="仕事が入ります"
+            style="width:90%;"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          おさけ
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;"id="myAlcoholEdit">
+            <option value="飲まない">飲まない</option>
+            <option value="ときどき飲む">ときどき飲む</option>
+            <option value="よく飲む">よく飲む</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          たばこ
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;"id="myTobaccoEdit">
+            <option value="吸わない">吸わない</option>
+            <option value="禁煙者の前では吸わない">禁煙者の前では吸わない</option>
+            <option value="吸う(紙タバコ)">吸う(紙タバコ)</option>
+            <option value="吸う(電子タバコ)">吸う(電子タバコ)</option>
+            </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          髪型
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;"id="myHairStyleEdit">
+            <option value="ショート">ショート</option>
+            <option value="ベリーショート">ベリーショート</option>
+            <option value="坊主">坊主</option>
+            <option value="ミディアム">ミディアム</option>
+            <option value="ロング">ロング</option>
+            <option value="その他">その他</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          髪の色
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;"id="myHairColorEdit">
+            <option value="黒">黒</option>
+            <option value="茶">茶</option>
+            <option value="金">金</option>
+            <option value="その他">その他</option>
+          </ons-select>
         </ons-col>
       </ons-row>
     </ons-list-item>
   </ons-list>
+  <script>
+    setTimeout(function () {
+      let mypageProfileEditPage = document.querySelector("#mypageProfileEditPage");
+      original_main_height = mypageProfileEditPage.clientHeight;
+    }, 100);
+
+      //ソフトウェアキーボード表示処理
+      window.addEventListener("keyboardWillShow", event => {
+        //画面の高さをキーボードの高さを差し引いた値とする
+        $("#mypageProfileEditPage").animate(
+          { height: original_main_height - event.keyboardHeight + "px" },
+          100
+        );
+      });
+
+      //ソフトウェアキーボード非表示処理
+      window.addEventListener("keyboardWillHide", () => {
+        //画面の高さを元の高さに戻す
+        $("#mypageProfileEditPage").animate({ height: original_main_height + "px" }, 100);
+      });
+    function profileCamera() {
+      window.navigator.camera.getPicture((imageData) => {
+        //成功時
+        document.getElementById('myImageEdit').src = 'data:image/jpeg;base64,' + imageData;
+        $('#profileImageEditStatus').val("1");
+      }, (error) => {
+        // 失敗時
+        alertNew("写真取得に失敗しました", "", "");
+      }, {
+        // 各種設定
+        sourceType: window.navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
+        destinationType: window.navigator.camera.DestinationType.DATA_URL,
+        targetWidth: 800,
+        targetHeight: 800
+      });
+    }
+    var userId = firebase.auth().currentUser['uid'];
+    var docRef = db.collection("users").doc(userId);
+
+    docRef
+    .get()
+    .then(function (doc) {
+      if (doc.exists) {
+        $("#myUserNameEdit").val(
+          doc.data().username
+        );
+        $("#myTextEdit").val(doc.data().text);
+        $("#myOldEdit").val(doc.data().old);
+        $("#myHeightEdit").val(doc.data().height);
+        $("#myTobaccoEdit").val(doc.data().tobacco);
+        $("#myAddressEdit").val(doc.data().address);
+        $("#myAlcoholEdit").val(doc.data().alcohol);
+        $("#myBirthPlaceEdit").val(doc.data().birthplace);
+        $("#myHairColorEdit").val(doc.data().haircolor);
+        $("#myHairStyleEdit").val(doc.data().hairstyle);
+        $("#myWorkEdit").val(doc.data().work);
+        ref = firebase
+          .storage()
+          .ref()
+          .child("profilePicture/" + userId)
+          .getDownloadURL()
+          .then(url => {
+            document.getElementById("myImageEdit").src = url;
+          })
+          .catch(function(err){
+            document.getElementById("myImageEdit").src = "img/userSampleImageMan.png";
+          });
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    })
+    .catch(function (error) {
+      console.log("Error getting document:", error);
+    });
+
+    $("#myImageInput").on("change", function (e) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $("#myImageEdit").attr("src", e.target.result);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+
+    function profileEdit(){
+      showLoad();
+      var username = $("#myUserNameEdit").val();
+      var text = $("#myTextEdit").val();
+      var old = $("#myOldEdit").val();
+      var height = $("#myHeightEdit").val();
+      var tobacco = $("#myTobaccoEdit").val();
+      var address = $("#myAddressEdit").val();
+      var alcohol = $("#myAlcoholEdit").val();
+      var birthplace = $("#myBirthPlaceEdit").val();
+      var haircolor = $("#myHairColorEdit").val();
+      var hairstyle = $("#myHairStyleEdit").val();
+      var work = $("#myWorkEdit").val();
+
+      var user = firebase.auth().currentUser;
+      // Add a new document in collection "cities"
+      db.collection("users").doc(user['uid']).set({
+        username: username,
+        text: text,
+        old: old,
+        height: height,
+        tobacco: tobacco,
+        address: address,
+        alcohol: alcohol,
+        birthplace: birthplace,
+        haircolor: haircolor,
+        hairstyle: hairstyle,
+        work: work
+      },{merge:true})
+      .then(function () {
+        var profileImageEditStatus = $('#profileImageEditStatus').val();
+        if (profileImageEditStatus != 0) {
+          var img = document.getElementById('myImageEdit');
+          var dataURI = img.getAttribute('src');
+          // dataURIをBlobに変換する
+          var blob = toBlob(dataURI);
+            firebase
+          .storage()
+          .ref("profilePicture/" + user["uid"])
+          .put(blob)
+          .then(function () {
+            ons.notification.alert({
+              title: "成功",
+              message: "プロフィールを編集しました。"
+            });
+            myNavigator.popPage();
+            userInfo(user["uid"]);
+            hideLoad();
+          })
+          .catch(function(error){
+            alert(error);
+          });
+        } else {
+          ons.notification.alert({
+            title: "成功",
+            message: "プロフィールを編集しました。"
+          });
+          myNavigator.popPage();
+          userInfo(user["uid"]);
+          hideLoad();
+        }
+        // console.log("Document successfully written!");
+        // var imgs = document.querySelector("#myImageInput");
+        // var uploads = [];
+        // for (var file of imgs.files) {
+        //   //選択したファイルのファイル名を使うが、場合によってはかぶるので注意
+        //   var storageRef = firebase
+        //     .storage()
+        //     .ref("profilePicture/" + user["uid"]);
+        //   uploads.push(storageRef.put(file));
+        // }
+        // //すべての画像のアップロード完了を待つ
+        // Promise.all(uploads).then(function () {
+        //   ons.notification.alert({
+        //     title: "成功",
+        //     message: "プロフィールを編集しました。"
+        //   });
+        //   myNavigator.popPage();
+        //   userInfo(user["uid"]);
+        //   hideLoad();
+        // });
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+        alert(error);
+        hideLoad();
+      });
+    }
+
+    
+  </script>
 </ons-page>

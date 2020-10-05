@@ -1,4 +1,4 @@
-<ons-page id="second-page">
+<ons-page id="myPage">
   <ons-speed-dial position="top right" direction="down">
     <ons-fab modifier="mini" ripple>
       <ons-icon icon="fa-ellipsis-h"></ons-icon>
@@ -28,7 +28,8 @@
   </ons-speed-dial>
   <div style="height:350px;position: relative;">
     <img
-      src="img/manSample.jpeg"
+      id="myPageImage"
+      src="img/userSampleImageMan.png"
       alt=""
       style="width:100%;height:350px;object-fit:cover;"
     />
@@ -58,10 +59,8 @@
     </div>
   </div>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
-    <p style="text-align: center;font-size:1.0em;">たなかたろう　32才</p>
-    <p class="light-navy" style="font-size:0.8em;">
-      テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。
-    </p>
+    <p id="myPageUserName" style="text-align: center;font-size:1.0em;"></p>
+    <p id="myPageText" class="light-navy" style="font-size:0.8em;"></p>
   </ons-card>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;margin-bottom:30px;">
     <ons-list-item>
@@ -71,9 +70,7 @@
       <div class="center navy-font">
         身長
       </div>
-      <div class="right light-navy-font">
-        172
-      </div>
+      <div id="myPageHeight" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -82,9 +79,7 @@
       <div class="center navy-font">
         居住地
       </div>
-      <div class="right light-navy-font">
-        宇都宮
-      </div>
+      <div id="myPageAddress" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -93,9 +88,7 @@
       <div class="center navy-font">
         出身地
       </div>
-      <div class="right light-navy-font">
-        埼玉
-      </div>
+      <div id="myPageBirthPlace" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -104,9 +97,7 @@
       <div class="center navy-font">
         仕事
       </div>
-      <div class="right light-navy-font">
-        不動産関係
-      </div>
+      <div id="myPageWork" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -115,9 +106,7 @@
       <div class="center navy-font">
         おさけ
       </div>
-      <div class="right light-navy-font">
-        ときどき飲む
-      </div>
+      <div id="myPageAlcohol" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -126,9 +115,7 @@
       <div class="center navy-font">
         たばこ
       </div>
-      <div class="right light-navy-font">
-        吸わない
-      </div>
+      <div id="myPageTobacco" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -137,9 +124,7 @@
       <div class="center navy-font">
         髪型
       </div>
-      <div class="right light-navy-font">
-        ショート
-      </div>
+      <div id="myPageHairStyle" class="right light-navy-font"></div>
     </ons-list-item>
     <ons-list-item>
       <div class="left">
@@ -148,9 +133,7 @@
       <div class="center navy-font">
         髪の色
       </div>
-      <div class="right light-navy-font">
-        黒
-      </div>
+      <div id="myPageHairColor" class="right light-navy-font"></div>
     </ons-list-item>
   </ons-card>
   <script>
@@ -173,7 +156,7 @@
           .auth()
           .signOut()
           .then(() => {
-            myNavigator.resetToPage("html/loginPage.html");
+            window.location = "index.html";
           })
           .catch(error => {
             ons.notification.alert({
@@ -182,6 +165,66 @@
             });
           });
       });
+    }
+    document.addEventListener(
+      "init",
+      function(event) {
+        if (event.target.matches("#myPage")) {
+          // コンテンツを準備...
+          var user = firebase.auth().currentUser;
+          if (user) {
+            // User is signed in.
+            userInfo(user.uid);
+          }
+        }
+      },
+      false
+    );
+
+    function userInfo(userId) {
+      var docRef = db.collection("users").doc(userId);
+
+      docRef
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            $("#myPageUserName").html(
+              doc.data().username + "&emsp;" + doc.data().old + "才"
+            );
+            $("#myPageText").html(doc.data().text);
+            $("#myPageHeight").html(doc.data().height);
+            $("#myPageTobacco").html(doc.data().tobacco);
+            $("#myPageAddress").html(doc.data().address);
+            $("#myPageAlcohol").html(doc.data().alcohol);
+            $("#myPageBirthPlace").html(doc.data().birthplace);
+            $("#myPageHairColor").html(doc.data().haircolor);
+            $("#myPageHairStyle").html(doc.data().hairstyle);
+            $("#myPageWork").html(doc.data().work);
+            var user = firebase.auth().currentUser;
+            ref = firebase
+              .storage()
+              .ref()
+              .child("profilePicture/" + user["uid"]);
+            ref
+              .getDownloadURL()
+              .then(url => {
+                return url;
+              })
+              .catch(function(error) {
+                var url = "img/userSampleImageMan.png";
+                return url;
+              })
+              .then(function(url) {
+                document.getElementById("myPageImage").src = url;
+              });
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
     }
   </script>
 </ons-page>

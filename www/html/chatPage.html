@@ -4,143 +4,151 @@
       メッセージ一覧
     </div>
   </ons-toolbar>
+  <ons-pull-hook id="chatPagePullHook">
+    Pull to refresh
+  </ons-pull-hook>
   <div>
-    <p style="text-align: center; margin-top: 10px;">
+    <!-- <p style="text-align: center; margin-top: 10px;">
       <ons-search-input
         placeholder="Search"
         onchange="ons.notification.alert('Searched for: ' + this.value)"
         style="width:80%;border-radius: 20px;"
       >
       </ons-search-input>
-    </p>
-    <ons-list>
-      <ons-list-item>
-        <div
-          class="left"
-          onclick="myNavigator.bringPageTop('html/other/womanPage.html');"
-        >
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div
-          class="center"
-          style="width:50%;"
-          onclick="myNavigator.bringPageTop('html/chat/chatDetailPage.html');"
-        >
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center" style="width:50%;">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。テキストが入ります。テキストがます。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center" style="width:50%;">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center" style="width:50%;">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center" style="width:50%;">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-      <ons-list-item>
-        <div class="left">
-          <img
-            class="list-item__thumbnail"
-            src="img/image61.jpg"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
-          />
-        </div>
-        <div class="center" style="width:50%;">
-          <span class="list-item__title navy-font">Hanako</span
-          ><span
-            class="list-item__subtitle light-navy-font"
-            style="height:55px;overflow: hidden;"
-            >テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</span
-          >
-        </div>
-        <div class="right">
-          <span class="list-item__subtitle light-navy-font">9:20 AM</span>
-        </div>
-      </ons-list-item>
-    </ons-list>
+    </!-->
+    <ons-list id="chatList"> </ons-list>
   </div>
+  <script>
+    ons.ready(function() {
+      var pullHook = document.getElementById("chatPagePullHook");
+      pullHook.onAction = function(done) {
+        myChatGet();
+        setTimeout(() => {
+          done();
+        }, 3000);
+      };
+      pullHook.addEventListener("changestate", function(event) {
+        var message = "";
+
+        switch (event.state) {
+          case "initial":
+            message = '<i class="fas fa-spinner" style="font-size:1.3em;"></i>';
+            break;
+          case "preaction":
+            message = '<i class="fas fa-spinner" style="font-size:1.3em;"></i>';
+            break;
+          case "action":
+            message =
+              '<i class="fas fa-spinner fa-spin" style="font-size:1.3em;"></i>';
+            break;
+        }
+
+        pullHook.innerHTML = message;
+      });
+    });
+    myChatGet();
+    function myChatGet() {
+      $("#chatList").empty();
+      var myUserId = firebase.auth().currentUser.uid;
+      db.collection("message")
+        .where("usersId", "array-contains-any", [myUserId])
+        .get()
+        .then(function(messages) {
+          if (messages.size > 0) {
+            var nowDataCounter = 0;
+
+            messages.forEach(message => {
+              var list =
+                `
+                <ons-list-item id="chatlist_` +
+                nowDataCounter +
+                `">
+                  <div class="left" onclick="">
+                    <img
+                      id="chatlistImage_` +
+                nowDataCounter +
+                `"
+                      class="list-item__thumbnail"
+                      style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
+                    />
+                  </div>
+                  <div
+                    class="center"
+                    style="width:50%;"
+                  >
+                    <span id="chatlistUserName_` +
+                nowDataCounter +
+                `"class="list-item__title navy-font"></span
+                    ><span
+                      id="chatlistText_` +
+                nowDataCounter +
+                `"
+                      class="list-item__subtitle light-navy-font"
+                      style="height:55px;overflow: hidden;"
+                      ></span
+                    >
+                  </div>
+                  <div class="right">
+                    <span
+                      id="chatlistTime_` +
+                nowDataCounter +
+                `"
+                      class="list-item__subtitle light-navy-font"></span>
+                  </div>
+                </ons-list-item>
+                `;
+              $("#chatList").append(list);
+              var usersIdArray = message.data().usersId;
+              var userId_1 = usersIdArray[0];
+              var userId_2 = usersIdArray[1];
+              if (myUserId == userId_1) {
+                var partnerId = userId_2;
+              } else {
+                var partnerId = userId_1;
+              }
+              myChatIndicate(message, nowDataCounter, messages.size, partnerId);
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+
+    function myChatIndicate(message, nowDataCounter, datasize, partnerId) {
+      db.collection("users")
+        .doc(partnerId)
+        .get()
+        .then(function(userResult) {
+          var userName = userResult.data().username;
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + partnerId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#chatlistImage_" + nowDataCounter).attr("src", url);
+              $("#chatlistUserName_" + nowDataCounter).html(userName);
+              $("#chatlistText_" + nowDataCounter).html(
+                message.data().newestText
+              );
+              $("#chatlistTime_" + nowDataCounter).html(
+                jikanCulc(message.data().newestTime)
+              );
+              $("#chatlist_" + nowDataCounter).click(function() {
+                chatPageJump(partnerId);
+              });
+            });
+        });
+    }
+  </script>
 </ons-page>

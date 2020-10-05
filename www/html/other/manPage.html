@@ -1,0 +1,211 @@
+<ons-page id="man-page">
+  <ons-toolbar>
+    <div class="left" id="toolbar-title">
+      <ons-back-button></ons-back-button>
+    </div>
+    <div class="center navy-font" id="toolbar-title">
+      Hanako
+    </div>
+  </ons-toolbar>
+  <ons-bottom-toolbar
+    style="background-color:#ff9831; text-align: center;color:white;line-height: 35px;"
+    onclick="chatPageJump($('#manPagemanId').val());"
+  >
+    メッセージを送る
+  </ons-bottom-toolbar>
+  <div style="height:350px;position: relative;">
+    <img
+      id="manImage"
+      src="img/userSampleImageMan.png"
+      alt=""
+      style="width:100%;height:350px;object-fit:cover;"
+    />
+    <div
+      style="position: absolute;bottom:20px;left: 50%;
+        transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);width:90%;background-color:rgba(255,152,49,0.2);font-weight: bold;height:60px;border-radius: 50px;margin:0 auto;"
+    >
+      <ons-row style="height:100%;width:90%;margin:0 auto;">
+        <ons-col style="text-align: center;" vertical-align="center">
+          <img src="img/starOn.png" alt="" style="height:35px;" />
+        </ons-col>
+        <ons-col style="text-align: center;" vertical-align="center">
+          <img src="img/starOn.png" alt="" style="height:35px;" />
+        </ons-col>
+        <ons-col style="text-align: center;" vertical-align="center">
+          <img src="img/starOn.png" alt="" style="height:35px;" />
+        </ons-col>
+        <ons-col style="text-align: center;" vertical-align="center">
+          <img src="img/starOn.png" alt="" style="height:35px;" />
+        </ons-col>
+        <ons-col style="text-align: center;" vertical-align="center">
+          <img src="img/starOff.png" alt="" style="height:35px;" />
+        </ons-col>
+      </ons-row>
+    </div>
+  </div>
+  <!-- <ons-row style="width:85%;margin:0 auto;height:70px;">
+    <ons-col style="text-align: center;" vertical-align="center">
+      <img
+        src="img/image61.jpg"
+        alt=""
+        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
+      />
+    </ons-col>
+    <ons-col style="text-align: center;" vertical-align="center">
+      <img
+        src="img/image61.jpg"
+        alt=""
+        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
+      />
+    </ons-col>
+    <ons-col style="text-align: center;" vertical-align="center">
+      <img
+        src="img/image61.jpg"
+        alt=""
+        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
+      />
+    </ons-col>
+    <ons-col style="text-align: center;" vertical-align="center">
+      <img
+        src="img/image61.jpg"
+        alt=""
+        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
+      />
+    </ons-col>
+    <ons-col style="text-align: center;" vertical-align="center">
+      <img
+        src="img/image61.jpg"
+        alt=""
+        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
+      />
+    </ons-col>
+  </ons-row> -->
+  <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
+    <ons-row>
+      <ons-col width="100%">
+        <h4><span id="manUserName"></span> <span id="manOld"></span></h4>
+      </ons-col>
+    </ons-row>
+    <p id="manText" class="light-navy" style="font-size:0.8em;"></p>
+  </ons-card>
+  <ons-card style="width:85%;margin:0 auto;margin-top:20px;margin-bottom:30px;">
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-male fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        身長
+      </div>
+      <div id="manHeight" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-home fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        居住地
+      </div>
+      <div id="manAddress" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-map-pin fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        出身地
+      </div>
+      <div id="manBirthPlace" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-briefcase fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        仕事
+      </div>
+      <div id="manWork" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-beer fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        おさけ
+      </div>
+      <div id="manAlcohol" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-smoking fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        たばこ
+      </div>
+      <div id="manTobacco" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-user fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        髪型
+      </div>
+      <div id="manHairStyle" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
+        <i class="fas fa-paint-brush fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        髪の色
+      </div>
+      <div id="manHairColor" class="right light-navy-font"></div>
+    </ons-list-item>
+  </ons-card>
+  <input type="hidden" id="nowDateTime" />
+  <input type="hidden" id="manPagemanId" />
+  <script>
+    function manInfoGet(userId) {
+      $("#manPagemanId").val(userId);
+      db.collection("users")
+        .doc(userId)
+        .get()
+        .then(function(manResult) {
+          $("#manHeight").html(manResult.data().height);
+          $("#manAddress").html(manResult.data().address);
+          $("#manAlcohol").html(manResult.data().alcohol);
+          $("#manBirthPlace").html(manResult.data().birthplace);
+          $("#manHairColor").html(manResult.data().haircolor);
+          $("#manHairStyle").html(manResult.data().hairstyle);
+          $("#manTobacco").html(manResult.data().tobacco);
+          $("#manWork").html(manResult.data().work);
+          $("#manUserName").html(manResult.data().username);
+          $("#manOld").html(manResult.data().old + "才");
+          $("#manClass").html(manResult.data().class + "クラス");
+          $("#manText").html(manResult.data().text);
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + userId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              $("#manImage").attr("src", url);
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  </script>
+</ons-page>

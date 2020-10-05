@@ -9,7 +9,7 @@
   </ons-toolbar>
   <ons-bottom-toolbar
     style="background-color:#ff9831; text-align: center;color:white;line-height: 35px;"
-    onclick="myNavigator.bringPageTop('html/call/callPage4.html');"
+    onclick="callPageJump4()"
   >
     次に進む(3/4)
   </ons-bottom-toolbar>
@@ -67,4 +67,45 @@
       </ons-list-item>
     </ons-list>
   </div>
+  <input type="hidden" id="callPage3CallTime" />
+  <input type="hidden" id="callPage3CallPlace" />
+  <input type="hidden" id="callPage3CallNumberPeople" />
+  <input type="hidden" id="callPage3CallHours" />
+  <input type="hidden" id="callPage3StartTime" />
+  <input type="hidden" id="callPage3EndTime" />
+  <script>
+    function callPageJump4() {
+      var callTime = $("#callPage3CallTime").val();
+      var callPlace = $("#callPage3CallPlace").val();
+      var callNumberPeople = Number($("#callPage3CallNumberPeople").val());
+      var callHours = Number($("#callPage3CallHours").val());
+      var startTime = Number($("#callPage3StartTime").val());
+      var endTime = Number($("#callPage3EndTime").val());
+
+      if (
+        callTime != "" &&
+        callPlace != "" &&
+        callNumberPeople != "" &&
+        callHours != ""
+      ) {
+        myNavigator.bringPageTop("html/call/callPage4.html");
+        showLoad();
+        setTimeout(function() {
+          $("#callPage4CallTime").val(callTime);
+          $("#callPage4CallPlace").val(callPlace);
+          $("#callPage4CallNumberPeople").val(callNumberPeople);
+          $("#callPage4CallHours").val(callHours);
+          $("#callPage4StartTime").val(startTime);
+          $("#callPage4EndTime").val(endTime);
+          setTimeout(function() {
+            callPage4Get();
+          }, 500);
+        }, 500);
+      } else {
+        ons.notification.alert({
+          message: "エラーが発生しました。再度やり直してください。"
+        });
+      }
+    }
+  </script>
 </ons-page>

@@ -15,10 +15,6 @@
   margin: 0px;
 }
 
-.page__content {
-  background-color: #f5f6f8 !important;
-}
-
 .bottom-bar {
   height: 49px;
 }
@@ -97,7 +93,7 @@ ons-toolbar > .center {
 }
 
 .light-navy-font,
-#chat-detail-page ons-card {
+#chatDetailPage ons-card {
   color: #515c6f;
   font-size: 0.8em;
   font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
@@ -113,6 +109,7 @@ ons-toolbar > .center {
 #search-page > .page__content {
   padding-right: 10px;
   padding-left: 10px;
+  background: white !important;
 }
 
 #call-page2 > .page__content {
@@ -162,25 +159,25 @@ ons-toolbar > .center {
   width: 98%;
 }
 
-#chat-detail-page .right {
+#chatDetailPage .right {
   margin-right: -5px;
 }
-#chat-detail-page .left {
+#chatDetailPage .left {
   margin-left: -5px;
 }
-#chat-detail-page .right ons-card {
+#chatDetailPage .right ons-card {
   border-radius: 50px 50px 0px 50px;
 }
-#chat-detail-page .left ons-card {
+#chatDetailPage .left ons-card {
   border-radius: 50px 50px 50px 0px;
 }
 
-#chat-detail-page .popover__content,
+#chatDetailPage .popover__content,
 #search-page .popover__content {
   width: 300px;
 }
 
-#chat-detail-page .popover__content .text-input,
+#chatDetailPage .popover__content .text-input,
 #search-page .popover__content .select-input {
   text-align: right;
 }
@@ -192,8 +189,8 @@ ons-toolbar > .center {
 
 .back-button__icon,
 .back-button__label {
-  fill: #ff9831;
-  color: #ff9831;
+  fill: #515c6f;
+  color: #515c6f;
 }
 
 .button--large--cta,
@@ -211,8 +208,41 @@ ons-bottom-toolbar {
   font-size: 0.8em;
 }
 
-#mypageProfileEdit-page > .page__content {
+#mypageProfileEditPage > .page__content {
   padding-right: 10px;
   padding-left: 10px;
   background: white !important;
+}
+
+.large-button-orange {
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  background-color: #ff9831;
+}
+.large-button-gray {
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  background-color: gray;
+}
+
+ons-input,
+ons-select {
+  border: 1px solid #ccc;
+  width: 95%;
+  border-radius: 5px;
+  padding: 0.3em;
+}
+
+.select-input,
+.text-input,
+.textarea {
+  font-size: 1em;
+}
+.textarea {
+  border: 1px solid #ccc;
+  width: 100%;
+  border-radius: 5px;
+  padding: 3%;
 }

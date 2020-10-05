@@ -1,0 +1,73 @@
+<ons-page id="shiftPage">
+  <style>
+    #shiftPage .page__content {
+      background: white !important;
+    }
+  </style>
+  <ons-toolbar>
+    <div
+      class="center"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;"
+      onclick="window.location='index.html';"
+    >
+      シフト設定ページ
+    </div>
+  </ons-toolbar>
+  <!--キャストを呼ぶ部分 -->
+  <div id="calendar"></div>
+
+  <div style="padding:0.5rem;margin-top:1rem;">
+    <ons-button
+      modifier="large"
+      class="large-button-orange"
+      onclick="scheduleEditPageJump();"
+      >編集</ons-button
+    >
+  </div>
+  <input type="hidden" id="selectDate" />
+  <script>
+    var user = firebase.auth().currentUser;
+    myShiftDateGet();
+    function myShiftDateGet() {
+      $(".fc-daygrid-day-events").empty();
+      db.collection("users")
+        .doc(user.uid)
+        .collection("shift")
+        .get()
+        .then(function(myShiftAll) {
+          if (myShiftAll.size > 0) {
+            var circle = `
+              <p style="display:flex;justify-content:center;align-items:center;margin:0px;font-size:0.8em;color:#ff9831">●</p>
+            `;
+            myShiftAll.forEach(myShift => {
+              var registerdDate = String(myShift.data().date);
+              var date = strIns(registerdDate, 4, "-");
+              var slashDate = strIns(date, 7, "-");
+
+              $(
+                'td[data-date="' + slashDate + '"] .fc-daygrid-day-events'
+              ).append(circle);
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+
+    function scheduleEditPageJump() {
+      var selectDate = $("#selectDate").val();
+      if (selectDate == "") {
+        ons.notification.alert({
+          message: "日付を選択してください"
+        });
+      } else {
+        myNavigator.bringPageTop("html/shift/shiftEditPage.html");
+        setTimeout(function() {
+          getSchedule(selectDate);
+        }, 500);
+      }
+    }
+  </script>
+</ons-page>
