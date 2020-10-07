@@ -104,21 +104,19 @@
             womanUsers.forEach(womanUser => {
               var womanlist =
                 `
-                <ons-carousel-item style="margin:5px;">
-                  <div style="height:200px;position: relative;">
-                    <img id="callPage1Image_` +
+                  <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
+                    <img id="searchAfterPageImage_` +
                 nowDataCount +
                 `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-                      <p id="callPage1UserName_` +
+                      <p id="searchAfterPageUserName_` +
                 nowDataCount +
                 `"style="margin:0px;color:white;"> </p>
-                      <p id="callPage1Salaly_` +
+                      <p id="searchAfterPageSalaly_` +
                 nowDataCount +
                 `"style="margin:0px;color:white;">¥0/h</sp>
                     </div>
                   </div>
-                </ons-carousel-item>
               `;
               $("#searchAfterPageList").append(womanlist);
               searchPageWomanIndicate(
@@ -136,15 +134,58 @@
           console.log(error);
         });
     }
-    function searchPageWomanIndicate(womanUserId, nowDataCount, dataSize) {
+
+    function searchNowLoginCast() {
+      $("#searchAfterPageList").empty();
+      var now = new Date();
+      var before15min_unix = now.getTime() - 900000; //ミリ秒なので(900秒*1000)
+      var before15min = formatDateYYYYMMDDHHMM(new Date(before15min_unix));
+      // var todayDate = Number(formatDate(new Date()));
+      db.collectionGroup("users")
+        .orderBy("loginDate", "desc")
+        .where("sex", "==", "man")
+        .where("loginDate", ">=", before15min)
+        .get()
+        .then(function(manUsers) {
+          if (manUsers.size > 0) {
+            var nowDataCount = 1;
+            manUsers.forEach(manUser => {
+              var manlist =
+                `
+                  <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
+                    <img id="searchAfterPageImage_` +
+                nowDataCount +
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p id="searchAfterPageUserName_` +
+                nowDataCount +
+                `"style="margin:0px;color:white;"> </p>
+                    </div>
+                  </div>
+              `;
+              $("#searchAfterPageList").append(manlist);
+              console.log(manUser.id, nowDataCount, manUsers.size);
+              searchPageWomanIndicate(manUser.id, nowDataCount, manUsers.size);
+              nowDataCount++;
+            });
+          } else {
+            hideLoad();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+    function searchPageWomanIndicate(userId, nowDataCount, dataSize) {
       db.collection("users")
-        .doc(womanUserId)
+        .doc(userId)
         .get()
         .then(function(womanUserResult) {
+          console.log(womanUserResult.data());
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + womanUserId)
+            .child("profilePicture/" + userId)
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -158,7 +199,7 @@
             .then(function(url) {
               $("#searchAfterPageImage_" + nowDataCount).attr("src", url);
               $("#searchAfterPageImage_" + nowDataCount).click(function() {
-                otherPageJump(womanUserId);
+                otherPageJump(userId);
               });
               $("#searchAfterPageSalaly_" + nowDataCount).html(
                 "¥" + womanUserResult.data().salaly + "/h"

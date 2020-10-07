@@ -1,0 +1,154 @@
+<ons-page id="partyPage">
+  <ons-toolbar>
+    <div class="center" id="toolbar-title" class="">
+      確定した予定
+    </div>
+  </ons-toolbar>
+  <div>
+    <ons-list id="partyList"> </ons-list>
+  </div>
+  <script>
+    var user = firebase.auth().currentUser;
+    myPartyGet();
+    function myPartyGet() {
+      var myUserId = firebase.auth().currentUser.uid;
+      db.collection("partyRoom")
+        .where("joinUsersId", "array-contains-any", [myUserId])
+        .orderBy("createTime", "desc")
+        .onSnapshot(function(partyRooms) {
+          $("#partyList").empty();
+          if (partyRooms.size > 0) {
+            var nowDataCounter = 0;
+
+            partyRooms.forEach(partyRoom => {
+              var list =
+                `
+                <ons-list-item id="partylist_` +
+                nowDataCounter +
+                `">
+                  <div class="left" onclick="">
+                    <img
+                      id="partylistImage_` +
+                nowDataCounter +
+                `"
+                      class="list-item__thumbnail"
+                      style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
+                    />
+                  </div>
+                  <div
+                    class="center"
+                    style="width:50%;"
+                  >
+                    <span id="partylistUserName_` +
+                nowDataCounter +
+                `"class="list-item__title navy-font"></span
+                    ><span
+                      id="partylistText_` +
+                nowDataCounter +
+                `"
+                      class="list-item__subtitle light-navy-font"
+                      style="height:50px;overflow: hidden;display:flex;align-items:center;"
+                      ></span
+                    >
+                  </div>
+                  <div class="right">
+                    <span
+                      id="partylistTime_` +
+                nowDataCounter +
+                `"
+                      class="list-item__subtitle light-navy-font"></span>
+                  </div>
+                </ons-list-item>
+                `;
+              $("#partyList").append(list);
+              var usersIdArray = partyRoom.data().joinUsersId;
+              var userId_1 = usersIdArray[0];
+              var userId_2 = usersIdArray[1];
+              if (myUserId == userId_1) {
+                var partnerId = userId_2;
+              } else {
+                var partnerId = userId_1;
+              }
+              myPartyIndicate(
+                partyRoom,
+                nowDataCounter,
+                partyRooms.size,
+                partnerId
+              );
+              nowDataCounter++;
+            });
+          }
+        });
+    }
+
+    function myPartyIndicate(partyRoom, nowDataCounter, datasize, partnerId) {
+      db.collection("users")
+        .doc(partnerId)
+        .get()
+        .then(function(userResult) {
+          var userName = userResult.data().username;
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + partnerId)
+            .getDownloadURL()
+            .then(url => {
+              // 画像取得できた
+              return url;
+            })
+            .catch(function() {
+              // 画像取得できないとき
+              url = "img/userSampleImageMan.png";
+              return url;
+            })
+            .then(function(url) {
+              var reviewUsersId = partyRoom.data().reviewUsersId;
+              if (
+                reviewUsersId == "" ||
+                reviewUsersId == null ||
+                reviewUsersId == undefined
+              ) {
+                reviewUsersId = [];
+              }
+              if (reviewUsersId.indexOf(user.uid) >= 0) {
+                $("#partylistText_" + nowDataCounter).html(
+                  "レビューが完了しました。"
+                );
+              } else {
+                var startTime = String(partyRoom.data().startTime);
+                startTime = strIns(startTime, 4, "/");
+                startTime = strIns(startTime, 7, "/");
+                startTime = strIns(startTime, 10, " ");
+                startTime = strIns(startTime, 13, ":");
+                var endTime = String(partyRoom.data().endTime);
+                endTime = strIns(endTime, 4, "/");
+                endTime = strIns(endTime, 7, "/");
+                endTime = strIns(endTime, 10, " ");
+                endTime = strIns(endTime, 13, ":");
+                $("#partylistText_" + nowDataCounter).html(
+                  "開始日時：" + startTime + "<br>終了日時：" + endTime
+                );
+              }
+
+              $("#partylistImage_" + nowDataCounter).attr("src", url);
+              $("#partylistUserName_" + nowDataCounter).html(userName);
+
+              $("#partylistTime_" + nowDataCounter).html(
+                jikanCulc(partyRoom.data().createTime)
+              );
+              $("#partylist_" + nowDataCounter).click(function() {
+                partyPageJump(partyRoom.id);
+              });
+            });
+        });
+    }
+
+    function partyPageJump(partyRoomId) {
+      console.log(partyRoomId);
+      myNavigator.bringPageTop("html/partyDetailPage.html");
+      setTimeout(() => {
+        partyPageDetail(partyRoomId);
+      }, 500);
+    }
+  </script>
+</ons-page>

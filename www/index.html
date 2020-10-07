@@ -8,7 +8,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"
+      content="default-src * lcall data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"
     />
     <script src="components/loader.js"></script>
     <script src="lib/onsenui/js/onsenui.min.js"></script>
@@ -140,7 +140,18 @@
           hideLoad();
         }, 5000);
       }
-
+      function handleOpenURL(url) {
+        setTimeout(function() {
+          var user = firebase.auth().currentUser;
+          if (user) {
+            // User is signed in.
+            myPointUriage(user.uid);
+            userInfo(user.uid);
+          } else {
+            // No user is signed in.
+          }
+        }, 100);
+      }
       function hideLoad() {
         $("body").LoadingOverlay("hide");
       }
@@ -204,13 +215,44 @@
       }
 
       function chatPageJump(partnerUserId) {
-        myNavigator.bringPageTop("html/chat/chatDetailPage.html");
-        setTimeout(function() {
-          $("#chatDetailPageUserId").val(partnerUserId);
-          setTimeout(function() {
-            chatDetailGet();
-          }, 200);
-        }, 500);
+        db.collection("users")
+          .doc(partnerUserId)
+          .get()
+          .then(function(partnerUser) {
+            var partnerUserSex = partnerUser.data().sex;
+            var partnerRank = partnerUser.data().rank;
+            var myUserId = firebase.auth().currentUser.uid;
+            db.collection("users")
+              .doc(myUserId)
+              .get()
+              .then(function(myUser) {
+                var myUserSex = myUser.data().sex;
+                if (partnerUserSex == myUserSex) {
+                  ons.notification.alert({
+                    message: "同性の相手にはメッセージを送れません。"
+                  });
+                } else {
+                  myNavigator.bringPageTop("html/chat/chatDetailPage.html");
+                  if (myUserSex == "man") {
+                    $("#popOverButton").show();
+                  } else {
+                    $("#popOverButton").hide();
+                  }
+                  setTimeout(function() {
+                    $("#chatDetailPageUserId").val(partnerUserId);
+                    $("#chatDetailPageUserRank").val(partnerRank);
+                    if (myUserSex == "man") {
+                      $("#popOverButton").show();
+                    } else {
+                      $("#popOverButton").hide();
+                    }
+                    setTimeout(function() {
+                      chatDetailGet();
+                    }, 200);
+                  }, 500);
+                }
+              });
+          });
       }
 
       function jikanCulc(create_date) {
@@ -231,6 +273,50 @@
         }
         var time = MM + "月" + DD + "日 " + hh + ":" + mm;
         return time;
+      }
+
+      //時刻取得（yyyymmddhhmmss）
+      function getCurrentTime(now) {
+        var res =
+          "" +
+          now.getFullYear() +
+          padZero(now.getMonth() + 1) +
+          padZero(now.getDate()) +
+          padZero(now.getHours()) +
+          padZero(now.getMinutes());
+        return res;
+      }
+
+      //先頭ゼロ付加
+      function padZero(num) {
+        return (num < 10 ? "0" : "") + num;
+      }
+
+      function reviewControl(userId) {
+        return new Promise(resolve => {
+          db.collection("users")
+            .doc(userId)
+            .collection("reviews")
+            .get()
+            .then(function(reviews) {
+              var reviewArray = [];
+              reviews.forEach(review => {
+                reviewArray.push(review.data().reviewCount);
+              });
+              var sum = 0;
+              var reviewQuantity = reviewArray.push();
+              reviewArray.forEach(function(v) {
+                sum += Number(v);
+              });
+              if (reviewQuantity > 0) {
+                var reviewAverage = sum / reviewQuantity;
+              } else {
+                var reviewAverage = 0;
+              }
+              var reviewInfo = [reviewQuantity, Math.round(reviewAverage)];
+              resolve(reviewInfo);
+            });
+        });
       }
     </script>
   </body>

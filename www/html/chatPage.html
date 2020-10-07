@@ -48,12 +48,11 @@
     });
     myChatGet();
     function myChatGet() {
-      $("#chatList").empty();
       var myUserId = firebase.auth().currentUser.uid;
       db.collection("message")
         .where("usersId", "array-contains-any", [myUserId])
-        .get()
-        .then(function(messages) {
+        .onSnapshot(function(messages) {
+          $("#chatList").empty();
           if (messages.size > 0) {
             var nowDataCounter = 0;
 
@@ -107,11 +106,9 @@
                 var partnerId = userId_1;
               }
               myChatIndicate(message, nowDataCounter, messages.size, partnerId);
+              nowDataCounter++;
             });
           }
-        })
-        .catch(function(error) {
-          console.log(error);
         });
     }
 

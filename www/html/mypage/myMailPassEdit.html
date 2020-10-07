@@ -1,0 +1,197 @@
+<ons-page id="myMailPassEditPage">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">メール/パスワード設定</div>
+  </ons-toolbar>
+  <ons-list class="content">
+    <ons-list>
+      <ons-list-header>メールアドレス再設定</ons-list-header>
+      <ons-list-item>
+        <ons-row>
+          <ons-col
+            vertical-align="center"
+            width="100%"
+            style="text-align: center;"
+          >
+            <ons-input
+              id="myMailEdit"
+              placeholder="新たなメールアドレス"
+              type="email"
+            ></ons-input>
+          </ons-col>
+        </ons-row>
+        <ons-row>
+          <ons-col
+            vertical-align="center"
+            width="100%"
+            style="margin-top:0.5em;text-align: center;"
+          >
+            <ons-input
+              id="myMailEditPassword"
+              placeholder="現在のパスワード"
+              type="password"
+            ></ons-input>
+          </ons-col>
+        </ons-row>
+        <ons-row style="margin-top:1em;">
+          <ons-col
+            vertical-align="center"
+            width="100%"
+            style="text-align: center;margin-bottom:0.5em;"
+          >
+            <ons-button
+              modifier="large"
+              class="large-button-orange"
+              style="background: #0799d7;"
+              onclick="myMailEdit()"
+              >メールアドレス変更</ons-button
+            >
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-header>パスワード再設定</ons-list-header>
+      <ons-list-item>
+        <ons-row>
+          <ons-col
+            vertical-align="center"
+            width="100%"
+            style="text-align: center;margin-bottom:0.5em;"
+          >
+            <p style="text-align: left;margin-bottom:1em;">
+              現在ご登録の以下のメールアドレスにパスワード再設定メールを送信します。<br />
+            </p>
+            <p
+              id="myMailNow"
+              style="text-align: center;margin-top:0px;font-size:1.1em;margin-bottom:0px;"
+            >
+              sample@sample.com
+            </p>
+          </ons-col>
+        </ons-row>
+        <ons-row>
+          <ons-col
+            vertical-align="center"
+            width="100%"
+            style="margin-top:1em;text-align: center;margin-bottom:1em;"
+          >
+            <ons-button
+              modifier="large"
+              class="large-button-orange"
+              onclick="myPassEdit()"
+              >パスワード変更</ons-button
+            >
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+  </ons-list>
+  <script>
+    document.addEventListener(
+      "show",
+      function(event) {
+        if (event.target.matches("#myMailPassEditPage")) {
+          var user = firebase.auth().currentUser;
+          if (user) {
+            $("#myMailNow").html(user.email);
+          } else {
+            // No user is signed in.
+            $("#myMailNow").html("");
+          }
+        }
+      },
+      false
+    );
+    function myMailEdit() {
+      showLoad();
+      var mailaddressedit = $("#myMailEdit").val();
+      var password = $("#myMailEditPassword").val();
+      if (mailaddressedit.trim() == "" || password.trim() == "") {
+        hideLoad();
+        ons.notification.alert({
+          title: "失敗",
+          message: "未入力情報があります"
+        });
+      } else {
+        var user = firebase.auth().currentUser;
+        var credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        user
+          .reauthenticateWithCredential(credential)
+          .then(function() {
+            // User re-authenticated.
+            user
+              .updateEmail(mailaddressedit)
+              .then(function() {
+                firebase
+                  .auth()
+                  .currentUser.getIdToken(true)
+                  .then(function() {
+                    firebase
+                      .auth()
+                      .currentUser.sendEmailVerification()
+                      .then(function() {
+                        // Update successful.
+                        hideLoad();
+                        ons.notification.alert({
+                          title: "ログアウトします",
+                          message:
+                            "認証メールを送信しました。ご確認くださいませ。",
+                          callback: function() {
+                            window.location.href = "index.html";
+                          }
+                        });
+                      });
+                  });
+              })
+              .catch(function(error) {
+                // An error happened.
+                hideLoad();
+                ons.notification.alert({
+                  title: "失敗",
+                  message: "変更が失敗しました"
+                });
+              });
+          })
+          .catch(function(error) {
+            // An error happened.
+            console.log(error);
+            hideLoad();
+          });
+      }
+    }
+
+    function myPassEdit() {
+      showLoad();
+      var user = firebase.auth().currentUser;
+      var email = user.email;
+      var auth = firebase.auth();
+      auth
+        .sendPasswordResetEmail(email)
+        .then(function() {
+          // Email sent.
+
+          hideLoad();
+          ons.notification.alert({
+            title: "ログアウトします",
+            message: "パスワード再設定メールを送信しました。ご確認ください。",
+            callback: function() {
+              window.location.href = "index.html";
+            }
+          });
+          myNavigator.popPage();
+        })
+        .catch(function(error) {
+          // An error happened.
+          hideLoad();
+          ons.notification.alert({
+            title: "メール送信失敗",
+            message: "パスワード再設定メールの送信に失敗しました。"
+          });
+        });
+    }
+  </script>
+</ons-page>

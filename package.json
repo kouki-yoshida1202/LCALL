@@ -21,7 +21,7 @@
             "cordova-plugin-inappbrowser": {},
             "cordova-plugin-ionic-keyboard": {},
             "cordova-plugin-customurlscheme": {
-                "URL_SCHEME": "knowledgecampus"
+                "URL_SCHEME": "lcall"
             },
             "cordova-plugin-camera": {}
         }

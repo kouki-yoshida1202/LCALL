@@ -78,10 +78,9 @@
         <ons-col vertical-align="center" width="50%" style="text-align: right;">
           <ons-select id="searchCastRank" onchange="editSelects(event)">
             <option>指定なし</option>
-            <option value="S">Sランク</option>
-            <option value="A">Aランク</option>
-            <option value="B">Bランク</option>
-            <option value="C">Cランク</option>
+            <option value="VIP">VIP</option>
+            <option value="プレミアム">プレミアム</option>
+            <option value="スタンダード">スタンダード</option>
           </ons-select>
         </ons-col>
       </ons-row>
@@ -158,14 +157,19 @@
           }
         });
     }, 500);
-
+    function searchAfterNowLoginCheck() {
+      myNavigator.bringPageTop("html/search/searchAfterPage.html");
+      showLoad();
+      setTimeout(function() {
+        searchNowLoginCast();
+      }, 500);
+    }
     function nowLoginGet() {
-      $(".todayCastList").empty();
       var now = new Date();
       var before15min_unix = now.getTime() - 900000; //ミリ秒なので(900秒*1000)
       var before15min = formatDateYYYYMMDDHHMM(new Date(before15min_unix));
       db.collection("users")
-        .orderBy("loginDate", "desc")
+        // .orderBy("loginDate", "desc")
         .where("sex", "==", "man")
         .where("loginDate", ">=", before15min)
         .limit(4)
@@ -174,6 +178,7 @@
           console.log(manLoginUsers.size);
           if (manLoginUsers.size > 0) {
             var nowDataCount = 1;
+            // $(".todayCastList").empty();
             manLoginUsers.forEach(manLoginUser => {
               var manlist =
                 `
@@ -186,14 +191,10 @@
                       <p id="callPage1UserName_` +
                 nowDataCount +
                 `"style="margin:0px;color:white;"> </p>
-                      <p id="callPage1Salaly_` +
-                nowDataCount +
-                `"style="margin:0px;color:white;">¥0/h</sp>
                     </div>
                   </div>
                 </ons-carousel-item>
               `;
-              console.log(manlist);
               $(".todayCastList").append(manlist);
               callPage1ManIndicate(
                 manLoginUser.id,
@@ -383,7 +384,6 @@
             .limit(20)
             .get()
             .then(function(userWomanResults) {
-              console.log(userWomanResults.size);
               if (userWomanResults.size > 0) {
                 var nowDataCount = 1;
                 userWomanResults.forEach(userWomanResult => {
@@ -425,7 +425,6 @@
     }
 
     function searchPageWomanIndicate(womanUserId, nowDataCount, dataSize) {
-      console.log(womanUserId);
       db.collection("users")
         .doc(womanUserId)
         .get()

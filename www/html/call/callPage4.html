@@ -101,10 +101,11 @@
           合計
         </p>
         <p
+          id="needPoint"
           class="list-item__title light-navy-font"
           style="overflow: hidden;margin-top:5px;margin-top:0px;margin-bottom:0px;line-height:normal;font-size:1.3em;font-weight: bold;"
         >
-          5000P
+          0P
         </p>
       </ons-col>
       <ons-col style="text-align: right;">
@@ -157,14 +158,14 @@
         .then(function(myResult) {
           var myPointNow = myResult.data().point;
           var myPointAfter = Number(myPointNow) - Number(needPoint);
-          if (myPointAfter < 0) {
+          if (myPointAfter >= 0) {
+            return myPointAfter;
+          } else {
             ons.notification.alert({
               message:
                 "所持ポイントが足りません。マイページからチャージしてください。"
             });
             return;
-          } else {
-            return myPointAfter;
           }
         })
         .then(function(myPointAfter) {
@@ -192,29 +193,11 @@
               { merge: true }
             )
             .then(function() {
-              womanPointGetArray.forEach(element => {
-                var womanUserId = element[0];
-                var getPoint = element[1];
-                db.collection("users")
-                  .doc(womanUserId)
-                  .get()
-                  .then(function(womanResult) {
-                    var pointNow = womanResult.data().point;
-                    var pointAfter = Number(pointNow) + Number(getPoint);
-                    db.collection("users")
-                      .doc(womanUserId)
-                      .set(
-                        {
-                          point: pointAfter
-                        },
-                        { merge: true }
-                      )
-                      .then(function() {
-                        ons.notification.alert({
-                          message: "予約が完了しました"
-                        });
-                      });
-                  });
+              ons.notification.alert({
+                message: "予約が完了しました",
+                callback: function() {
+                  window.location = "index.html";
+                }
               });
             })
             .catch(function(error) {
@@ -250,7 +233,7 @@
 
       $("#callPage4CallDateTime").html(startTime);
       $("#callCastImage").empty();
-      for (var i = 0; i < callNumberPeople; i++) {
+      for (var i = 1; i <= callNumberPeople; i++) {
         var callCastList =
           `
           <img
@@ -264,56 +247,58 @@
         `;
         $("#callCastImage").append(callCastList);
       }
-
-      for (var j = 0; j < womanUserIdArray.length; j++) {
+      var womanUserIdArrayCounter = 1;
+      womanUserIdArray.forEach(womanUserId => {
         db.collection("users")
-          .doc(womanUserIdArray[j])
+          .doc(womanUserId)
           .get()
           .then(function(womanResult) {
             var rank = womanResult.data().rank;
-            if (rank == "S") {
+            if (rank == "VIP") {
               var hourlyWage = 10000;
-            } else if (rank == "A") {
+            } else if (rank == "プレミアム") {
+              var hourlyWage = 7500;
+            } else if (rank == "スタンダード") {
               var hourlyWage = 5000;
-            } else if (rank == "B") {
-              var hourlyWage = 3000;
-            } else if (rank == "C") {
-              var hourlyWage = 1500;
             }
+
             needPointArray.push(hourlyWage * Number(callHours));
             womanPointGetArray.push([
-              womanUserIdArray[j],
+              womanUserId,
               hourlyWage * Number(callHours)
             ]);
-            if (j == womanUserIdArray.length - 1) {
+            // console.log(needPointArray, j, womanUserIdArray.length);
+            if (womanUserIdArrayCounter == womanUserIdArray.length) {
               var sum = 0;
               needPointArray.forEach(function(elm) {
                 sum += elm;
               });
               $("#callPage4NeedPoint").val(sum);
-            }
-          });
-        firebase
-          .storage()
-          .ref()
-          .child("profilePicture/" + womanUserIdArray[j])
-          .getDownloadURL()
-          .then(url => {
-            // 画像取得できた
-            return url;
-          })
-          .catch(function() {
-            // 画像取得できないとき
-            url = "img/userSampleImageMan.png";
-            return url;
-          })
-          .then(function(url) {
-            $("#callCastImage_" + j).attr("src", url);
-            if (j + 1 == womanUserIdArray.length) {
+              $("#needPoint").html(sum + "P");
               hideLoad();
             }
+          })
+          .then(function() {
+            firebase
+              .storage()
+              .ref()
+              .child("profilePicture/" + womanUserId)
+              .getDownloadURL()
+              .then(url => {
+                // 画像取得できた
+                return url;
+              })
+              .catch(function() {
+                // 画像取得できないとき
+                url = "img/userSampleImageMan.png";
+                return url;
+              })
+              .then(function(url) {
+                $("#callCastImage_" + womanUserIdArrayCounter).attr("src", url);
+                womanUserIdArrayCounter++;
+              });
           });
-      }
+      });
     }
   </script>
 </ons-page>

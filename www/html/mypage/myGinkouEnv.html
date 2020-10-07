@@ -1,0 +1,185 @@
+<ons-page id="myGinkouEnvPage">
+  <style>
+    #myGinkouEnvPage .page__content {
+      background-color: white !important;
+    }
+    #myGinkouEnvPage ons-list-item {
+      padding-left: 0px;
+    }
+    #myGinkouEnvPage ons-list-item .center {
+      padding-left: 14px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center" id="toolbar-title">銀行口座設定</div>
+  </ons-toolbar>
+  <div class="content">
+    <ons-list-item>
+      <ons-row>
+        <ons-col width="30%" vertical-align="center">銀行名</ons-col>
+        <ons-col width="70%" vertical-align="center">
+          <ons-input id="myGinkouName" placeholder="(必須)"></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col width="30%" vertical-align="center">口座種別</ons-col>
+        <ons-col width="70%" vertical-align="center">
+          <ons-select id="myGinkouKind">
+            <option value="普通">普通</option>
+            <option value="当座">当座</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col width="30%" vertical-align="center">支店コード</ons-col>
+        <ons-col width="70%" vertical-align="center">
+          <ons-input
+            id="myGinkouShiten"
+            placeholder="数字3桁"
+            type="tel"
+            maxlength="3"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col width="30%" vertical-align="center">口座番号</ons-col>
+        <ons-col width="70%" vertical-align="center">
+          <ons-input
+            id="myGinkouNumber"
+            placeholder="数字7桁"
+            type="tel"
+            maxlength="7"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col width="30%" vertical-align="center">口座名義</ons-col>
+        <ons-col width="70%" vertical-align="center">
+          <ons-input
+            id="myGinkouMeigi"
+            placeholder="(例)ヤマダタロウ"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <div style="padding:0.5rem;margin-top:1rem;font-size:0.8em;color:gray;">
+      <p>※口座番号が7桁未満の場合は先頭に0を付けてください。</p>
+      <p>※振込手数料300円が発生します。</p>
+    </div>
+    <div style="padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        modifier="large"
+        class="large-button-orange"
+        onclick="myGinkouSubmitCheck();"
+        >設定を完了する</ons-button
+      >
+    </div>
+  </div>
+  <script>
+    document.addEventListener(
+      "init",
+      function(event) {
+        if (event.target.matches("#myGinkouEnvPage")) {
+          // ons.notification.alert("ページ1が初期化されました");
+          // コンテンツを準備...
+          var user = firebase.auth().currentUser;
+          if (user) {
+            // User is signed in.
+            myGinkouInfoIndicate(user.uid);
+          } else {
+            // No user is signed in.
+          }
+        }
+      },
+      false
+    );
+
+    function myGinkouInfoIndicate(userId) {
+      var docRef = db.collection("users").doc(userId);
+      docRef
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            $("#myGinkouName").val(doc.data().ginkouname);
+            $("#myGinkouKind").val(doc.data().ginkoukind);
+            $("#myGinkouShiten").val(doc.data().ginkoushiten);
+            $("#myGinkouNumber").val(doc.data().ginkounumber);
+            $("#myGinkouMeigi").val(doc.data().ginkoumeigi);
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    }
+
+    function myGinkouSubmitCheck() {
+      var ginkouname = $("#myGinkouName").val();
+      var ginkoukind = $("#myGinkouKind").val();
+      var ginkoushiten = $("#myGinkouShiten").val();
+      var ginkounumber = $("#myGinkouNumber").val();
+      var ginkoumeigi = $("#myGinkouMeigi").val();
+      if (
+        ginkouname.trim() == "" ||
+        ginkoukind.trim() == "" ||
+        ginkoushiten.trim() == "" ||
+        ginkounumber.trim() == "" ||
+        ginkoumeigi.trim() == ""
+      ) {
+        ons.notification.alert({
+          title: "失敗",
+          message: "未入力の項目があります"
+        });
+      } else {
+        myGinkouSubmit();
+      }
+    }
+
+    function myGinkouSubmit() {
+      showLoad();
+      var ginkouname = $("#myGinkouName").val();
+      var ginkoukind = $("#myGinkouKind").val();
+      var ginkoushiten = $("#myGinkouShiten").val();
+      var ginkounumber = $("#myGinkouNumber").val();
+      var ginkoumeigi = $("#myGinkouMeigi").val();
+      var user = firebase.auth().currentUser;
+      db.collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            ginkouname: ginkouname,
+            ginkoukind: ginkoukind,
+            ginkoushiten: ginkoushiten,
+            ginkounumber: ginkounumber,
+            ginkoumeigi: ginkoumeigi
+          },
+          { merge: true }
+        )
+        .then(function() {
+          hideLoad();
+          ons.notification.alert({
+            title: "成功",
+            message: "銀行口座設定を完了しました"
+          });
+          myNavigator.popPage();
+        })
+        .catch(function(error) {
+          console.error("Error writing document: ", error);
+          hideLoad();
+        });
+    }
+  </script>
+</ons-page>

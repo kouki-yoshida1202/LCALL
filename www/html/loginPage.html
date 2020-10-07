@@ -93,12 +93,18 @@
       <div class="content">
         <div style="text-align: center; margin-top: 30px;">
           <p>
+            <style>
+              #newMailaddress input,
+              #newPassword input {
+                border-bottom: none;
+              }
+            </style>
             <ons-input
               id="newMailaddress"
               modifier="underbar"
               type="email"
               placeholder="MailAddress"
-              style="padding:1.2em;width:80%;"
+              style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
           </p>
@@ -108,7 +114,7 @@
               modifier="underbar"
               type="password"
               placeholder="Password"
-              style="padding:1.2em;width:80%;"
+              style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
           </p>
@@ -142,12 +148,17 @@
       <div class="content">
         <div style="text-align: center; margin-top: 30px;">
           <p>
+            <style>
+              #updateMailaddress input {
+                border-bottom: none;
+              }
+            </style>
             <ons-input
               id="updateMailaddress"
               modifier="underbar"
               type="email"
               placeholder="MailAddress"
-              style="padding:1.2em;"
+              style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
           </p>
@@ -317,7 +328,7 @@
                     .doc(user.uid)
                     .set(
                       {
-                        username: "",
+                        username: "男性ユーザー",
                         address: "",
                         alcohol: "",
                         birthplace: "",
@@ -329,9 +340,14 @@
                         text: "",
                         tobacco: "",
                         work: "",
-                        class: "",
+                        rank: "",
                         salaly: 0,
                         point: 0,
+                        ginkoukind: "普通",
+                        ginkoumeigi: "",
+                        ginkouname: "",
+                        ginkounumber: "",
+                        ginkoushiten: "",
                         createDate: formatDateYYYYMMDDHHMM(new Date()),
                         loginDate: formatDateYYYYMMDDHHMM(new Date())
                       },

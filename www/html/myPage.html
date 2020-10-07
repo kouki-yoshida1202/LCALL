@@ -1,5 +1,12 @@
 <ons-page id="myPage">
-  <ons-speed-dial position="top right" direction="down">
+  <style>
+    #myPageFab > ons-fab,
+    #myPageFab > ons-speed-dial-item {
+      background-color: #ff9831;
+    }
+  </style>
+
+  <ons-speed-dial id="myPageFab" position="top right" direction="down">
     <ons-fab modifier="mini" ripple>
       <ons-icon icon="fa-ellipsis-h"></ons-icon>
     </ons-fab>
@@ -38,8 +45,9 @@
         transform: translateX(-50%);
         -webkit-transform: translateX(-50%);
         -ms-transform: translateX(-50%);width:90%;background-color:rgba(255,152,49,0.2);font-weight: bold;height:60px;border-radius: 50px;margin:0 auto;"
+      onclick="reviewPageJump(firebase.auth().currentUser.uid);"
     >
-      <ons-row style="height:100%;width:90%;margin:0 auto;">
+      <ons-row id="myPageReview" style="height:100%;width:90%;margin:0 auto;">
         <ons-col style="text-align: center;" vertical-align="center">
           <img src="img/starOn.png" alt="" style="height:35px;" />
         </ons-col>
@@ -59,7 +67,19 @@
     </div>
   </div>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
-    <p id="myPageUserName" style="text-align: center;font-size:1.0em;"></p>
+    <ons-row>
+      <ons-col width="70%">
+        <h4><span id="myPageUserName"></span> <span id="myPageOld"></span></h4>
+      </ons-col>
+      <ons-col
+        id="myPageRankBox"
+        vertical-align="center"
+        width="30%"
+        style="text-align: center;background-color: #ff9831;border-radius: 10px;padding:5px 3px;"
+      >
+        <span id="myPageRank" style="font-size:0.8em;color:white;"> </span>
+      </ons-col>
+    </ons-row>
     <p id="myPageText" class="light-navy" style="font-size:0.8em;"></p>
   </ons-card>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;margin-bottom:30px;">
@@ -188,9 +208,15 @@
         .get()
         .then(function(doc) {
           if (doc.exists) {
-            $("#myPageUserName").html(
-              doc.data().username + "&emsp;" + doc.data().old + "才"
-            );
+            $("#myPageUserName").html(doc.data().username);
+            if (doc.data().old != "" || doc.data().old != null) {
+              $("#myPageOld").html(doc.data().old + "才");
+            }
+            if (doc.data().sex == "woman") {
+              $("#myPageRank").html(doc.data().rank);
+            } else {
+              $("#myPageRank").html(doc.data().point + "P所持");
+            }
             $("#myPageText").html(doc.data().text);
             $("#myPageHeight").html(doc.data().height);
             $("#myPageTobacco").html(doc.data().tobacco);
@@ -217,6 +243,21 @@
               .then(function(url) {
                 document.getElementById("myPageImage").src = url;
               });
+
+            // var reviewInFo =
+            reviewControl(userId).then(function(result) {
+              $("#myPageReview").empty();
+              for (var i = 1; i < 6; i++) {
+                if (i > result[1]) {
+                  var star =
+                    '<ons-col style="text-align: center;" vertical-align="center"><img src="img/starOff.png" alt="" style="height:35px;" /></ons-col>';
+                } else {
+                  var star =
+                    '<ons-col style="text-align: center;" vertical-align="center"><img src="img/starOn.png" alt="" style="height:35px;" /></ons-col>';
+                }
+                $("#myPageReview").append(star);
+              }
+            });
           } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -225,6 +266,13 @@
         .catch(function(error) {
           console.log("Error getting document:", error);
         });
+    }
+
+    function reviewPageJump(userId) {
+      myNavigator.bringPageTop("html/reviewPage.html");
+      setTimeout(function() {
+        reviewInfomation(userId);
+      }, 500);
     }
   </script>
 </ons-page>

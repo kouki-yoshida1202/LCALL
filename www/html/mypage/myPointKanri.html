@@ -1,0 +1,100 @@
+<ons-page id="myPointKanriPage">
+  <style>
+    #myPointKanriPage .page__content {
+      background: white !important;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div
+      class="center"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;"
+    >
+      ポイント管理
+    </div>
+  </ons-toolbar>
+  <div class="content">
+    <div
+      style="width:80%;margin:0 auto;border-radius:5px;padding:0.5em;margin-top:1em;margin-bottom:1em;"
+    >
+      <p style="text-align: center;">所持ポイント</p>
+      <h1 id="myPoint" style="text-align: center;">0P</h1>
+      <p style="text-align: center;">※1P=1円で換金できます。</p>
+    </div>
+    <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        id="hurikomiFormJumpButton"
+        modifier="large"
+        class="large-button-blue"
+        >振り込み申請
+      </ons-button>
+    </div>
+    <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        modifier="large"
+        class="large-button-gray"
+        onclick="myNavigator.bringPageTop('html/mypage/myGinkouEnv.html');"
+        >振り込み先口座設定
+      </ons-button>
+    </div>
+  </div>
+  <script>
+    document.addEventListener(
+      "init",
+      function(event) {
+        if (event.target.matches("#myPointKanriPage")) {
+          // ons.notification.alert("ページ1が初期化されました");
+          // コンテンツを準備...
+          var user = firebase.auth().currentUser;
+          if (user) {
+            // User is signed in.
+            myPointUriage(user.uid);
+          } else {
+            // No user is signed in.
+          }
+        }
+      },
+      false
+    );
+
+    function myPointUriage(userId) {
+      var docRef = db.collection("users").doc(userId);
+      docRef
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            $("#myPoint").html(doc.data().point + "P");
+            document.getElementById(
+              "hurikomiFormJumpButton"
+            ).onclick = new Function(
+              "hurikomiFormJump('" + doc.data().point + "','" + userId + "');"
+            );
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    }
+
+    function hurikomiFormJump(pointNow, userId) {
+      myNavigator.bringPageTop("html/mypage/myHurikomi.html");
+      document.addEventListener(
+        "show",
+        function(event) {
+          if (event.target.matches("#myHurikomiPage")) {
+            $("#myHurikomiUriageNow").html("¥" + pointNow);
+            $("#myHurikomiUriageNowHidden").val(pointNow);
+            $("#myHurikomiUserId").val(userId);
+          }
+        },
+        false
+      );
+    }
+  </script>
+</ons-page>

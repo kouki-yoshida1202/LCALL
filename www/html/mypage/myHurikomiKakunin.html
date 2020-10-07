@@ -1,0 +1,184 @@
+<ons-page id="myHurikomiKakuninPage">
+  <style>
+    #myHurikomiKakuninPage .page__content {
+      background-color: white !important;
+    }
+    #myHurikomiKakuninPage ons-list-item {
+      padding-left: 0px;
+    }
+    #myHurikomiKakuninPage ons-list-item .center {
+      padding-left: 14px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center" id="toolbar-title">振込申請確認</div>
+  </ons-toolbar>
+  <div class="content">
+    <ons-list>
+      <ons-list-header>振込内容</ons-list-header>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">現在の売上金</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p id="myHurikomiKakuninUriageNow" style="text-align: right;">¥0</p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込申請額</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p id="myHurikomiKakuninShinseiKingaku" style="text-align: right;">
+              ¥0
+            </p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込手数料</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p style="text-align: right;">¥300</p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込金額</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p id="myHurikomiKakuninHurikomiKingaku" style="text-align: right;">
+              ¥0
+            </p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <br />
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">銀行</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p id="myHurikomiKakuninGinkouName" style="text-align: right;"></p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">支店コード</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p
+              id="myHurikomiKakuninGinkouShiten"
+              style="text-align: right;"
+            ></p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">口座番号</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p
+              id="myHurikomiKakuninGinkouNumber"
+              style="text-align: right;"
+            ></p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">口座名義</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p id="myHurikomiKakuninGinkouMeigi" style="text-align: right;"></p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+
+    <div style="padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        modifier="large"
+        class="large-button-orange"
+        onclick="hurikomiShinsei();"
+        >振込申請する</ons-button
+      >
+    </div>
+  </div>
+  <input type="hidden" id="myHurikomiKakuninUserId" />
+
+  <script>
+    function hurikomiShinsei() {
+      showLoad();
+      var uriageNow = Number(
+        $("#myHurikomiKakuninUriageNow")
+          .html()
+          .replace("¥", "")
+      );
+      var hurikomiShinsei = Number(
+        $("#myHurikomiKakuninShinseiKingaku")
+          .html()
+          .replace("¥", "")
+      );
+      var hurikomiKingaku = Number(
+        $("#myHurikomiKakuninHurikomiKingaku")
+          .html()
+          .replace("¥", "")
+      );
+      var ginkouName = $("#myHurikomiKakuninGinkouName").html();
+      var ginkouShiten = $("#myHurikomiKakuninGinkouShiten").html();
+      var ginkouNumber = $("#myHurikomiKakuninGinkouNumber").html();
+      var ginkouMeigi = $("#myHurikomiKakuninGinkouMeigi").html();
+      if (
+        uriageNow == "" ||
+        hurikomiShinsei == "" ||
+        hurikomiKingaku == "" ||
+        ginkouName == "" ||
+        ginkouShiten == "" ||
+        ginkouNumber == "" ||
+        ginkouMeigi == ""
+      ) {
+        ons.notification.alert({
+          message: "未入力項目があります。"
+        });
+        hideLoad();
+      } else {
+        var user = firebase.auth().currentUser;
+        var afterPoint = uriageNow - hurikomiShinsei;
+        db.collection("users")
+          .doc(user.uid)
+          .set(
+            {
+              point: afterPoint
+            },
+            { merge: true }
+          )
+          .then(function() {
+            db.collection("hurikomiHistory")
+              .add({
+                userId: user.uid,
+                uriageNow: uriageNow,
+                hurikomiShinsei: hurikomiShinsei,
+                hurikomiKingaku: hurikomiKingaku,
+                ginkouName: ginkouName,
+                ginkouShiten: ginkouShiten,
+                ginkouNumber: ginkouNumber,
+                ginkouMeigi: ginkouMeigi
+              })
+              .then(function() {
+                hideLoad();
+                ons.notification.alert({
+                  message: "申請が完了しました。",
+                  callback: function() {
+                    window.location = "index.html";
+                  }
+                });
+              });
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
+    }
+  </script>
+</ons-page>

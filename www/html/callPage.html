@@ -30,10 +30,10 @@
                 style="border-radius:50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
               >
                 <select id="callTime"class="select-input light-navy-font">
-                  <option value="afterNow">今すぐ呼ぶ</option>
-                  <option value="afterOneHour">1時間後</option>
-                  <option value="afterTwoHour">2時間後</option>
-                  <option value="afterThreeHour">3時間後</option>
+                  <option value="0">今すぐ呼ぶ</option>
+                  <option value="1">1時間後</option>
+                  <option value="2">2時間後</option>
+                  <option value="3">3時間後</option>
                   <option value="afterCustomHour">時間指定</option>
                 </select>
               </ons-select>
@@ -163,6 +163,8 @@
           searchTodayCast();
         }, 500);
       }
+
+    
     function todayCastGet(){
       
       $(".todayCastList").empty();

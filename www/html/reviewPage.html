@@ -1,0 +1,133 @@
+<ons-page id="reviewPage">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div
+      class="center"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;"
+    >
+      評価一覧
+    </div>
+  </ons-toolbar>
+  <div class="content">
+    <ons-list id="reviewList" style="background-image: none;"> </ons-list>
+  </div>
+  <script>
+    function reviewInfomation(userId) {
+      showLoad();
+      $("#reviewList").empty();
+      var nowDataCount = 0;
+      db.collection("users")
+        .doc(userId)
+        .collection("reviews")
+        .orderBy("createTime", "desc")
+        .get()
+        .then(results => {
+          if (results.size > 0) {
+            results.forEach(result => {
+              nowDataCount++;
+              var reviewlist = "";
+              reviewlist +=
+                `
+                  <ons-list-item style="min-height:80px;padding-left:0px;">
+                    <ons-row style="padding-left:14px;">
+                      <ons-col width="20%" vertical-align="center"style="text-align:center;">
+                        <img id="reviewImage_` +
+                nowDataCount +
+                `"
+                          class="shitagakiImage list-item__thumbnail"
+                          src="img/userSampleImageMan.png"
+                          style="width:45px;height:45px;border-radius: 50%;object-fit:cover;margin:0 auto;"
+                        />
+                        <p id="reviewUserName_` +
+                nowDataCount +
+                `" style="text-align:center;margin-top:7px;margin-bottom:3px;font-size:0.8em;"></p>
+                      </ons-col>
+                      <ons-col width="80%" vertical-align="center">
+                        <p id="reviewStar_` +
+                nowDataCount +
+                `"style="margin-bottom:10px;margin-top:0px;"></p>
+                        <p id="reviewComment_` +
+                nowDataCount +
+                `"style="margin-bottom:0px;margin-top:0px;font-size:0.9em;"></p>
+                        <p id="reviewCreateTime_` +
+                nowDataCount +
+                `" class="list-item__subtitle light-navy-font"style="margin-top:3px;text-align:right;margin-bottom:5px;"></p>
+                      </ons-col>
+                    </ons-row>
+                  </ons-list-item>
+              `;
+              $("#reviewList").append(reviewlist);
+
+              reviewInfomationIndicate(
+                result.data(),
+                nowDataCount,
+                results.size
+              );
+            });
+          } else {
+            hideLoad();
+          }
+        })
+        .catch(error => {
+          console.log(`データの取得に失敗しました (${error})`);
+          hideLoad();
+        });
+    }
+
+    function reviewInfomationIndicate(reviewResult, nowDataCount, size) {
+      ref = firebase
+        .storage()
+        .ref()
+        .child("profilePicture/" + reviewResult.writeUserId);
+      ref
+        .getDownloadURL()
+        .then(url => {
+          return url;
+        })
+        .catch(function() {
+          url = "img/userSampleImageMan.png";
+          return url;
+        })
+        .then(function(url) {
+          db.collection("users")
+            .doc(reviewResult.writeUserId)
+            .get()
+            .then(function(userResult) {
+              var userName = userResult.data().username;
+              $("#reviewUserName_" + nowDataCount).html(userName);
+              $("#reviewImage_" + nowDataCount).attr("src", url);
+              $("#reviewImage_" + nowDataCount).click(function() {
+                otherPageJump(reviewResult.writeUserId);
+              });
+              $("#reviewComment_" + nowDataCount).html(
+                reviewResult.reviewComment
+              );
+              $("#reviewCreateTime_" + nowDataCount).html(
+                jikanCulc(reviewResult.createTime)
+              );
+              $("#reviewStar_" + nowDataCount).empty();
+              for (var i = 1; i < 6; i++) {
+                if (i > reviewResult.reviewCount) {
+                  var star =
+                    '<img src="img/starOff.png" alt="" style="height:16px;margin-right:5px;" />';
+                } else {
+                  var star =
+                    '<img src="img/starOn.png" alt="" style="height:16px;margin-right:5px;" />';
+                }
+                $("#reviewStar_" + nowDataCount).append(star);
+              }
+              if (nowDataCount == size) {
+                hideLoad();
+              }
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+          hideLoad();
+        });
+    }
+  </script>
+</ons-page>

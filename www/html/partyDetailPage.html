@@ -1,0 +1,632 @@
+<ons-page id="partyDeailtPage">
+  <style>
+    #partyDeailtPage .page__content {
+      background: white !important;
+    }
+    .blink {
+      -webkit-animation: blink 1s ease infinite;
+      animation: blink 1s ease infinite;
+    }
+    @-webkit-keyframes blink {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @keyframes blink {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    .hyouka {
+      display: -ms-flex;
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -o-flex;
+      display: flex;
+      margin: 0 auto;
+
+      flex-direction: -ms-row-reverse;
+      flex-direction: -webkit-row-reverse;
+      flex-direction: -moz-row-reverse;
+      flex-direction: -o-row-reverse;
+      flex-direction: row-reverse;
+
+      justify-content: -ms-right;
+      justify-content: -webkit-right;
+      justify-content: -moz-right;
+      justify-content: -o-right;
+      justify-content: right;
+    }
+    .hyouka input[type="radio"] {
+      display: none;
+    }
+    .hyouka input[type="radio"] {
+      display: none;
+    }
+    .hyouka label {
+      position: relative;
+      padding: 10px 0px 20px 0px;
+      color: #bbb;
+      cursor: pointer;
+      font-size: 30px;
+    }
+
+    .hyouka label:hover,
+    .hyouka label:hover ~ label,
+    .hyouka input[type="radio"]:checked ~ label {
+      color: #ffd43b;
+    }
+
+    #partyReviewModal .list-item__center {
+      background-image: none;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div
+      class="center"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;"
+    >
+      お食事管理
+    </div>
+  </ons-toolbar>
+  <div class="content">
+    <div
+      style="width:80%;margin:0 auto;padding:0.5em;margin-top:1em;margin-bottom:1em;"
+    >
+      <ons-row style="border-bottom:3px solid #0799d7;">
+        <ons-col
+          width="30%"
+          vertical-align="center"
+          style="text-align: right;padding:10px;"
+          >残り</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="remainingTime"
+          style="font-size:2.5em;width:initial;text-align: right;padding:10px;"
+        >
+          0
+        </ons-col>
+        <ons-col width="20%" vertical-align="center" style="padding:10px;"
+          >分</ons-col
+        >
+      </ons-row>
+    </div>
+    <div
+      style="width:80%;margin:0 auto;padding:0.5em;margin-top:1em;margin-bottom:1em;"
+    >
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >開始予定：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyStartTime"
+          style="text-align: left;"
+        >
+          0
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >終了予定：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyEndTime"
+          style="text-align: left;"
+        >
+          0
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >食事時間：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyTime"
+          style="text-align: left;"
+        >
+          0
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >実際の開始日時：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyStartTimeReal"
+          style="text-align: left;"
+        >
+        </ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >実際の終了日時：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyEndTimeReal"
+          style="text-align: left;"
+        >
+        </ons-col>
+      </ons-row>
+    </div>
+    <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        id="partyStartButton"
+        modifier="large"
+        class="large-button-blue"
+        onclick="startPartyCheck()"
+        >スタート
+      </ons-button>
+    </div>
+    <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        id="partyEndButton"
+        modifier="large"
+        class="large-button-gray"
+        onclick="endPartyCheck()"
+        disabled
+        >終了
+      </ons-button>
+    </div>
+    <div
+      id="partyReviewZone"
+      style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;display:none;"
+    >
+      <ons-button
+        id="partyReviewButton"
+        modifier="large"
+        class="large-button-orange"
+        onclick="showPartyReviewModal()"
+        >レビュー
+      </ons-button>
+    </div>
+  </div>
+  <ons-modal id="partyReviewModal" direction="up">
+    <div style="text-align: center">
+      <ons-card>
+        <ons-list style="background-image: none;">
+          <ons-list-item>
+            <ons-row>
+              <ons-col>
+                <p style="text-align: center;font-size:1.2em;">
+                  <span
+                    style="float:right;padding-right:0.5em;"
+                    onclick="hidePartyReviewModal()"
+                    ><i class="fas fa-times"></i
+                  ></span>
+                </p>
+              </ons-col>
+            </ons-row>
+          </ons-list-item>
+          <ons-list-item>
+            <ons-row style="position: relative;">
+              <div class="hyouka">
+                <input id="hoshi1" type="radio" name="hoshi" value="5" />
+                <label for="hoshi1">★</label>
+                <input id="hoshi2" type="radio" name="hoshi" value="4" />
+                <label for="hoshi2">★</label>
+                <input id="hoshi3" type="radio" name="hoshi" value="3" />
+                <label for="hoshi3">★</label>
+                <input id="hoshi4" type="radio" name="hoshi" value="2" />
+                <label for="hoshi4">★</label>
+                <input id="hoshi5" type="radio" name="hoshi" value="1" />
+                <label for="hoshi5">★</label>
+              </div>
+            </ons-row>
+            <ons-row>
+              <ons-col vertical-align="center" style="text-align: left;">
+                評価コメント
+              </ons-col>
+            </ons-row>
+            <ons-row>
+              <ons-col vertical-align="center">
+                <textarea
+                  id="reviewComment"
+                  class="textarea textarea--transparent"
+                  rows="5"
+                  placeholder=""
+                ></textarea>
+              </ons-col>
+            </ons-row>
+            <ons-row>
+              <ons-button
+                id="reviewSubmitButton"
+                onclick="reviewSubmitCheck()"
+                modifier="large"
+                class="large-button-orange"
+                style="margin-top:1em;margin-bottom:1em;"
+                >評価する</ons-button
+              >
+            </ons-row>
+          </ons-list-item>
+        </ons-list>
+      </ons-card>
+    </div>
+  </ons-modal>
+  <ons-modal
+    id="reviewCompleteModal"
+    direction="up"
+    style="background-color: rgba(0,0,0,0.9);"
+  >
+    <div style="text-align: center">
+      <p style="color:white;font-weight: bold;">
+        完了しました。<br />
+        またのご利用をお待ちしております。
+      </p>
+      <div style="padding:0.5rem;margin-top:1rem;">
+        <ons-button
+          modifier="large"
+          class="large-button-orange"
+          onclick="window.location.href = 'index.html';"
+          >ホーム画面へ
+        </ons-button>
+      </div>
+    </div>
+  </ons-modal>
+  <input type="hidden" id="partyTimeHidden" />
+  <input type="hidden" id="partyRoomId" />
+  <script>
+    var interval;
+    var user = firebase.auth().currentUser;
+    setTimeout(function() {
+      let partyDeailtPage = document.querySelector("#partyDeailtPage");
+      original_main_height = partyDeailtPage.clientHeight;
+    }, 100);
+
+    //ソフトウェアキーボード表示処理
+    window.addEventListener("keyboardWillShow", event => {
+      //画面の高さをキーボードの高さを差し引いた値とする
+      $("#partyDeailtPage").animate(
+        { height: original_main_height - event.keyboardHeight + "px" },
+        100
+      );
+    });
+
+    //ソフトウェアキーボード非表示処理
+    window.addEventListener("keyboardWillHide", () => {
+      //画面の高さを元の高さに戻す
+      $("#partyDeailtPage").animate(
+        { height: original_main_height + "px" },
+        100
+      );
+    });
+
+    function showPartyReviewModal() {
+      var modal = document.querySelector("#partyReviewModal");
+      modal.show();
+    }
+
+    function hidePartyReviewModal() {
+      var modal = document.querySelector("#partyReviewModal");
+      modal.hide();
+    }
+    function reviewSubmitCheck() {
+      var partyRoomId = $("#partyRoomId").val();
+      var user = firebase.auth().currentUser;
+      var myUserId = user.uid;
+      ons.notification.confirm({
+        message: "レビューを送信します（他の方にも公開されます）.",
+        title: "確認",
+        buttonLabels: ["キャンセル", "OK"],
+        callback: function(buttonIndex) {
+          if (buttonIndex == 1) {
+            reviewSubmit();
+          }
+        }
+      });
+    }
+    function partyPageDetail(partyRoomId) {
+      db.collection("partyRoom")
+        .doc(partyRoomId)
+        .get()
+        .then(function(partyResult) {
+          var partyStatus = partyResult.data().partyStatus;
+          var startTime = String(partyResult.data().startTime);
+          startTime = strIns(startTime, 4, "/");
+          startTime = strIns(startTime, 7, "/");
+          startTime = strIns(startTime, 10, " ");
+          startTime = strIns(startTime, 13, ":");
+          var endTime = String(partyResult.data().endTime);
+          endTime = strIns(endTime, 4, "/");
+          endTime = strIns(endTime, 7, "/");
+          endTime = strIns(endTime, 10, " ");
+          endTime = strIns(endTime, 13, ":");
+          $("#partyStartTime").html(startTime);
+          $("#partyEndTime").html(endTime);
+          var d1 = new Date(startTime);
+          var d2 = new Date(endTime);
+          var diffTime = d2.getTime() - d1.getTime();
+          var diffDay = Math.floor(diffTime / (1000 * 60));
+          $("#remainingTime").html(diffDay);
+          $("#partyTime").html(diffDay + "分");
+          $("#partyTimeHidden").val(diffDay);
+          $("#partyRoomId").val(partyRoomId);
+
+          if (partyStatus == "start") {
+            $("#partyStartButton").attr("disabled", true);
+            $("#partyStartButton")
+              .removeClass("large-button-blue")
+              .addClass("large-button-gray");
+            $("#remainingTime").addClass("blink");
+            $("#partyEndButton").attr("disabled", false);
+            $("#partyEndButton")
+              .removeClass("large-button-gray")
+              .addClass("large-button-blue");
+            var startTimeReal = String(partyResult.data().startTimeReal);
+            startTimeReal = strIns(startTimeReal, 4, "/");
+            startTimeReal = strIns(startTimeReal, 7, "/");
+            startTimeReal = strIns(startTimeReal, 10, " ");
+            startTimeReal = strIns(startTimeReal, 13, ":");
+            $("#partyStartTimeReal").html(startTimeReal);
+            intervalRemainTime();
+            interval = setInterval(function() {
+              intervalRemainTime();
+            }, 30000);
+          } else if (partyStatus == "end") {
+            $("#partyStartButton").attr("disabled", true);
+            $("#partyStartButton")
+              .removeClass("large-button-blue")
+              .addClass("large-button-gray");
+            $("#remainingTime").removeClass("blink");
+            $("#partyEndButton").attr("disabled", true);
+            $("#partyEndButton")
+              .removeClass("large-button-blue")
+              .addClass("large-button-gray");
+            var startTimeReal = String(partyResult.data().startTimeReal);
+            startTimeReal = strIns(startTimeReal, 4, "/");
+            startTimeReal = strIns(startTimeReal, 7, "/");
+            startTimeReal = strIns(startTimeReal, 10, " ");
+            startTimeReal = strIns(startTimeReal, 13, ":");
+            var endTimeReal = String(partyResult.data().endTimeReal);
+            endTimeReal = strIns(endTimeReal, 4, "/");
+            endTimeReal = strIns(endTimeReal, 7, "/");
+            endTimeReal = strIns(endTimeReal, 10, " ");
+            endTimeReal = strIns(endTimeReal, 13, ":");
+            $("#partyStartTimeReal").html(startTimeReal);
+            $("#partyEndTimeReal").html(endTimeReal);
+            $("#remainingTime").html(partyResult.data().partyTimeReal);
+            $("#partyReviewZone").show();
+            var reviewUsersId = partyResult.data().reviewUsersId;
+            if (
+              reviewUsersId == "" ||
+              reviewUsersId == null ||
+              reviewUsersId == undefined
+            ) {
+              reviewUsersId = [];
+            }
+            if (reviewUsersId.indexOf(user.uid) >= 0) {
+              $("#partyReviewButton")
+                .removeClass("large-button-orange")
+                .addClass("large-button-gray");
+              $("#partyReviewButton").attr("disabled", true);
+            }
+          }
+        });
+    }
+    function startPartyCheck() {
+      ons.notification.confirm({
+        message: "お食事を開始しますか？（双方のユーザーで確認してください）",
+        title: "確認",
+        buttonLabels: ["キャンセル", "OK"],
+        callback: function(buttonIndex) {
+          if (buttonIndex == 1) {
+            startParty();
+          }
+        }
+      });
+    }
+    function endPartyCheck() {
+      ons.notification.confirm({
+        message: "お食事を終了しますか？（双方のユーザーで確認してください）",
+        title: "確認",
+        buttonLabels: ["キャンセル", "OK"],
+        callback: function(buttonIndex) {
+          if (buttonIndex == 1) {
+            endParty();
+          }
+        }
+      });
+    }
+    function startParty() {
+      var startTimeReal = String(formatDateYYYYMMDDHHMM(new Date()));
+      startTimeReal = strIns(startTimeReal, 4, "/");
+      startTimeReal = strIns(startTimeReal, 7, "/");
+      startTimeReal = strIns(startTimeReal, 10, " ");
+      startTimeReal = strIns(startTimeReal, 13, ":");
+      $("#partyStartTimeReal").html(startTimeReal);
+      $("#partyStartButton").attr("disabled", true);
+      $("#partyStartButton")
+        .removeClass("large-button-blue")
+        .addClass("large-button-gray");
+      $("#remainingTime").addClass("blink");
+      $("#partyEndButton").attr("disabled", false);
+      $("#partyEndButton")
+        .removeClass("large-button-gray")
+        .addClass("large-button-blue");
+      db.collection("partyRoom")
+        .doc($("#partyRoomId").val())
+        .set(
+          {
+            startTimeReal: formatDateYYYYMMDDHHMM(new Date()),
+            partyStatus: "start"
+          },
+          { merge: true }
+        );
+      interval = setInterval(function() {
+        intervalRemainTime();
+      }, 30000);
+    }
+    function endParty() {
+      var endTimeReal = String(formatDateYYYYMMDDHHMM(new Date()));
+      endTimeReal = strIns(endTimeReal, 4, "/");
+      endTimeReal = strIns(endTimeReal, 7, "/");
+      endTimeReal = strIns(endTimeReal, 10, " ");
+      endTimeReal = strIns(endTimeReal, 13, ":");
+      $("#partyEndTimeReal").html(endTimeReal);
+      $("#remainingTime").removeClass("blink");
+      $("#partyEndButton").attr("disabled", true);
+      $("#partyEndButton")
+        .removeClass("large-button-blue")
+        .addClass("large-button-gray");
+      clearInterval(interval);
+      $("#partyReviewZone").show();
+      db.collection("partyRoom")
+        .doc($("#partyRoomId").val())
+        .set(
+          {
+            endTimeReal: formatDateYYYYMMDDHHMM(new Date()),
+            partyStatus: "end",
+            partyTimeReal: Number($("#remainingTime").html())
+          },
+          { merge: true }
+        )
+        .then(function() {
+          var partyRoomId = $("#partyRoomId").val();
+          db.collection("partyRoom")
+            .doc(partyRoomId)
+            .get()
+            .then(function(partyResults) {
+              var joinUserArray = partyResults.data().joinUsersId;
+              var callHours = partyResults.data().callHours;
+              joinUserArray.forEach(joinUserId => {
+                womanPointAdd(joinUserId, callHours);
+              });
+            });
+        });
+    }
+
+    function womanPointAdd(joinUserId, callHours) {
+      db.collection("users")
+        .doc(joinUserId)
+        .get()
+        .then(function(joinUser) {
+          var sex = joinUser.data().sex;
+          if (sex == "woman") {
+            var nowPoint = joinUser.data().point;
+            var rank = joinUser.data().rank;
+            if (rank == "VIP") {
+              var hourlyWage = 10000;
+            } else if (rank == "プレミアム") {
+              var hourlyWage = 7500;
+            } else if (rank == "スタンダード") {
+              var hourlyWage = 5000;
+            }
+
+            var addPoint = hourlyWage * Number(callHours);
+            db.collection("users")
+              .doc(joinUserId)
+              .set(
+                {
+                  point: Number(nowPoint) + Number(addPoint)
+                },
+                { merge: true }
+              );
+          }
+        });
+    }
+
+    function intervalRemainTime() {
+      console.log("30秒経過");
+      var nowDateTime = new Date();
+      var startTime = new Date($("#partyStartTimeReal").html());
+      var diffTime = nowDateTime.getTime() - startTime.getTime();
+      var diffDay = Math.floor(diffTime / (1000 * 60));
+      var remainTime = Number($("#partyTimeHidden").val()) - Number(diffDay);
+      console.log(remainTime);
+      $("#remainingTime").html(remainTime);
+      if (remainTime < 0) {
+        $("#remainingTime").css("color", "red");
+      }
+    }
+
+    function reviewSubmit() {
+      var reviewComment = $("#reviewComment").val();
+      var reviewCount = $("input[name=hoshi]:checked").val();
+      showLoad();
+      var partyRoomId = $("#partyRoomId").val();
+      var user = firebase.auth().currentUser;
+      var myUserId = user.uid;
+      var createTime = new Date();
+      db.collection("partyRoom")
+        .doc(partyRoomId)
+        .get()
+        .then(function(partyInfo) {
+          var reviewUsersId = partyInfo.data().reviewUsersId;
+          var joinUsersId = partyInfo.data().joinUsersId;
+          if (reviewUsersId == "" || reviewUsersId == null) {
+            reviewUsersId = [];
+          }
+          if (reviewUsersId.indexOf(myUserId) < 0) {
+            reviewUsersId.push(myUserId);
+            reviewUsersId.sort();
+            db.collection("partyRoom")
+              .doc(partyRoomId)
+              .set(
+                {
+                  reviewUsersId: reviewUsersId
+                },
+                { merge: true }
+              )
+              .then(function() {
+                //配列をループして値を照合して要素を削除
+                for (i = 0; i < joinUsersId.length; i++) {
+                  if (joinUsersId[i] == myUserId) {
+                    //spliceメソッドで要素を削除
+                    joinUsersId.splice(i, 1);
+                  }
+                }
+                return joinUsersId;
+              })
+              .then(function(joinUserId) {
+                joinUserId.forEach(joinUser => {
+                  db.collection("users")
+                    .doc(joinUser)
+                    .collection("reviews")
+                    .doc()
+                    .set(
+                      {
+                        createTime: new Date(),
+                        reviewComment: reviewComment,
+                        reviewCount: reviewCount,
+                        partyRoomId: partyRoomId,
+                        writeUserId: myUserId
+                      },
+                      { merge: true }
+                    );
+                });
+              })
+              .then(function() {
+                hideLoad();
+                $("#reviewCompleteModal").show();
+              });
+          } else {
+            hideLoad();
+            ons.notification.alert({
+              message: "既にレビューが完了しています。"
+            });
+          }
+        });
+    }
+  </script>
+</ons-page>

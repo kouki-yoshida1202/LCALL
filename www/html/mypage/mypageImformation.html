@@ -8,8 +8,22 @@
 
   <ons-list>
     <ons-list-header>個人情報</ons-list-header>
-    <ons-list-item modifier="chevron" tappable>ポイント履歴</ons-list-item>
-    <ons-list-item modifier="chevron" tappable>お支払い情報</ons-list-item>
+    <ons-list-item
+      modifier="chevron"
+      tappable
+      onclick="myNavigator.bringPageTop('html/mypage/myMailPassEdit.html');"
+      >メルアド/パスワード変更</ons-list-item
+    >
+    <ons-list-item
+      id="pointKanri"
+      modifier="chevron"
+      tappable
+      style="display: none;"
+      >ポイント管理</ons-list-item
+    >
+    <ons-list-item id="pointCharge" modifier="chevron" tappable
+      >ポイントチャージ</ons-list-item
+    >
     <ons-list-header>ガイド</ons-list-header>
     <!-- <ons-list-item modifier="chevron" tappable>ヘルプ</ons-list-item> -->
     <ons-list-item
@@ -31,4 +45,27 @@
       >特定商取引に関する方針</ons-list-item
     >
   </ons-list>
+  <script>
+    var user = firebase.auth().currentUser;
+    db.collection("users")
+      .doc(user.uid)
+      .get()
+      .then(function(myInfo) {
+        var mySex = myInfo.data().sex;
+        if (mySex == "woman") {
+          $("#pointCharge").hide();
+          $("#pointKanri").show();
+        } else {
+          $("#pointCharge").show();
+          $("#pointKanri").hide();
+        }
+      });
+    $("#pointKanri").click(function() {
+      myNavigator.bringPageTop("html/mypage/myPointKanri.html");
+    });
+
+    $("#pointCharge").click(function() {
+      myNavigator.bringPageTop("html/mypage/myPointCharge.html");
+    });
+  </script>
 </ons-page>

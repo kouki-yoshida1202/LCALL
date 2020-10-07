@@ -3,9 +3,7 @@
     <div class="left" id="toolbar-title">
       <ons-back-button></ons-back-button>
     </div>
-    <div class="center navy-font" id="toolbar-title">
-      Hanako
-    </div>
+    <div class="center navy-font" id="toolbar-title"></div>
   </ons-toolbar>
   <ons-bottom-toolbar
     style="background-color:#ff9831; text-align: center;color:white;line-height: 35px;"
@@ -263,13 +261,12 @@
       <ons-col width="70%">
         <h4><span id="womanUserName"></span> <span id="womanOld"></span></h4>
       </ons-col>
-      <ons-col vertical-align="center" width="30%" style="text-align: right;">
-        <span
-          id="womanClass"
-          style="font-size:0.8em;background-color: #ff9831;color:white;border-radius: 10px;padding:7px 10px;"
-        >
-          クラス
-        </span>
+      <ons-col
+        vertical-align="center"
+        width="30%"
+        style="text-align: center;background-color: #ff9831;border-radius: 10px;padding:5px 3px;"
+      >
+        <span id="womanClass" style="font-size:0.8em;color:white;"> </span>
       </ons-col>
     </ons-row>
     <p id="womanText" class="light-navy" style="font-size:0.8em;"></p>
@@ -367,7 +364,7 @@
           $("#womanWork").html(womanResult.data().work);
           $("#womanUserName").html(womanResult.data().username);
           $("#womanOld").html(womanResult.data().old + "才");
-          $("#womanClass").html(womanResult.data().class + "クラス");
+          $("#womanClass").html(womanResult.data().rank);
           $("#womanText").html(womanResult.data().text);
           firebase
             .storage()

@@ -14,7 +14,7 @@
   <div style="margin-top:10px;margin-bottom:7px;">
     <ons-row>
       <ons-col>
-        <h4 style="padding-left:5px;">本日マッチング可能なキャスト</h4>
+        <h4 style="padding-left:5px;">キャストを選択してください。</h4>
       </ons-col>
     </ons-row>
     <ons-row>
@@ -26,7 +26,7 @@
     </ons-row>
   </div>
   <!-- 在籍キャスト -->
-  <div style="margin-top:25px;margin-bottom:7px;">
+  <div>
     <ons-row>
       <ons-col width="100%">
         <h4 style="padding-left:5px;">希望日時にマッチング可能なキャスト</h4>
@@ -53,18 +53,16 @@
       var callPlace = $("#callPage2CallPlace").val();
       var callNumberPeople = $("#callPage2CallNumberPeople").val();
       var callHours = Number($("#callPage2CallHours").val());
-      // var nowDateTime = ;
-      if (callTime == "afterNow") {
-        var startTime = new Date();
-        var endTime = new Date();
-        endTime.setHours(endTime.getHours() + callHours);
+      var startTime = new Date();
+      var endTime = new Date();
+
+      if (callTime == "afterCustomHour") {
+      } else {
+        callTime = Number(callTime);
+        startTime.setHours(startTime.getHours() + callTime);
+        endTime.setHours(endTime.getHours() + callTime + callHours);
         startTime = Number(getCurrentTime(startTime));
         endTime = Number(getCurrentTime(endTime));
-      } else if (callTime == "afterOneHour") {
-      } else if (callTime == "afterOneHour") {
-      } else if (callTime == "afterTwoHour") {
-      } else if (callTime == "afterThreeHour") {
-      } else if (callTime == "afterCustomHour") {
       }
       $("#callPage2StartTime").val(startTime);
       $("#callPage2EndTime").val(endTime);
@@ -78,7 +76,10 @@
         .then(function(womanUsers) {
           if (womanUsers.size > 0) {
             var nowDataCount = 1;
+            var call2Counter = 0;
             womanUsers.forEach(womanUser => {
+              call2Counter++;
+
               if (womanUser.data().startTime < startTime) {
                 var womanlist =
                   `
@@ -109,29 +110,27 @@
                 );
                 nowDataCount++;
               }
+              if (call2Counter == womanUsers.size && nowDataCount == 1) {
+                hideLoad();
+                ons.notification.alert({
+                  message: "選択日時に可能なキャストが1人もいませんでした。"
+                });
+                myNavigator.popPage();
+              }
             });
+          } else {
+            hideLoad();
+            ons.notification.alert({
+              message: "選択日時に可能なキャストが1人もいませんでした。"
+            });
+            myNavigator.popPage();
           }
         })
         .catch(function(error) {
           console.log(error);
         });
     }
-    //時刻取得（yyyymmddhhmmss）
-    function getCurrentTime(now) {
-      var res =
-        "" +
-        now.getFullYear() +
-        padZero(now.getMonth() + 1) +
-        padZero(now.getDate()) +
-        padZero(now.getHours()) +
-        padZero(now.getMinutes());
-      return res;
-    }
 
-    //先頭ゼロ付加
-    function padZero(num) {
-      return (num < 10 ? "0" : "") + num;
-    }
     function callPage2WomanIndicate(womanUserId, nowDataCount, dataSize) {
       db.collection("users")
         .doc(womanUserId)
@@ -181,10 +180,10 @@
               $("#callPage2UserName_" + nowDataCount).html(
                 womanUserResult.data().username
               );
-              if (nowDataCount == dataSize) {
-                hideLoad();
+              hideLoad();
+              setTimeout(function() {
                 syoryaku("callPageUserName", 6);
-              }
+              }, 3000);
             })
             .catch(function(error) {
               console.log(error);
@@ -221,7 +220,9 @@
                 .get()
                 .then(function(womanUsers) {
                   if (womanUsers.size > 0) {
+                    var womanCounter = 0;
                     womanUsers.forEach(womanUser => {
+                      womanCounter++;
                       if (womanUser.data().startTime < startTime) {
                         if (
                           womanUserIdArray.length < callNumberPeople &&
@@ -231,6 +232,16 @@
                         } else {
                           callPageJump3();
                         }
+                      }
+                      if (
+                        womanCounter == womanUsers.size &&
+                        womanUserIdArray.length < callNumberPeople
+                      ) {
+                        ons.notification.alert({
+                          message:
+                            "マッチング可能なキャストが足りませんでした。恐れ入りますが、別の時間でお試しくださいませ。"
+                        });
+                        myNavigator.popPage();
                       }
                     });
                   }

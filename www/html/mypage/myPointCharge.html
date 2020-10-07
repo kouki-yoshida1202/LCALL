@@ -1,0 +1,154 @@
+<ons-page id="myPointChargePage">
+  <style>
+    #myPointChargePage ons-input {
+      border: none;
+    }
+    #myPointChargePage ons-input input {
+      text-align: right;
+    }
+    #myPointChargePage .page__content {
+      background: white !important;
+    }
+
+    #chargeCard ons-card {
+      padding: 10px 3px;
+      text-align: center;
+      font-size: 0.8em;
+      color: #0799d7;
+      border: 1px solid #0799d7;
+      border-radius: 10px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div
+      class="center"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;"
+    >
+      ポイントチャージ
+    </div>
+  </ons-toolbar>
+  <div class="content">
+    <div style="margin:0 auto;padding:0.5em;margin-top:1em;margin-bottom:1em;">
+      <p style="text-align: center;">現在：<span id="myPoint">0P</span></p>
+    </div>
+    <div style="width:80%;margin:0 auto;">
+      <ons-row style="border-bottom:3px solid #0799d7;">
+        <ons-col width="20%" vertical-align="center" style="text-align: right;"
+          >金額</ons-col
+        >
+        <ons-col width="60%" vertical-align="center">
+          <ons-input
+            id="chargeMoney"
+            value="0"
+            type="tel"
+            style="font-size:2.0em;width:initial;"
+          ></ons-input>
+        </ons-col>
+        <ons-col width="20%" vertical-align="center">円</ons-col>
+      </ons-row>
+    </div>
+    <div style="width:80%;margin:0 auto;margin-top:20px;">
+      <ons-row id="chargeCard">
+        <ons-col width="25%" vertical-align="center" style="text-align: right;">
+          <ons-card ripple onclick="chargeCardAuto(5000)">+5000</ons-card>
+        </ons-col>
+        <ons-col width="25%" vertical-align="center" style="text-align: right;">
+          <ons-card ripple onclick="chargeCardAuto(10000)">+10000</ons-card>
+        </ons-col>
+        <ons-col width="25%" vertical-align="center" style="text-align: right;">
+          <ons-card ripple onclick="chargeCardAuto(30000)">+30000</ons-card>
+        </ons-col>
+        <ons-col width="25%" vertical-align="center" style="text-align: right;">
+          <ons-card ripple onclick="chargeCardAuto(50000)">+50000</ons-card>
+        </ons-col>
+      </ons-row>
+    </div>
+    <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        id="chargeMoneyButton"
+        modifier="large"
+        class="large-button-blue"
+        onclick="chargeMoneyCheck();"
+        >チャージする
+      </ons-button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener(
+      "init",
+      function(event) {
+        if (event.target.matches("#myPointChargePage")) {
+          // ons.notification.alert("ページ1が初期化されました");
+          // コンテンツを準備...
+          var user = firebase.auth().currentUser;
+          if (user) {
+            // User is signed in.
+            myPointUriage(user.uid);
+          } else {
+            // No user is signed in.
+          }
+        }
+      },
+      false
+    );
+    function chargeMoneyCheck() {
+      var chargeMoney = Number($("#chargeMoney").val());
+      if (chargeMoney == "" || chargeMoney == null || chargeMoney < 1000) {
+        ons.notification.alert({
+          message: "チャージ金額は1000円〜お願いします。"
+        });
+      } else {
+        chargeMoneyStripe(chargeMoney);
+      }
+    }
+
+    function chargeMoneyStripe(chargeMoney) {
+      var user = firebase.auth().currentUser;
+      var userId = user.uid;
+      var mailaddress = user.email;
+      var createTime = new Date();
+      var strong = 1000;
+      var uid =
+        new Date().getTime().toString(16) +
+        Math.floor(strong * Math.random()).toString(16);
+      window.open(
+        "https://www.paystripe.info/LCALL_stripe/LCALLpayButton.html?mailaddress=" +
+          mailaddress +
+          "&userId=" +
+          userId +
+          "&createTime=" +
+          createTime +
+          "&chargeMoney=" +
+          chargeMoney +
+          "&uid=" +
+          uid,
+        "_system",
+        "location=yes"
+      );
+    }
+    function chargeCardAuto(money) {
+      $("#chargeMoney input").val(money);
+    }
+    function myPointUriage(userId) {
+      var docRef = db.collection("users").doc(userId);
+      docRef
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            $("#myPoint").html(doc.data().point + "P");
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    }
+  </script>
+</ons-page>

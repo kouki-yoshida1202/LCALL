@@ -85,7 +85,9 @@
 p,
 h4,
 .navy-font,
-ons-toolbar > .center {
+ons-toolbar > .center,
+ons-toolbar > .right,
+ons-toolbar > .left {
   color: #515c6f;
   font-family: "Lato", "Noto Sans JP", "ヒラギノ角ゴ ProN",
     "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, "ＭＳ Ｐゴシック",
@@ -102,7 +104,7 @@ ons-toolbar > .center {
 }
 
 #chat-page > .page__content,
-#tweet-page > .page__content {
+#tweetPage > .page__content {
   background: white !important;
 }
 
@@ -127,12 +129,12 @@ ons-toolbar > .center {
   border-radius: 10px;
 }
 
-#tweet-page .left {
+#tweetPage .left {
   align-items: baseline;
   padding-top: 20px;
 }
 
-#tweet-page .list-item__center {
+#tweetPage .list-item__center {
   padding-top: 20px;
   padding-bottom: 20px;
 }
@@ -225,6 +227,12 @@ ons-bottom-toolbar {
   color: white;
   font-weight: bold;
   background-color: gray;
+}
+.large-button-blue {
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  background-color: #0799d7;
 }
 
 ons-input,

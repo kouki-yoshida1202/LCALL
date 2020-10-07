@@ -1,0 +1,174 @@
+<ons-page id="myHurikomiPage">
+  <style>
+    #myHurikomiPage .page__content {
+      background-color: white !important;
+    }
+    #myHurikomiPage ons-list-item ons-col {
+      font-size: 0.9em;
+    }
+    #myHurikomiPage ons-list-item {
+      padding-left: 0px;
+    }
+    #myHurikomiPage ons-list-item .center {
+      padding-left: 14px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center" id="toolbar-title">振込申請額を入力</div>
+  </ons-toolbar>
+  <div class="content">
+    <ons-list>
+      <ons-list-item style="padding-top:1em;">
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込申請金額</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <ons-input
+              id="myHurikomiShinseiKingaku"
+              placeholder="入力してください"
+              type="tel"
+            ></ons-input>
+          </ons-col>
+        </ons-row>
+        <ons-row>
+          <p style="font-size:0.8em;color:gray;">
+            ※振込手数料300円が発生します。
+          </p>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">現在の売上金</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p
+              id="myHurikomiUriageNow"
+              style="text-align: right;padding-right:0.5em;"
+            >
+              ¥0
+            </p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込手数料</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p style="text-align: right;padding-right:0.5em;">¥300</p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="30%" vertical-align="center">振込金額</ons-col>
+          <ons-col width="70%" vertical-align="center">
+            <p
+              id="myHurikomiKingaku"
+              style="text-align: right;padding-right:0.5em;"
+            >
+              ¥0
+            </p>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+
+    <div style="padding:0.5rem;margin-top:1rem;">
+      <ons-button
+        modifier="large"
+        class="large-button-orange"
+        onclick="myHurikomiKakuninCheck()"
+        >確認する</ons-button
+      >
+    </div>
+  </div>
+  <input type="hidden" id="myHurikomiUserId" />
+  <input type="hidden" id="myHurikomiUriageNowHidden" />
+  <script>
+    $("#myHurikomiShinseiKingaku").keyup(function() {
+      console.log($(this).val());
+      var shinseiKingaku = $(this).val();
+      if (
+        shinseiKingaku != "" &&
+        shinseiKingaku != 0 &&
+        shinseiKingaku >= 300
+      ) {
+        $("#myHurikomiKingaku").html("¥" + (shinseiKingaku - 300));
+      } else {
+        $("#myHurikomiKingaku").html("¥0");
+      }
+    });
+
+    function myHurikomiKakuninCheck() {
+      var shinseiKingaku = $("#myHurikomiShinseiKingaku").val();
+      var myHurikomiUriageNowHidden = $("#myHurikomiUriageNowHidden").val();
+      if (shinseiKingaku == "") {
+        ons.notification.alert({
+          title: "失敗",
+          message: "申請金額を入力してください"
+        });
+      } else if (Number(shinseiKingaku) < 300) {
+        ons.notification.alert({
+          title: "失敗",
+          message: "300円以上の申請金額を入力してください"
+        });
+      } else if (Number(shinseiKingaku) > Number(myHurikomiUriageNowHidden)) {
+        ons.notification.alert({
+          title: "失敗",
+          message: "売上金よりも小さい値を入力してください"
+        });
+      } else {
+        myHurikomiKakunin();
+      }
+    }
+    function myHurikomiKakunin() {
+      myNavigator.bringPageTop("html/mypage/myHurikomiKakunin.html");
+      showLoad();
+      document.addEventListener(
+        "show",
+        function(event) {
+          if (event.target.matches("#myHurikomiKakuninPage")) {
+            var userId = firebase.auth().currentUser.uid;
+            var docRef = db.collection("users").doc(userId);
+            docRef
+              .get()
+              .then(function(doc) {
+                if (doc.exists) {
+                  var myHurikomiShinseiKingaku = $(
+                    "#myHurikomiShinseiKingaku"
+                  ).val();
+                  $("#myHurikomiKakuninUriageNow").html("¥" + doc.data().point);
+                  $("#myHurikomiKakuninShinseiKingaku").html(
+                    "¥" + myHurikomiShinseiKingaku
+                  );
+                  var hurikomiKingaku = myHurikomiShinseiKingaku - 300;
+                  $("#myHurikomiKakuninHurikomiKingaku").html(
+                    "¥" + hurikomiKingaku
+                  );
+                  $("#myHurikomiKakuninGinkouName").html(doc.data().ginkouname);
+                  $("#myHurikomiKakuninGinkouShiten").html(
+                    doc.data().ginkoushiten
+                  );
+                  $("#myHurikomiKakuninGinkouNumber").html(
+                    doc.data().ginkounumber
+                  );
+                  $("#myHurikomiKakuninGinkouMeigi").html(
+                    doc.data().ginkoumeigi
+                  );
+                  hideLoad();
+                } else {
+                  // doc.data() will be undefined in this case
+                  console.log("No such document!");
+                }
+              })
+              .catch(function(error) {
+                console.log("Error getting document:", error);
+              });
+          }
+        },
+        false
+      );
+    }
+  </script>
+</ons-page>

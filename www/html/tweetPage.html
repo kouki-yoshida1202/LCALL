@@ -1,4 +1,4 @@
-<ons-page id="tweet-page">
+<ons-page id="tweetPage">
   <style>
     #tweetFab {
       background-color: #ff9831;
@@ -8,9 +8,22 @@
       padding-top: 5px;
       padding-bottom: 5px;
     }
+    #tweetPage p {
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
   </style>
   <ons-toolbar>
-    <div class="center" id="toolbar-title">つぶやき</div>
+    <div class="left" id="toolbar-title" style="width:10%;"></div>
+    <div class="center" id="toolbar-title" style="width:80%;">つぶやき</div>
+    <div
+      class="right"
+      id="toolbar-title"
+      onclick="tweetPageChange()"
+      style="display:flex;align-items:center;width:10%;"
+    >
+      <i class="fas fa-exchange-alt fa-fw"></i>
+    </div>
   </ons-toolbar>
   <ons-pull-hook id="tweetPagePullHook">
     Pull to refresh
@@ -58,11 +71,31 @@
       </ons-row>
     </ons-card>
   </ons-modal>
+  <input type="hidden" id="nowTweetPageSex" />
   <script>
+    setTimeout(function() {
+      let tweetPage = document.querySelector("#tweetPage");
+      original_main_height = tweetPage.clientHeight;
+    }, 100);
+
+    //ソフトウェアキーボード表示処理
+    window.addEventListener("keyboardWillShow", event => {
+      //画面の高さをキーボードの高さを差し引いた値とする
+      $("#tweetPage").animate(
+        { height: original_main_height - event.keyboardHeight + "px" },
+        100
+      );
+    });
+
+    //ソフトウェアキーボード非表示処理
+    window.addEventListener("keyboardWillHide", () => {
+      //画面の高さを元の高さに戻す
+      $("#tweetPage").animate({ height: original_main_height + "px" }, 100);
+    });
     ons.ready(function() {
       var pullHook = document.getElementById("tweetPagePullHook");
       pullHook.onAction = function(done) {
-        tweetGet();
+        tweetGetCheck();
         setTimeout(() => {
           done();
         }, 3000);
@@ -86,6 +119,33 @@
         pullHook.innerHTML = message;
       });
     });
+
+    function tweetPageChange() {
+      var nowPage = $("#nowTweetPageSex").val();
+      if (nowPage == "man") {
+        ons.notification.confirm({
+          message: "女性つぶやきページに切り替えますか",
+          title: "確認",
+          buttonLabels: ["キャンセル", "OK"],
+          callback: function(buttonIndex) {
+            if (buttonIndex == 1) {
+              tweetGet("woman");
+            }
+          }
+        });
+      } else {
+        ons.notification.confirm({
+          message: "男性つぶやきページに切り替えますか",
+          title: "確認",
+          buttonLabels: ["キャンセル", "OK"],
+          callback: function(buttonIndex) {
+            if (buttonIndex == 1) {
+              tweetGet("man");
+            }
+          }
+        });
+      }
+    }
     function tweetModalShow() {
       var modal = document.querySelector("#tweetModal");
       modal.show();
@@ -95,11 +155,9 @@
       modal.hide();
     }
     setTimeout(function() {
-      tweetGet();
+      tweetGetCheck();
     }, 500);
-
-    function tweetGet() {
-      $("#tweetList").empty();
+    function tweetGetCheck() {
       var user = firebase.auth().currentUser;
       var userId = user.uid;
       db.collection("users")
@@ -112,54 +170,59 @@
           } else {
             var userSex = "woman";
           }
-          db.collection("tweet")
-            .where("userSex", "==", userSex)
-            .orderBy("createTime", "desc")
-            .limit(20)
-            .get()
-            .then(function(tweetResults) {
-              if (tweetResults.size > 0) {
-                var nowDataCount = 0;
-                tweetResults.forEach(tweetResult => {
-                  var tweetlist =
-                    `
-                    <ons-list-item id="tweetlist_` +
-                    nowDataCount +
-                    `">
-                      <div class="left">
-                        <img id="tweetImage_` +
-                    nowDataCount +
-                    `"class="list-item__thumbnail" src="img/userSampleImageMan.png"
-                          style="width:45px;height:45px;border-radius: 50%;object-fit:cover;" />
-                      </div>
-                      <div class="center">
-                        <span id="tweetUserName_` +
-                    nowDataCount +
-                    `" class="list-item__title navy-font" style="padding-bottom:5px;"></span>
-                        <span id="tweetText_` +
-                    nowDataCount +
-                    `" class="tweetText list-item__subtitle light-navy-font"></span>
-                      </div>
-                      <div class="right">
-                        <span id="tweetTime_` +
-                    nowDataCount +
-                    `" class="list-item__subtitle light-navy-font"></span>
-                      </div>
-                    </ons-list-item>
-                  `;
-                  $("#tweetList").append(tweetlist);
-                  tweetIndicate(
-                    tweetResult.data(),
-                    nowDataCount,
-                    tweetResults.size
-                  );
-                  nowDataCount++;
-                });
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
+
+          tweetGet(userSex);
+        });
+    }
+    function tweetGet(userSex) {
+      $("#tweetList").empty();
+      $("#nowTweetPageSex").val(userSex);
+      db.collection("tweet")
+        .where("userSex", "==", userSex)
+        .orderBy("createTime", "desc")
+        .limit(20)
+        .get()
+        .then(function(tweetResults) {
+          if (tweetResults.size > 0) {
+            var nowDataCount = 0;
+            tweetResults.forEach(tweetResult => {
+              var tweetlist =
+                `
+                <ons-list-item id="tweetlist_` +
+                nowDataCount +
+                `">
+                  <div class="left">
+                    <img id="tweetImage_` +
+                nowDataCount +
+                `"class="list-item__thumbnail" src="img/userSampleImageMan.png"
+                      style="width:45px;height:45px;border-radius: 50%;object-fit:cover;" />
+                  </div>
+                  <div class="center">
+                    <p id="tweetUserName_` +
+                nowDataCount +
+                `" class="list-item__title navy-font" style="padding-bottom:5px;"></p>
+                    <p id="tweetText_` +
+                nowDataCount +
+                `" class="tweetText list-item__subtitle light-navy-font"></p>
+                    <p id="tweetTime_` +
+                nowDataCount +
+                `"class="light-navy-font list-item__subtitle" style="text-align:right;">
+                    </p>
+                  </div>
+                </ons-list-item>
+              `;
+              $("#tweetList").append(tweetlist);
+              tweetIndicate(
+                tweetResult.data(),
+                nowDataCount,
+                tweetResults.size
+              );
+              nowDataCount++;
             });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
         });
     }
     function tweetIndicate(tweetResult, nowDataCount, dataSize) {
@@ -187,6 +250,9 @@
                 otherPageJump(tweetResult.userId);
               });
               $("#tweetText_" + nowDataCount).html(tweetResult.tweet);
+              $("#tweetTime_" + nowDataCount).html(
+                jikanCulc(tweetResult.createTime)
+              );
               $("#tweetUserName_" + nowDataCount).html(
                 womanUserResult.data().username
               );
@@ -237,6 +303,7 @@
                 ons.notification.alert({
                   message: "つぶやきました"
                 });
+                tweetGet($("#nowTweetPageSex").val());
               })
               .catch(function(error) {
                 console.log(error);
