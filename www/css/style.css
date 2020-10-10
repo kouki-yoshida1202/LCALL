@@ -1,4 +1,9 @@
 /**/
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+}
 .cp_iptxt {
   margin: 7px 3%;
   font-size: 0.8em;
