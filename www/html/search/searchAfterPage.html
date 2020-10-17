@@ -26,15 +26,20 @@
     ></div>
   </div>
   <script>
-    function searchAfter(rank, tobacco, alcohol) {
+    function searchAfter(rank, tobacco, alcohol, sex) {
       $("#searchAfterPageList").empty();
-      if (rank == "S" || rank == "A" || rank == "B" || rank == "C") {
-        var search = db
-          .collection("users")
-          .where("sex", "==", "woman")
-          .where("rank", "==", rank);
+      if (sex == "woman") {
+        // 検索対象が女性
+        if (rank == "VIP" || rank == "プレミアム" || rank == "スタンダード") {
+          var search = db
+            .collection("users")
+            .where("sex", "==", "woman")
+            .where("rank", "==", rank);
+        } else {
+          var search = db.collection("users").where("sex", "==", "woman");
+        }
       } else {
-        var search = db.collection("users").where("sex", "==", "woman");
+        var search = db.collection("users").where("sex", "==", "man");
       }
 
       if (
@@ -66,7 +71,7 @@
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="searchAfterPageImage_` +
                 nowDataCount +
-                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="searchAfterPageUserName_` +
                 nowDataCount +
@@ -86,6 +91,9 @@
               nowDataCount++;
             });
           } else {
+            ons.notification.alert({
+              message: "検索結果が1件もありません。"
+            });
             hideLoad();
           }
         });
@@ -107,7 +115,7 @@
                   <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                     <img id="searchAfterPageImage_` +
                 nowDataCount +
-                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="searchAfterPageUserName_` +
                 nowDataCount +
@@ -193,7 +201,11 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              if (womanUserResult.data().sex == "woman") {
+                var url = "img/userSampleImageWoman.png";
+              } else {
+                var url = "img/userSampleImageMan.png";
+              }
               return url;
             })
             .then(function(url) {

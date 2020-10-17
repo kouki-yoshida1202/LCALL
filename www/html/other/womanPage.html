@@ -14,7 +14,7 @@
   <div style="height:350px;position: relative;">
     <img
       id="womanImage"
-      src="img/userSampleImageMan.png"
+      src="img/userSampleImageWoman.png"
       alt=""
       style="width:100%;height:350px;object-fit:cover;"
     />
@@ -22,64 +22,40 @@
       style="position: absolute;bottom:20px;left: 50%;
         transform: translateX(-50%);
         -webkit-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);width:90%;background-color:rgba(255,152,49,0.2);font-weight: bold;height:60px;border-radius: 50px;margin:0 auto;"
+        -ms-transform: translateX(-50%);width:90%;background-color:rgba(255,152,49,0.35);font-weight: bold;height:70px;border-radius: 50px;margin:0 auto;"
+      onclick="reviewPageJump($('#womanPageWomanId').val());"
     >
-      <ons-row style="height:100%;width:90%;margin:0 auto;">
+      <ons-row
+        id="womanPageReview"
+        style="height:50px;width:90%;margin:0 auto;"
+      >
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
           <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
       </ons-row>
+      <ons-row style="width:90%;margin:0 auto;height:20px;">
+        <ons-col style="text-align: center;color:white;font-size:0.8em;">
+          評価コメントはコチラ >
+        </ons-col>
+      </ons-row>
     </div>
   </div>
-  <!-- <ons-row style="width:85%;margin:0 auto;height:70px;">
-    <ons-col style="text-align: center;" vertical-align="center">
-      <img
-        src="img/image61.jpg"
-        alt=""
-        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
-      />
-    </ons-col>
-    <ons-col style="text-align: center;" vertical-align="center">
-      <img
-        src="img/image61.jpg"
-        alt=""
-        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
-      />
-    </ons-col>
-    <ons-col style="text-align: center;" vertical-align="center">
-      <img
-        src="img/image61.jpg"
-        alt=""
-        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
-      />
-    </ons-col>
-    <ons-col style="text-align: center;" vertical-align="center">
-      <img
-        src="img/image61.jpg"
-        alt=""
-        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
-      />
-    </ons-col>
-    <ons-col style="text-align: center;" vertical-align="center">
-      <img
-        src="img/image61.jpg"
-        alt=""
-        style="height:45px;width:45px;border-radius:50%;object-fit: cover;"
-      />
-    </ons-col>
-  </ons-row> -->
+  <div style="width:85%;margin:0 auto;margin-top:20px;">
+    <ons-row id="womanImageArray" style="height:100%;width:100%;margin:0 auto;">
+    </ons-row>
+  </div>
   <ons-card
     id="womanPageCarender"
     style="width:85%;margin:0 auto;margin-top:20px;"
@@ -328,6 +304,15 @@
     </ons-list-item>
     <ons-list-item>
       <div class="left">
+        <i class="fas fa-microphone-alt fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        カラオケ
+      </div>
+      <div id="womanKaraoke" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
         <i class="fas fa-user fa-fw" style="color:#ff9831;"></i>
       </div>
       <div class="center navy-font">
@@ -361,6 +346,7 @@
           $("#womanHairColor").html(womanResult.data().haircolor);
           $("#womanHairStyle").html(womanResult.data().hairstyle);
           $("#womanTobacco").html(womanResult.data().tobacco);
+          $("#womanKaraoke").html(womanResult.data().karaoke);
           $("#womanWork").html(womanResult.data().work);
           $("#womanUserName").html(womanResult.data().username);
           $("#womanOld").html(womanResult.data().old + "才");
@@ -369,7 +355,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + userId)
+            .child("profilePicture/" + userId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -377,12 +363,26 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              url = "img/userSampleImageWoman.png";
               return url;
             })
             .then(function(url) {
               $("#womanImage").attr("src", url);
+              womanImageArray(userId, url);
             });
+          reviewControl(userId).then(function(result) {
+            $("#womanPageReview").empty();
+            for (var i = 1; i < 6; i++) {
+              if (i > result[1]) {
+                var star =
+                  '<ons-col style="text-align: center;" vertical-align="center"><img src="img/starOff.png" alt="" style="height:35px;" /></ons-col>';
+              } else {
+                var star =
+                  '<ons-col style="text-align: center;" vertical-align="center"><img src="img/starOn.png" alt="" style="height:35px;" /></ons-col>';
+              }
+              $("#womanPageReview").append(star);
+            }
+          });
           return womanResult;
         })
         .then(function(womanResult) {
@@ -420,6 +420,7 @@
         });
     }
     function womanCarenderInfo(y, m, d, womanUserId, j) {
+      $("#womanCarenderOnOff ons-col").empty();
       var searchDate = Number(y + m + d);
       var calenderCounter = 0;
       db.collection("users")
@@ -429,16 +430,28 @@
         .get()
         .then(function(results) {
           if (results.size > 0) {
-            var calenderlist = `
-              <i class="far fa-circle" style="color:#ff9831"></i>
-            `;
+            results.forEach(myShift => {
+              var startTime = String(myShift.data().startTime).slice(8);
+              var startTime = strIns(startTime, 2, ":");
+              var endTime = String(myShift.data().endTime).slice(8);
+              var endTime = strIns(endTime, 2, ":");
+              var calenderlist =
+                `
+              <p style="display:flex;justify-content:center;align-items:center;margin:0px;font-size:0.8em;color:#ff9831">` +
+                startTime +
+                ` - ` +
+                endTime +
+                `</p>
+              `;
+              $("#OnOff" + Number(j + 1)).append(calenderlist);
+            });
           } else {
             var calenderlist = `
               <i class="fas fa-slash" style="color:gray"></i>
             `;
+            $("#OnOff" + Number(j + 1)).append(calenderlist);
           }
 
-          $("#OnOff" + Number(j + 1)).html(calenderlist);
           if (j == 6) {
             hideWomanLoad();
           }
@@ -528,6 +541,112 @@
 
     function hideWomanLoad() {
       $("#womanPageCarender").LoadingOverlay("hide");
+    }
+
+    function womanImageArray(userId, noUrl) {
+      $("#womanImageArray").empty();
+      ref = firebase
+        .storage()
+        .ref()
+        .child("profilePicture/" + userId + "/1")
+        .getDownloadURL()
+        .then(url => {
+          var imageArray =
+            `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+            url +
+            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"onclick="imageChange('` +
+            url +
+            `','womanImage')" />
+                  </ons-col>
+                `;
+          $("#womanImageArray").append(imageArray);
+          ref = firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + userId + "/2")
+            .getDownloadURL()
+            .then(url => {
+              var imageArray =
+                `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+                url +
+                `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"onclick="imageChange('` +
+                url +
+                `','womanImage')" />
+                  </ons-col>
+                `;
+              $("#womanImageArray").append(imageArray);
+              ref = firebase
+                .storage()
+                .ref()
+                .child("profilePicture/" + userId + "/3")
+                .getDownloadURL()
+                .then(url => {
+                  var imageArray =
+                    `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+                    url +
+                    `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"
+                    onclick="imageChange('` +
+                    url +
+                    `','womanImage')"/>
+                  </ons-col>
+                `;
+                  $("#womanImageArray").append(imageArray);
+                  ref = firebase
+                    .storage()
+                    .ref()
+                    .child("profilePicture/" + userId + "/4")
+                    .getDownloadURL()
+                    .then(url => {
+                      var imageArray =
+                        `
+                          <ons-col style="text-align: center;" vertical-align="center">
+                            <img src="` +
+                        url +
+                        `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" onclick="imageChange('` +
+                        url +
+                        `','womanImage')"/>
+                          </ons-col>
+                        `;
+                      $("#womanImageArray").append(imageArray);
+                      ref = firebase
+                        .storage()
+                        .ref()
+                        .child("profilePicture/" + userId + "/5")
+                        .getDownloadURL()
+                        .then(url => {
+                          var imageArray =
+                            `
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img src="` +
+                            url +
+                            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" onclick="imageChange('` +
+                            url +
+                            `','womanImage')"/>
+                              </ons-col>
+                            `;
+                          $("#womanImageArray").append(imageArray);
+                        });
+                    });
+                });
+            });
+        })
+        .catch(function(err) {
+          var imageArray =
+            `
+            <ons-col style="text-align: center;" vertical-align="center">
+              <img src="` +
+            noUrl +
+            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" />
+            </ons-col>
+          `;
+          $("#womanImageArray").append(imageArray);
+        });
     }
   </script>
 </ons-page>

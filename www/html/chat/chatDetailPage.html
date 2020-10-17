@@ -13,7 +13,7 @@
     <div class="left" style="padding-left:8px;">
       <ons-back-button></ons-back-button>
     </div>
-    <div class="center">メッセージ</div>
+    <div id="chatPartnerName"class="center" style="display: flex;justify-content: center;align-items: center;">メッセージ</div>
     <div class="right">
       <ons-toorbar-button
       id="popOverButton"
@@ -32,10 +32,12 @@
   <ons-bottom-toolbar id="chatDetailBottom" style="line-height: 40px;height:55px">
     <ons-row style="padding-top:5px;">
       <ons-col width="80%" style="text-align: center;font-size:1.0em;" vertical-align="center">
-        <ons-input id="chatCommentInput"
+        <!-- <ons-input id="chatCommentInput"
           style="background-color: #efeff4;width:90%;line-height: 40px;padding-top:0px;padding-bottom:0px;"
           placeholder="コメント入力欄">
-        </ons-input>
+        </ons-input> -->
+        <textarea id="chatCommentInput" class="textarea textarea--transparent" rows="1" placeholder="コメント入力欄"
+          style="background-color: #efeff4;width:90%;height: 40px;padding-top:6px;padding-bottom:0px;"></textarea>
       </ons-col>
       <ons-col width="20%" style="text-align: center;" vertical-align="center">
         <ons-button class="large-button-orange" style="font-size:1.0em;padding-top:0px;padding-bottom:0px;line-height:40px;"
@@ -305,7 +307,7 @@
             messages.forEach(message => {
               var sendChat = message.data().sendChat;
               var catchChat = message.data().catchChat;
-              var text = message.data().text;
+              var text = message.data().text.replace(/<5060>/g, "<br>");
               var createTime = jikanCulc(message.data().createTime);
               if (sendChat == myUserId) {
                 // 自分の投稿
@@ -463,30 +465,6 @@
                   { merge: true }
                 )
                 .then(function(){
-                  db.collection("commission")
-                    .doc("fee")
-                    .get()
-                    .then(function (percent) {
-                      var percent = Number(percent.data().percent);
-                      db.collection("users")
-                        .doc(sendUserId)
-                        .get()
-                        .then(function (womanResult) {
-                          var pointNow = womanResult.data().point;
-                          var getPoint = Number(needPoint)*percent;
-                          var pointAfter = Number(pointNow) + Number(getPoint);
-                          db.collection("users")
-                            .doc(sendUserId)
-                            .set(
-                              {
-                                point: pointAfter
-                              },
-                              { merge: true }
-                            );
-                        });
-                    });
-                })
-                .then(function(){
                   db.collection("message")
                     .where("usersId", "==", usersArray)
                     .get()
@@ -544,7 +522,8 @@
                             callPlace: "チャットで相談",
                             callTime: "",
                             joinUsersId: usersArray,
-                            createTime: new Date()
+                            createTime: new Date(),
+                            partyStatus:"still"
                           },
                           { merge: true }
                         );
@@ -559,9 +538,9 @@
     }
     function chatSubmit(){
       
-      var chatText = $('#chatCommentInput').val();
+      var chatText = $('#chatCommentInput').val()
+        .replace(/\r?\n/g, "<5060>");;
       if(chatText==""||chatText==null){
-      
         ons.notification.alert({
           "message":"未入力です"
         })

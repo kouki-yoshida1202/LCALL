@@ -27,46 +27,69 @@
             <div class="cp_iptxt">
               <ons-select
                 class="select"
-                style="border-radius:50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
+                style="border-radius:50px;padding:0.5em;padding-left:40px;padding-right:1.0em;"
               >
                 <select id="callTime"class="select-input light-navy-font">
-                  <option value="0">今すぐ呼ぶ</option>
+                  <option value="0">今すぐ</option>
                   <option value="1">1時間後</option>
                   <option value="2">2時間後</option>
                   <option value="3">3時間後</option>
-                  <option value="afterCustomHour">時間指定</option>
+                  <option value="afterCustomHour">日時指定</option>
                 </select>
               </ons-select>
               <i class="far fa-clock fa-lg fa-fw" aria-hidden="true"></i>
             </div>
           </ons-col>
           <ons-col>
-            <ons-col>
-              <div class="cp_iptxt">
-                <ons-select
-                id="callPlace"
-                  class="select"
-                  style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
-                >
-                  <select class="select-input light-navy-font">
-                    <option>宇都宮西口</option>
-                    <option>宇都宮東口</option>
-                    <option>宇都宮郊外</option>
-                  </select>
-                </ons-select>
-                <i class="fas fa-map-marker-alt fa-lg fa-fw" aria-hidden="true"></i>
-              </div>
-            </ons-col>
+            <div class="cp_iptxt">
+              <ons-select
+              id="callPlace"
+                class="select"
+                style="border-radius: 50px;padding:0.5em;padding-left:40px;padding-right:1.0em;"
+              >
+                <select class="select-input light-navy-font">
+                  <option>宇都宮西口</option>
+                  <option>宇都宮東口</option>
+                  <option>宇都宮郊外</option>
+                </select>
+              </ons-select>
+              <i class="fas fa-map-marker-alt fa-lg fa-fw" aria-hidden="true"></i>
+            </div>
+          </ons-col>
+        </ons-row>
+        <ons-row id="customDateTime" style="display:none;">
+          <ons-col width="50%" style="padding:1em;">
+            <ons-input id="afterCustomDate" placeholder="必須" type="date" value=""></ons-input>
+          </ons-col>
+          <ons-col width="50%" style="padding:1em;">
+            <ons-select id="afterCustomTime">
+              <option>12:00</option>
+              <option>13:00</option>
+              <option>14:00</option>
+              <option>15:00</option>
+              <option>16:00</option>
+              <option>17:00</option>
+              <option selected>18:00</option>
+              <option>19:00</option>
+              <option>20:00</option>
+              <option>21:00</option>
+              <option>22:00</option>
+              <option>23:00</option>
+              <option>24:00</option>
+              <option>25:00</option>
+              <option>26:00</option>
+              <option>27:00</option>
+              <option>28:00</option>
+            </ons-select>
           </ons-col>
         </ons-row>
         <ons-row>
           <ons-col>
-            <ons-col>
               <div class="cp_iptxt">
                 <ons-select
                 id="callNumberPeople"
                   class="select"
-                  style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
+                  style="border-radius: 50px;padding:0.5em;padding-left:40px;padding-right:1.0em;"
                 >
                   <select class="select-input light-navy-font">
                     <option value="1">1人</option>
@@ -74,19 +97,22 @@
                     <option value="3">3人</option>
                     <option value="4">4人</option>
                     <option value="5">5人</option>
+                    <option value="6">6人</option>
+                    <option value="7">7人</option>
+                    <option value="8">8人</option>
+                    <option value="9">9人</option>
+                    <option value="10">10人</option>
                   </select>
                 </ons-select>
                 <i class="fas fa-user-friends fa-lg fa-fw" aria-hidden="true"></i>
               </div>
-            </ons-col>
           </ons-col>
           <ons-col>
-            <ons-col>
               <div class="cp_iptxt">
                 <ons-select
                 id="callHours"
                   class="select"
-                  style="border-radius: 50px;padding:0.5em;padding-left:50px;padding-right:1.0em;"
+                  style="border-radius: 50px;padding:0.5em;padding-left:40px;padding-right:1.0em;"
                 >
                   <select class="select-input light-navy-font">
                     <option value="1">1時間</option>
@@ -97,7 +123,6 @@
                 </ons-select>
                 <i class="fas fa-phone-volume fa-lg fa-fw" aria-hidden="true"></i>
               </div>
-            </ons-col>
           </ons-col>
         </ons-row>
         <ons-row style="margin-top:10px;">
@@ -152,10 +177,23 @@
         function (event) {
           if (event.target.matches("#call-page")) {
             todayCastGet();
+            var dt = new Date();
+            var y = dt.getFullYear();
+            var m = ('00' + (dt.getMonth() + 1)).slice(-2);
+            var d = ('00' + dt.getDate()).slice(-2);
+            $('#afterCustomDate').val(y+"-"+m+"-"+d);
           }
         }
     );
 
+    $("#callTime").change(function(){
+      var callTime = $(this).val();
+      if(callTime=="afterCustomHour"){
+        $('#customDateTime').show();
+      }else{
+        $('#customDateTime').hide();
+      }
+    });
     function searchAfterTodayCheck() {
         myNavigator.bringPageTop('html/search/searchAfterPage.html');
         showLoad();
@@ -183,7 +221,7 @@
                   `
                 <ons-carousel-item style="margin:5px;">
                   <div style="height:200px;position: relative;">
-                    <img id="callPage1Image_`+nowDataCount+`"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    <img id="callPage1Image_`+nowDataCount+`"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="callPage1UserName_`+nowDataCount+`"style="margin:0px;color:white;"> </p>
                       <p id="callPage1Salaly_`+nowDataCount+`"style="margin:0px;color:white;">¥0/h</sp>
@@ -242,7 +280,7 @@
             firebase
               .storage()
               .ref()
-              .child("profilePicture/" + womanUserId)
+              .child("profilePicture/" + womanUserId + "/1")
               .getDownloadURL()
               .then(url => {
                 // 画像取得できた
@@ -250,7 +288,7 @@
               })
               .catch(function () {
                 // 画像取得できないとき
-                url = "img/userSampleImageMan.png";
+                url = "img/userSampleImageWoman.png";
                 return url;
               })
               .then(function (url) {

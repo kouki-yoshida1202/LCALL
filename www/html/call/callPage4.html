@@ -188,7 +188,8 @@
                 callPlace: callPlace,
                 callTime: callTime,
                 joinUsersId: joinUsersId,
-                createTime: new Date()
+                createTime: new Date(),
+                partyStatus: "still"
               },
               { merge: true }
             )
@@ -241,7 +242,7 @@
           i +
           `"
             class="list-item__thumbnail"
-            src="img/userSampleImageMan.png"
+            src="img/userSampleImageWoman.png"
             style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;"
           />
         `;
@@ -282,7 +283,7 @@
             firebase
               .storage()
               .ref()
-              .child("profilePicture/" + womanUserId)
+              .child("profilePicture/" + womanUserId + "/1")
               .getDownloadURL()
               .then(url => {
                 // 画像取得できた
@@ -290,7 +291,7 @@
               })
               .catch(function() {
                 // 画像取得できないとき
-                url = "img/userSampleImageMan.png";
+                url = "img/userSampleImageWoman.png";
                 return url;
               })
               .then(function(url) {

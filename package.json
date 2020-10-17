@@ -11,7 +11,8 @@
         "monaca-plugin-monaca-core": "3.3.0",
         "cordova-plugin-customurlscheme": "file:res/custom_plugins/cordova-plugin-customurlscheme",
         "cordova-plugin-camera": "4.0.3",
-        "cordova-plugin-wkwebview-engine": "1.2.1"
+        "cordova-plugin-wkwebview-engine": "1.2.1",
+        "monaca-plugin-customscheme": "1.0.2"
     },
     "cordova": {
         "plugins": {
@@ -25,7 +26,8 @@
                 "URL_SCHEME": "lcall"
             },
             "cordova-plugin-camera": {},
-            "cordova-plugin-wkwebview-engine": {}
+            "cordova-plugin-wkwebview-engine": {},
+            "monaca-plugin-customscheme": {}
         }
     },
     "scripts": {

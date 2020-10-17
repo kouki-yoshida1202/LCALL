@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
+  <style>
+    html,
+    body {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
   <head>
     <meta charset="utf-8" />
     <meta
@@ -73,7 +80,7 @@
                 initialView: "dayGridMonth",
                 locale: "ja",
                 selectable: true, // 選択不可
-                height: 500,
+                height: 450,
                 selectLongPressDelay: 0,
                 dateClick: function(info) {
                   $("#selectDate").val(info.dateStr);
@@ -222,6 +229,7 @@
             var partnerUserSex = partnerUser.data().sex;
             var partnerRank = partnerUser.data().rank;
             var myUserId = firebase.auth().currentUser.uid;
+            var partnerName = partnerUser.data().username;
             db.collection("users")
               .doc(myUserId)
               .get()
@@ -241,11 +249,41 @@
                   setTimeout(function() {
                     $("#chatDetailPageUserId").val(partnerUserId);
                     $("#chatDetailPageUserRank").val(partnerRank);
+
+                    $("#chatPartnerName").click(function() {
+                      otherPageJump(partnerUserId);
+                    });
                     if (myUserSex == "man") {
                       $("#popOverButton").show();
                     } else {
                       $("#popOverButton").hide();
                     }
+                    firebase
+                      .storage()
+                      .ref()
+                      .child("profilePicture/" + partnerUserId + "/1")
+                      .getDownloadURL()
+                      .then(url => {
+                        // 画像取得できた
+                        return url;
+                      })
+                      .catch(function() {
+                        // 画像取得できないとき
+                        if (myUserSex == "woman") {
+                          var url = "img/userSampleImageWoman.png";
+                        } else {
+                          var url = "img/userSampleImageMan.png";
+                        }
+                        return url;
+                      })
+                      .then(function(url) {
+                        $("#chatPartnerName").html(
+                          '<img src="' +
+                            url +
+                            '"style="width:30px;height:30px;border-radius: 50%;object-fit:cover;margin-right:5px;"/>' +
+                            partnerName
+                        );
+                      });
                     setTimeout(function() {
                       chatDetailGet();
                     }, 200);
@@ -317,6 +355,151 @@
               resolve(reviewInfo);
             });
         });
+      }
+
+      function imageGet(userId) {
+        $("#profileEditPageImage").empty();
+
+        ref = firebase
+          .storage()
+          .ref()
+          .child("profilePicture/" + userId + "/1")
+          .getDownloadURL()
+          .then(url => {
+            var image =
+              `
+            <ons-col style="text-align: center;" vertical-align="center">
+              <img id="myImageEdit_1" src="` +
+              url +
+              `" alt=""
+                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                onclick="profileCamera(1);"/>
+            </ons-col>
+          `;
+            $("#profileEditPageImage").append(image);
+            ref = firebase
+              .storage()
+              .ref()
+              .child("profilePicture/" + userId + "/2")
+              .getDownloadURL()
+              .then(url => {
+                var image =
+                  `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img id="myImageEdit_2" src="` +
+                  url +
+                  `" alt=""
+                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                      onclick="profileCamera(2);"/>
+                  </ons-col>
+                `;
+                $("#profileEditPageImage").append(image);
+                ref = firebase
+                  .storage()
+                  .ref()
+                  .child("profilePicture/" + userId + "/3")
+                  .getDownloadURL()
+                  .then(url => {
+                    var image =
+                      `
+                      <ons-col style="text-align: center;" vertical-align="center">
+                        <img id="myImageEdit_3" src="` +
+                      url +
+                      `" alt=""
+                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                          onclick="profileCamera(3);"/>
+                      </ons-col>
+                    `;
+                    $("#profileEditPageImage").append(image);
+                    ref = firebase
+                      .storage()
+                      .ref()
+                      .child("profilePicture/" + userId + "/4")
+                      .getDownloadURL()
+                      .then(url => {
+                        var image =
+                          `
+                            <ons-col style="text-align: center;" vertical-align="center">
+                              <img id="myImageEdit_4" src="` +
+                          url +
+                          `" alt=""
+                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                onclick="profileCamera(4);"/>
+                            </ons-col>
+                          `;
+                        $("#profileEditPageImage").append(image);
+                        ref = firebase
+                          .storage()
+                          .ref()
+                          .child("profilePicture/" + userId + "/5")
+                          .getDownloadURL()
+                          .then(url => {
+                            var image =
+                              `
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img id="myImageEdit_5" src="` +
+                              url +
+                              `" alt=""
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                  onclick="profileCamera(5);"/>
+                              </ons-col>
+                            `;
+                            $("#profileEditPageImage").append(image);
+                          })
+                          .catch(function(err) {
+                            var image = `
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img id="myImageEdit_5" src="img/plusIcon.png" alt=""
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                  onclick="profileCamera(5);"/>
+                              </ons-col>
+                            `;
+                            $("#profileEditPageImage").append(image);
+                          });
+                      })
+                      .catch(function(err) {
+                        var image = `
+                            <ons-col style="text-align: center;" vertical-align="center">
+                              <img id="myImageEdit_4" src="img/plusIcon.png" alt=""
+                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                onclick="profileCamera(4);"/>
+                            </ons-col>
+                          `;
+                        $("#profileEditPageImage").append(image);
+                      });
+                  })
+                  .catch(function(err) {
+                    var image = `
+                      <ons-col style="text-align: center;" vertical-align="center">
+                        <img id="myImageEdit_3" src="img/plusIcon.png" alt=""
+                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                          onclick="profileCamera(3);"/>
+                      </ons-col>
+                    `;
+                    $("#profileEditPageImage").append(image);
+                  });
+              })
+              .catch(function(err) {
+                var image = `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img id="myImageEdit_2" src="img/plusIcon.png" alt=""
+                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                      onclick="profileCamera(2);"/>
+                  </ons-col>
+                `;
+                $("#profileEditPageImage").append(image);
+              });
+          })
+          .catch(function(err) {
+            var image = `
+            <ons-col style="text-align: center;" vertical-align="center">
+              <img id="myImageEdit_1" src="img/plusIcon.png" alt=""
+                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                onclick="profileCamera(1);"/>
+            </ons-col>
+          `;
+            $("#profileEditPageImage").append(image);
+          });
       }
     </script>
   </body>

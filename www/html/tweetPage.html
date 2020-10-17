@@ -12,6 +12,9 @@
       margin-top: 0px;
       margin-bottom: 0px;
     }
+    #tweetPage .page__content {
+      position: relative;
+    }
   </style>
   <ons-toolbar>
     <div class="left" id="toolbar-title" style="width:10%;"></div>
@@ -73,25 +76,25 @@
   </ons-modal>
   <input type="hidden" id="nowTweetPageSex" />
   <script>
-    setTimeout(function() {
-      let tweetPage = document.querySelector("#tweetPage");
-      original_main_height = tweetPage.clientHeight;
-    }, 100);
+    // setTimeout(function() {
+    //   let tweetPage = document.querySelector("#tweetPage");
+    //   original_main_height = tweetPage.clientHeight;
+    // }, 100);
 
-    //ソフトウェアキーボード表示処理
-    window.addEventListener("keyboardWillShow", event => {
-      //画面の高さをキーボードの高さを差し引いた値とする
-      $("#tweetPage").animate(
-        { height: original_main_height - event.keyboardHeight + "px" },
-        100
-      );
-    });
+    // //ソフトウェアキーボード表示処理
+    // window.addEventListener("keyboardWillShow", event => {
+    //   //画面の高さをキーボードの高さを差し引いた値とする
+    //   $("#tweetPage").animate(
+    //     { height: original_main_height - event.keyboardHeight + "px" },
+    //     100
+    //   );
+    // });
 
-    //ソフトウェアキーボード非表示処理
-    window.addEventListener("keyboardWillHide", () => {
-      //画面の高さを元の高さに戻す
-      $("#tweetPage").animate({ height: original_main_height + "px" }, 100);
-    });
+    // //ソフトウェアキーボード非表示処理
+    // window.addEventListener("keyboardWillHide", () => {
+    //   //画面の高さを元の高さに戻す
+    //   $("#tweetPage").animate({ height: original_main_height + "px" }, 100);
+    // });
     ons.ready(function() {
       var pullHook = document.getElementById("tweetPagePullHook");
       pullHook.onAction = function(done) {
@@ -233,7 +236,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + tweetResult.userId)
+            .child("profilePicture/" + tweetResult.userId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -241,7 +244,11 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              if (womanUserResult.data().sex == "woman") {
+                var url = "img/userSampleImageWoman.png";
+              } else {
+                var url = "img/userSampleImageMan.png";
+              }
               return url;
             })
             .then(function(url) {

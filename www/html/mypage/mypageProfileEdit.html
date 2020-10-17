@@ -1,4 +1,13 @@
 <ons-page id="mypageProfileEditPage">
+  <style>
+  #mypageProfileEditPage ons-carousel-item{
+    width:120px !important;
+  }
+  #mypageProfileEditPage .ons-swiper-target{
+    justify-content: center;
+  }
+  </style>
+  
   <ons-toolbar>
     <div class="left">
       <ons-back-button> </ons-back-button>
@@ -13,16 +22,10 @@
 
   <ons-row style="padding-top:30px;">
     <ons-col vertical-align="center" style="text-align: center;">
-      <img
-      id="myImageEdit"
-        src="img/userSampleImageMan.png"
-        alt=""
-        style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-      />
+      <ons-row id="profileEditPageImage" style="height:100%;width:100%;margin:0 auto;">
+      </ons-row>
       <br />
-      <!-- <input id="myImageInput" type="file" hidden/> -->
-      <input type="hidden" id="profileImageEditStatus" val="0">
-      <p style="color:#0799d7;" onclick="profileCamera();">写真を変更する</p>
+      
     </ons-col>
   </ons-row>
   <ons-list>
@@ -217,6 +220,21 @@
     <ons-list-item>
       <ons-row>
         <ons-col vertical-align="center" width="20%" style="text-align: left;">
+          カラオケ
+        </ons-col>
+        <ons-col vertical-align="center" width="80%" style="text-align: right;">
+          <ons-select style="width:90%;" id="myKaraokeEdit">
+            <option></option>
+            <option value="歌わない">歌わない</option>
+            <option value="上手くないけど歌える">上手くないけど歌える</option>
+            <option value="好き">好き</option>
+          </ons-select>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+    <ons-list-item>
+      <ons-row>
+        <ons-col vertical-align="center" width="20%" style="text-align: left;">
           髪型
         </ons-col>
         <ons-col vertical-align="center" width="80%" style="text-align: right;">
@@ -252,6 +270,7 @@
     setTimeout(function () {
       let mypageProfileEditPage = document.querySelector("#mypageProfileEditPage");
       original_main_height = mypageProfileEditPage.clientHeight;
+      profileEditInit();
     }, 100);
 
       //ソフトウェアキーボード表示処理
@@ -268,11 +287,35 @@
         //画面の高さを元の高さに戻す
         $("#mypageProfileEditPage").animate({ height: original_main_height + "px" }, 100);
       });
-    function profileCamera() {
+    function profileCamera(photoNumber) {
       window.navigator.camera.getPicture((imageData) => {
         //成功時
-        document.getElementById('myImageEdit').src = 'data:image/jpeg;base64,' + imageData;
-        $('#profileImageEditStatus').val("1");
+        showLoad();
+        document.getElementById('myImageEdit_'+photoNumber).src = 'data:image/jpeg;base64,' + imageData;
+        setTimeout(function(){
+          var img = document.getElementById('myImageEdit_' + photoNumber);
+          var dataURI = img.getAttribute('src');
+          // dataURIをBlobに変換する
+          var blob = toBlob(dataURI);
+          firebase
+            .storage()
+            .ref("profilePicture/" + user["uid"] + "/" + photoNumber)
+            .put(blob)
+            .then(function () {
+              ons.notification.alert({
+                title: "成功",
+                message: "プロフィールを編集しました。"
+              });
+              myNavigator.popPage();
+              userInfo(user["uid"]);
+              hideLoad();
+            })
+            .catch(function (error) {
+              alert(error);
+              hideLoad();
+            });
+        },500);
+        
       }, (error) => {
         // 失敗時
         alertNew("写真取得に失敗しました", "", "");
@@ -285,53 +328,38 @@
       });
     }
     var userId = firebase.auth().currentUser['uid'];
-    var docRef = db.collection("users").doc(userId);
+    function profileEditInit(){
+      var docRef = db.collection("users").doc(userId);
 
-    docRef
-    .get()
-    .then(function (doc) {
-      if (doc.exists) {
-        $("#myUserNameEdit").val(
-          doc.data().username
-        );
-        $("#myTextEdit").val(doc.data().text);
-        $("#myOldEdit").val(doc.data().old);
-        $("#myHeightEdit").val(doc.data().height);
-        $("#myTobaccoEdit").val(doc.data().tobacco);
-        $("#myAddressEdit").val(doc.data().address);
-        $("#myAlcoholEdit").val(doc.data().alcohol);
-        $("#myBirthPlaceEdit").val(doc.data().birthplace);
-        $("#myHairColorEdit").val(doc.data().haircolor);
-        $("#myHairStyleEdit").val(doc.data().hairstyle);
-        $("#myWorkEdit").val(doc.data().work);
-        ref = firebase
-          .storage()
-          .ref()
-          .child("profilePicture/" + userId)
-          .getDownloadURL()
-          .then(url => {
-            document.getElementById("myImageEdit").src = url;
-          })
-          .catch(function(err){
-            document.getElementById("myImageEdit").src = "img/userSampleImageMan.png";
-          });
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    })
-    .catch(function (error) {
-      console.log("Error getting document:", error);
-    });
-
-    $("#myImageInput").on("change", function (e) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        $("#myImageEdit").attr("src", e.target.result);
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    });
-
+      docRef
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            $("#myUserNameEdit").val(
+              doc.data().username
+            );
+            $("#myTextEdit").val(doc.data().text);
+            $("#myOldEdit").val(doc.data().old);
+            $("#myHeightEdit").val(doc.data().height);
+            $("#myTobaccoEdit").val(doc.data().tobacco);
+            $("#myAddressEdit").val(doc.data().address);
+            $("#myAlcoholEdit").val(doc.data().alcohol);
+            $("#myBirthPlaceEdit").val(doc.data().birthplace);
+            $("#myHairColorEdit").val(doc.data().haircolor);
+            $("#myHairStyleEdit").val(doc.data().hairstyle);
+            $("#myWorkEdit").val(doc.data().work);
+            $("#myKaraokeEdit").val(doc.data().karaoke);
+            imageGet(userId);
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+    }
+    
     function profileEdit(){
       showLoad();
       var username = $("#myUserNameEdit").val();
@@ -345,6 +373,7 @@
       var haircolor = $("#myHairColorEdit").val();
       var hairstyle = $("#myHairStyleEdit").val();
       var work = $("#myWorkEdit").val();
+      var karaoke = $("#myKaraokeEdit").val();
 
       var user = firebase.auth().currentUser;
       // Add a new document in collection "cities"
@@ -359,60 +388,17 @@
         birthplace: birthplace,
         haircolor: haircolor,
         hairstyle: hairstyle,
-        work: work
+        work: work,
+        karaoke:karaoke
       },{merge:true})
       .then(function () {
-        var profileImageEditStatus = $('#profileImageEditStatus').val();
-        if (profileImageEditStatus != 0) {
-          var img = document.getElementById('myImageEdit');
-          var dataURI = img.getAttribute('src');
-          // dataURIをBlobに変換する
-          var blob = toBlob(dataURI);
-            firebase
-          .storage()
-          .ref("profilePicture/" + user["uid"])
-          .put(blob)
-          .then(function () {
-            ons.notification.alert({
-              title: "成功",
-              message: "プロフィールを編集しました。"
-            });
-            myNavigator.popPage();
-            userInfo(user["uid"]);
-            hideLoad();
-          })
-          .catch(function(error){
-            alert(error);
-          });
-        } else {
-          ons.notification.alert({
-            title: "成功",
-            message: "プロフィールを編集しました。"
-          });
-          myNavigator.popPage();
-          userInfo(user["uid"]);
-          hideLoad();
-        }
-        // console.log("Document successfully written!");
-        // var imgs = document.querySelector("#myImageInput");
-        // var uploads = [];
-        // for (var file of imgs.files) {
-        //   //選択したファイルのファイル名を使うが、場合によってはかぶるので注意
-        //   var storageRef = firebase
-        //     .storage()
-        //     .ref("profilePicture/" + user["uid"]);
-        //   uploads.push(storageRef.put(file));
-        // }
-        // //すべての画像のアップロード完了を待つ
-        // Promise.all(uploads).then(function () {
-        //   ons.notification.alert({
-        //     title: "成功",
-        //     message: "プロフィールを編集しました。"
-        //   });
-        //   myNavigator.popPage();
-        //   userInfo(user["uid"]);
-        //   hideLoad();
-        // });
+        ons.notification.alert({
+          title: "成功",
+          message: "プロフィールを編集しました。"
+        });
+        myNavigator.popPage();
+        userInfo(user["uid"]);
+        hideLoad();
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);

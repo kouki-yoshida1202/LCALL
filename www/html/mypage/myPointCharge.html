@@ -37,10 +37,10 @@
     </div>
     <div style="width:80%;margin:0 auto;">
       <ons-row style="border-bottom:3px solid #0799d7;">
-        <ons-col width="20%" vertical-align="center" style="text-align: right;"
-          >金額</ons-col
+        <ons-col width="40%" vertical-align="center" style="text-align: right;"
+          >ポイント</ons-col
         >
-        <ons-col width="60%" vertical-align="center">
+        <ons-col width="50%" vertical-align="center">
           <ons-input
             id="chargeMoney"
             value="0"
@@ -48,7 +48,12 @@
             style="font-size:2.0em;width:initial;"
           ></ons-input>
         </ons-col>
-        <ons-col width="20%" vertical-align="center">円</ons-col>
+        <ons-col width="10%" vertical-align="center">P</ons-col>
+      </ons-row>
+      <ons-row>
+        <ons-col style="text-align: right;">
+          ※1P=1.1円(税込)です。
+        </ons-col>
       </ons-row>
     </div>
     <div style="width:80%;margin:0 auto;margin-top:20px;">
@@ -100,7 +105,7 @@
       var chargeMoney = Number($("#chargeMoney").val());
       if (chargeMoney == "" || chargeMoney == null || chargeMoney < 1000) {
         ons.notification.alert({
-          message: "チャージ金額は1000円〜お願いします。"
+          message: "チャージポイントは1000P〜お願いします。"
         });
       } else {
         chargeMoneyStripe(chargeMoney);
@@ -113,6 +118,7 @@
       var mailaddress = user.email;
       var createTime = new Date();
       var strong = 1000;
+      var shiharai = Math.ceil(chargeMoney * 1.1);
       var uid =
         new Date().getTime().toString(16) +
         Math.floor(strong * Math.random()).toString(16);
@@ -126,9 +132,11 @@
           "&chargeMoney=" +
           chargeMoney +
           "&uid=" +
-          uid,
+          uid +
+          "&shiharai=" +
+          shiharai,
         "_system",
-        "location=yes"
+        "usewkwebview=yes"
       );
     }
     function chargeCardAuto(money) {

@@ -6,7 +6,12 @@
     }
   </style>
 
-  <ons-speed-dial id="myPageFab" position="top right" direction="down">
+  <ons-speed-dial
+    id="myPageFab"
+    position="top right"
+    direction="down"
+    style="z-index: 100000 !important;"
+  >
     <ons-fab modifier="mini" ripple>
       <ons-icon icon="fa-ellipsis-h"></ons-icon>
     </ons-fab>
@@ -44,27 +49,36 @@
       style="position: absolute;bottom:20px;left: 50%;
         transform: translateX(-50%);
         -webkit-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);width:90%;background-color:rgba(255,152,49,0.2);font-weight: bold;height:60px;border-radius: 50px;margin:0 auto;"
+        -ms-transform: translateX(-50%);width:90%;background-color:rgba(255, 152, 49, 0.35);font-weight: bold;height:70px;border-radius: 50px;margin:0 auto;"
       onclick="reviewPageJump(firebase.auth().currentUser.uid);"
     >
-      <ons-row id="myPageReview" style="height:100%;width:90%;margin:0 auto;">
+      <ons-row id="myPageReview" style="height:50px;width:90%;margin:0 auto;">
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
-          <img src="img/starOn.png" alt="" style="height:35px;" />
+          <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
         <ons-col style="text-align: center;" vertical-align="center">
           <img src="img/starOff.png" alt="" style="height:35px;" />
         </ons-col>
       </ons-row>
+      <ons-row style="width:90%;margin:0 auto;height:20px;">
+        <ons-col style="text-align: center;color:white;font-size:0.8em;">
+          評価コメントはコチラ >
+        </ons-col>
+      </ons-row>
     </div>
+  </div>
+  <div style="width:85%;margin:0 auto;margin-top:20px;">
+    <ons-row id="myImageArray" style="height:100%;width:100%;margin:0 auto;">
+    </ons-row>
   </div>
   <ons-card style="width:85%;margin:0 auto;margin-top:20px;">
     <ons-row>
@@ -139,6 +153,15 @@
     </ons-list-item>
     <ons-list-item>
       <div class="left">
+        <i class="fas fa-microphone-alt fa-fw" style="color:#ff9831;"></i>
+      </div>
+      <div class="center navy-font">
+        カラオケ
+      </div>
+      <div id="myPageKaraoke" class="right light-navy-font"></div>
+    </ons-list-item>
+    <ons-list-item>
+      <div class="left">
         <i class="fas fa-user fa-fw" style="color:#ff9831;"></i>
       </div>
       <div class="center navy-font">
@@ -200,7 +223,115 @@
       },
       false
     );
+    function myImageArray(userId, noUrl) {
+      $("#myImageArray").empty();
+      ref = firebase
+        .storage()
+        .ref()
+        .child("profilePicture/" + userId + "/1")
+        .getDownloadURL()
+        .then(url => {
+          var imageArray =
+            `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+            url +
+            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"onclick="imageChange('` +
+            url +
+            `','myPageImage')" />
+                  </ons-col>
+                `;
+          $("#myImageArray").append(imageArray);
+          ref = firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + userId + "/2")
+            .getDownloadURL()
+            .then(url => {
+              var imageArray =
+                `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+                url +
+                `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"onclick="imageChange('` +
+                url +
+                `','myPageImage')" />
+                  </ons-col>
+                `;
+              $("#myImageArray").append(imageArray);
+              ref = firebase
+                .storage()
+                .ref()
+                .child("profilePicture/" + userId + "/3")
+                .getDownloadURL()
+                .then(url => {
+                  var imageArray =
+                    `
+                  <ons-col style="text-align: center;" vertical-align="center">
+                    <img src="` +
+                    url +
+                    `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;"
+                    onclick="imageChange('` +
+                    url +
+                    `','myPageImage')"/>
+                  </ons-col>
+                `;
+                  $("#myImageArray").append(imageArray);
+                  ref = firebase
+                    .storage()
+                    .ref()
+                    .child("profilePicture/" + userId + "/4")
+                    .getDownloadURL()
+                    .then(url => {
+                      var imageArray =
+                        `
+                          <ons-col style="text-align: center;" vertical-align="center">
+                            <img src="` +
+                        url +
+                        `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" onclick="imageChange('` +
+                        url +
+                        `','myPageImage')"/>
+                          </ons-col>
+                        `;
+                      $("#myImageArray").append(imageArray);
+                      ref = firebase
+                        .storage()
+                        .ref()
+                        .child("profilePicture/" + userId + "/5")
+                        .getDownloadURL()
+                        .then(url => {
+                          var imageArray =
+                            `
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img src="` +
+                            url +
+                            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" onclick="imageChange('` +
+                            url +
+                            `','myPageImage')"/>
+                              </ons-col>
+                            `;
+                          $("#myImageArray").append(imageArray);
+                        });
+                    });
+                });
+            });
+        })
+        .catch(function(err) {
+          var imageArray =
+            `
+            <ons-col style="text-align: center;" vertical-align="center">
+              <img src="` +
+            noUrl +
+            `" alt="" style="height:40px;width:40px;border-radius:50%;object-fit:cover;" />
+            </ons-col>
+          `;
+          $("#myImageArray").append(imageArray);
+        });
+    }
 
+    function imageChange(url, place) {
+      document.getElementById(place).src = url;
+    }
     function userInfo(userId) {
       var docRef = db.collection("users").doc(userId);
 
@@ -226,22 +357,28 @@
             $("#myPageHairColor").html(doc.data().haircolor);
             $("#myPageHairStyle").html(doc.data().hairstyle);
             $("#myPageWork").html(doc.data().work);
+            $("#myPageKaraoke").html(doc.data().karaoke);
             var user = firebase.auth().currentUser;
             ref = firebase
               .storage()
               .ref()
-              .child("profilePicture/" + user["uid"]);
+              .child("profilePicture/" + user["uid"] + "/1");
             ref
               .getDownloadURL()
               .then(url => {
                 return url;
               })
               .catch(function(error) {
-                var url = "img/userSampleImageMan.png";
+                if (doc.data().sex == "woman") {
+                  var url = "img/userSampleImageWoman.png";
+                } else {
+                  var url = "img/userSampleImageMan.png";
+                }
                 return url;
               })
               .then(function(url) {
                 document.getElementById("myPageImage").src = url;
+                myImageArray(userId, url);
               });
 
             // var reviewInFo =

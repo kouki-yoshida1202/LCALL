@@ -3,6 +3,14 @@
     #shiftPage .page__content {
       background: white !important;
     }
+    .fc-header-toolbar {
+      margin-bottom: 0.25em !important;
+    }
+    .fc-daygrid-body,
+    .fc-col-header,
+    .fc-scrollgrid-sync-table {
+      width: 100% !important;
+    }
   </style>
   <ons-toolbar>
     <div class="left" style="width:10%;"></div>
@@ -25,7 +33,7 @@
   <!--キャストを呼ぶ部分 -->
   <div id="calendar"></div>
 
-  <div style="padding:0.5rem;margin-top:1rem;">
+  <div style="padding:0.5rem;margin-top:0rem;">
     <ons-button
       modifier="large"
       class="large-button-orange"
@@ -45,14 +53,23 @@
         .get()
         .then(function(myShiftAll) {
           if (myShiftAll.size > 0) {
-            var circle = `
-              <p style="display:flex;justify-content:center;align-items:center;margin:0px;font-size:0.8em;color:#ff9831">●</p>
-            `;
             myShiftAll.forEach(myShift => {
               var registerdDate = String(myShift.data().date);
               var date = strIns(registerdDate, 4, "-");
               var slashDate = strIns(date, 7, "-");
-
+              var date = strIns(registerdDate, 4, "-");
+              var startTime = String(myShift.data().startTime).slice(8);
+              var startTime = strIns(startTime, 2, ":");
+              var endTime = String(myShift.data().endTime).slice(8);
+              var endTime = strIns(endTime, 2, ":");
+              var circle =
+                `
+              <p style="display:flex;justify-content:center;align-items:center;margin:0px;font-size:0.8em;color:#ff9831">` +
+                startTime +
+                ` - ` +
+                endTime +
+                `</p>
+            `;
               $(
                 'td[data-date="' + slashDate + '"] .fc-daygrid-day-events'
               ).append(circle);

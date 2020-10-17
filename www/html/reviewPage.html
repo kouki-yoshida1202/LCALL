@@ -68,6 +68,9 @@
               );
             });
           } else {
+            ons.notification.alert({
+              message: "評価が1件もありません。"
+            });
             hideLoad();
           }
         })
@@ -81,7 +84,7 @@
       ref = firebase
         .storage()
         .ref()
-        .child("profilePicture/" + reviewResult.writeUserId);
+        .child("profilePicture/" + reviewResult.writeUserId + "/1");
       ref
         .getDownloadURL()
         .then(url => {
@@ -89,6 +92,7 @@
         })
         .catch(function() {
           url = "img/userSampleImageMan.png";
+
           return url;
         })
         .then(function(url) {

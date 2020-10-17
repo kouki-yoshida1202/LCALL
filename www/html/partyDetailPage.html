@@ -68,15 +68,23 @@
     }
   </style>
   <ons-toolbar>
-    <div class="left">
+    <div class="left" style="width:10%;">
       <ons-back-button> </ons-back-button>
     </div>
     <div
       class="center"
       id="toolbar-title"
-      style="display:flex;align-items: center;justify-content: center;"
+      style="display:flex;align-items: center;justify-content: center;width:80%;"
     >
       お食事管理
+    </div>
+    <div
+      class="right"
+      id="toolbar-title"
+      style="display:flex;align-items: center;justify-content: center;width:10%;"
+      onclick="partyPageDetail($('#partyRoomId').val())"
+    >
+      <i class="fas fa-redo-alt"></i>
     </div>
   </ons-toolbar>
   <div class="content">
@@ -85,6 +93,7 @@
     >
       <ons-row style="border-bottom:3px solid #0799d7;">
         <ons-col
+          id="remainTitle"
           width="30%"
           vertical-align="center"
           style="text-align: right;padding:10px;"
@@ -169,6 +178,18 @@
         >
         </ons-col>
       </ons-row>
+      <ons-row>
+        <ons-col width="50%" vertical-align="center" style="text-align: right;"
+          >延長可能時間：</ons-col
+        >
+        <ons-col
+          width="50%"
+          vertical-align="center"
+          id="partyAddtional"
+          style="text-align: left;color:red;"
+        >
+        </ons-col>
+      </ons-row>
     </div>
     <div style="width:80%;margin:0 auto;padding:0.5rem;margin-top:1rem;">
       <ons-button
@@ -176,6 +197,7 @@
         modifier="large"
         class="large-button-blue"
         onclick="startPartyCheck()"
+        disabled
         >スタート
       </ons-button>
     </div>
@@ -207,17 +229,26 @@
       <ons-card>
         <ons-list style="background-image: none;">
           <ons-list-item>
-            <ons-row>
-              <ons-col>
-                <p style="text-align: center;font-size:1.2em;">
-                  <span
-                    style="float:right;padding-right:0.5em;"
-                    onclick="hidePartyReviewModal()"
-                    ><i class="fas fa-times"></i
-                  ></span>
-                </p>
-              </ons-col>
-            </ons-row>
+            <div
+              class="center"
+              style="padding-top:0px;padding-bottom:0px;min-height: initial;"
+            >
+              <ons-row>
+                <ons-col
+                  style="display:flex;justify-content: flex-end;align-items: center;"
+                >
+                  <p
+                    style="text-align: center;font-size:1.2em;margin-top:0px;margin-bottom:0px;"
+                  >
+                    <span
+                      style="float:right;padding-right:0.5em;"
+                      onclick="hidePartyReviewModal()"
+                      ><i class="fas fa-times"></i
+                    ></span>
+                  </p>
+                </ons-col>
+              </ons-row>
+            </div>
           </ons-list-item>
           <ons-list-item>
             <ons-row style="position: relative;">
@@ -249,6 +280,43 @@
                 ></textarea>
               </ons-col>
             </ons-row>
+            <ons-row
+              class="ohineriArea"
+              style="border-bottom:3px solid #0799d7;margin-top:15px;margin-bottom:5px;"
+            >
+              <ons-col
+                width="40%"
+                vertical-align="center"
+                style="text-align: center;"
+                >おひねり</ons-col
+              >
+              <ons-col width="50%" vertical-align="center">
+                <ons-input
+                  id="ohineri"
+                  value="0"
+                  type="tel"
+                  style="font-size:1.5em;width:initial;"
+                ></ons-input>
+                <style>
+                  #ohineri input {
+                    text-align: right;
+                  }
+                </style>
+              </ons-col>
+              <ons-col
+                width="10%"
+                vertical-align="center"
+                style="text-align: center;"
+                >P</ons-col
+              >
+            </ons-row>
+            <ons-row class="ohineriArea">
+              <ons-col
+                style="text-align: left;font-size:0.8em;color:lightslategray;"
+              >
+                ※「おひねり」とは謝礼として支払うチップのことです。
+              </ons-col>
+            </ons-row>
             <ons-row>
               <ons-button
                 id="reviewSubmitButton"
@@ -270,7 +338,7 @@
     style="background-color: rgba(0,0,0,0.9);"
   >
     <div style="text-align: center">
-      <p style="color:white;font-weight: bold;">
+      <p id="reviewCompleteMessage" style="color:white;font-weight: bold;">
         完了しました。<br />
         またのご利用をお待ちしております。
       </p>
@@ -292,6 +360,26 @@
     setTimeout(function() {
       let partyDeailtPage = document.querySelector("#partyDeailtPage");
       original_main_height = partyDeailtPage.clientHeight;
+      db.collection("users")
+        .doc(user.uid)
+        .get()
+        .then(function(myInfo) {
+          var sex = myInfo.data().sex;
+          if (sex == "woman") {
+            var reviewMessage = `
+              完了しました。<br />
+              お疲れ様でした。
+            `;
+            $(".ohineriArea").hide();
+          } else {
+            var reviewMessage = `
+              完了しました。<br />
+              またのご利用をお待ちしております。
+            `;
+            $(".ohineriArea").show();
+          }
+          $("#reviewCompleteMessage").html(reviewMessage);
+        });
     }, 100);
 
     //ソフトウェアキーボード表示処理
@@ -324,17 +412,45 @@
     function reviewSubmitCheck() {
       var partyRoomId = $("#partyRoomId").val();
       var user = firebase.auth().currentUser;
+      var reviewComment = $("#reviewComment").val();
+      var reviewCount = $("input[name=hoshi]:checked").val();
       var myUserId = user.uid;
-      ons.notification.confirm({
-        message: "レビューを送信します（他の方にも公開されます）.",
-        title: "確認",
-        buttonLabels: ["キャンセル", "OK"],
-        callback: function(buttonIndex) {
-          if (buttonIndex == 1) {
-            reviewSubmit();
+      var ohineri = $("#ohineri").val();
+      db.collection("users")
+        .doc(user.uid)
+        .get()
+        .then(function(myInfo) {
+          var pointNow = myInfo.data().point;
+          if (Number(pointNow) < Number(ohineri)) {
+            ons.notification.alert({
+              message:
+                "おひねりを払うポイントが足りません。チャージしてください。"
+            });
+          } else if (ohineri == "" || ohineri == null) {
+            ons.notification.alert({
+              message: "おひねりが未入力です"
+            });
+          } else if (reviewComment == "" || reviewComment == null) {
+            ons.notification.alert({
+              message: "評価コメントが未入力です"
+            });
+          } else if (reviewCount == "" || reviewCount == null) {
+            ons.notification.alert({
+              message: "評価の星の数は1~5で選択してください"
+            });
+          } else {
+            ons.notification.confirm({
+              message: "レビューを送信します（他の方にも公開されます）.",
+              title: "確認",
+              buttonLabels: ["キャンセル", "OK"],
+              callback: function(buttonIndex) {
+                if (buttonIndex == 1) {
+                  reviewSubmit();
+                }
+              }
+            });
           }
-        }
-      });
+        });
     }
     function partyPageDetail(partyRoomId) {
       db.collection("partyRoom")
@@ -362,7 +478,8 @@
           $("#partyTime").html(diffDay + "分");
           $("#partyTimeHidden").val(diffDay);
           $("#partyRoomId").val(partyRoomId);
-
+          var joinUsersId = partyResult.data().joinUsersId;
+          partyAdditional(joinUsersId);
           if (partyStatus == "start") {
             $("#partyStartButton").attr("disabled", true);
             $("#partyStartButton")
@@ -421,6 +538,8 @@
                 .addClass("large-button-gray");
               $("#partyReviewButton").attr("disabled", true);
             }
+          } else if (partyStatus == "still") {
+            $("#partyStartButton").attr("disabled", false);
           }
         });
     }
@@ -532,37 +651,44 @@
             } else if (rank == "スタンダード") {
               var hourlyWage = 5000;
             }
-
-            var addPoint = hourlyWage * Number(callHours);
-            db.collection("users")
-              .doc(joinUserId)
-              .set(
-                {
-                  point: Number(nowPoint) + Number(addPoint)
-                },
-                { merge: true }
-              );
+            db.collection("commission")
+              .doc("fee")
+              .get()
+              .then(function(result) {
+                var percent = result.data().percent;
+                var addPoint = hourlyWage * Number(callHours) * percent;
+                db.collection("users")
+                  .doc(joinUserId)
+                  .set(
+                    {
+                      point: Number(nowPoint) + Number(addPoint)
+                    },
+                    { merge: true }
+                  );
+              });
           }
         });
     }
 
     function intervalRemainTime() {
-      console.log("30秒経過");
       var nowDateTime = new Date();
       var startTime = new Date($("#partyStartTimeReal").html());
       var diffTime = nowDateTime.getTime() - startTime.getTime();
       var diffDay = Math.floor(diffTime / (1000 * 60));
       var remainTime = Number($("#partyTimeHidden").val()) - Number(diffDay);
-      console.log(remainTime);
-      $("#remainingTime").html(remainTime);
       if (remainTime < 0) {
+        $("#remainTitle").html("延長");
+        $("#remainingTime").html(remainTime * -1);
         $("#remainingTime").css("color", "red");
+      } else {
+        $("#remainingTime").html(remainTime);
       }
     }
 
     function reviewSubmit() {
       var reviewComment = $("#reviewComment").val();
       var reviewCount = $("input[name=hoshi]:checked").val();
+      var ohineri = $("#ohineri").val();
       showLoad();
       var partyRoomId = $("#partyRoomId").val();
       var user = firebase.auth().currentUser;
@@ -615,6 +741,47 @@
                       { merge: true }
                     );
                 });
+                return joinUserId;
+              })
+              .then(function(joinUserId) {
+                db.collection("users")
+                  .doc(myUserId)
+                  .get()
+                  .then(function(myInfo) {
+                    var myPointNow = myInfo.data().point;
+                    var afterPoint = Number(myPointNow) - Number(ohineri);
+                    db.collection("users")
+                      .doc(myUserId)
+                      .set(
+                        {
+                          point: afterPoint
+                        },
+                        { merge: true }
+                      )
+                      .then(function() {
+                        var ohineriAdd =
+                          Number(ohineri) / Number(joinUserId.length);
+                        joinUserId.forEach(joinUser => {
+                          db.collection("users")
+                            .doc(joinUser)
+                            .get()
+                            .then(function(joinUserResult) {
+                              var joinUserPointNow = joinUserResult.data()
+                                .point;
+                              var afterPoint =
+                                Number(joinUserPointNow) + Number(ohineriAdd);
+                              db.collection("users")
+                                .doc(joinUser)
+                                .set(
+                                  {
+                                    point: afterPoint
+                                  },
+                                  { merge: true }
+                                );
+                            });
+                        });
+                      });
+                  });
               })
               .then(function() {
                 hideLoad();
@@ -626,6 +793,51 @@
               message: "既にレビューが完了しています。"
             });
           }
+        });
+    }
+
+    function partyAdditional(joinUsersId) {
+      var manUserId = "";
+      var womanUserWage = 0;
+      var counter = 0;
+      joinUsersId.forEach(joinUser => {
+        db.collection("users")
+          .doc(joinUser)
+          .get()
+          .then(function(user) {
+            counter++;
+            var sex = user.data().sex;
+            if (sex == "man") {
+              manUserId = joinUser;
+            } else {
+              var rank = user.data().rank;
+              if (rank == "VIP") {
+                var hourlyWage = 10000;
+              } else if (rank == "プレミアム") {
+                var hourlyWage = 7500;
+              } else if (rank == "スタンダード") {
+                var hourlyWage = 5000;
+              }
+              womanUserWage += hourlyWage;
+            }
+            if (joinUsersId.length == counter) {
+              var halfHourWage = womanUserWage / (joinUsersId.length - 1);
+              partyAdditional2(manUserId, halfHourWage);
+            }
+          });
+      });
+    }
+
+    function partyAdditional2(manUserId, halfHourWage) {
+      db.collection("users")
+        .doc(manUserId)
+        .get()
+        .then(function(manUser) {
+          var manHavePoint = manUser.data().point;
+          console.log(30 * Math.floor(manHavePoint / halfHourWage) + "分まで");
+          $("#partyAddtional").html(
+            30 * Math.floor(manHavePoint / halfHourWage) + "分まで"
+          );
         });
     }
   </script>

@@ -71,7 +71,7 @@
           ></ons-icon>
         </ons-col>
       </ons-row>
-      <ons-row style="padding:20px 10px;">
+      <ons-row id="searchCastRankArea" style="padding:20px 10px;">
         <ons-col vertical-align="center" width="50%">
           キャストクラス
         </ons-col>
@@ -110,6 +110,7 @@
             <option value="alcoholOff">飲まない</option>
           </ons-select>
         </ons-col>
+        <input type="hidden" id="searchCastSex" />
       </ons-row>
 
       <p style="padding:10px;">
@@ -138,9 +139,13 @@
             $("#seeAllButton").click(function() {
               searchAfterTodayCheck();
             });
+            $("#searchCastRankArea").show();
+            $("#searchCastSex").val("woman");
             zaisekiCast();
           } else {
             // 自分が女性の場合
+            $("#searchCastRankArea").hide();
+            $("#searchCastSex").val("man");
             db.collection("users")
               .where("sex", "==", "man")
               .get()
@@ -175,7 +180,6 @@
         .limit(4)
         .get()
         .then(function(manLoginUsers) {
-          console.log(manLoginUsers.size);
           if (manLoginUsers.size > 0) {
             var nowDataCount = 1;
             // $(".todayCastList").empty();
@@ -228,7 +232,7 @@
                   <div style="height:200px;position: relative;">
                     <img id="callPage1Image_` +
                 nowDataCount +
-                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="callPage1UserName_` +
                 nowDataCount +
@@ -262,7 +266,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + womanUserId)
+            .child("profilePicture/" + womanUserId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -270,7 +274,7 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              url = "img/userSampleImageWoman.png";
               return url;
             })
             .then(function(url) {
@@ -307,7 +311,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + manUserId)
+            .child("profilePicture/" + manUserId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -349,9 +353,10 @@
       var alcohol = $("#searchCastAlcohol").val();
       var tobacco = $("#searchCastTobacco").val();
       var rank = $("#searchCastRank").val();
+      var sex = $("#searchCastSex").val();
       showLoad();
       setTimeout(function() {
-        searchAfter(rank, tobacco, alcohol);
+        searchAfter(rank, tobacco, alcohol, sex);
       }, 500);
     }
     var showSearchPopover = function(target) {
@@ -392,7 +397,7 @@
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="searchPageImage_` +
                     nowDataCount +
-                    `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    `"src="" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="searchPageUserName_` +
                     nowDataCount +
@@ -432,7 +437,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + womanUserId)
+            .child("profilePicture/" + womanUserId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -440,7 +445,11 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              if (womanUserResult.data().sex == "woman") {
+                var url = "img/userSampleImageWoman.png";
+              } else {
+                var url = "img/userSampleImageMan.png";
+              }
               return url;
             })
             .then(function(url) {

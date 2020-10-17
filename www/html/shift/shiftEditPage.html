@@ -21,12 +21,24 @@
     <ons-row>
       <ons-col width="30%" vertical-align="center">開始時刻</ons-col>
       <ons-col width="70%" vertical-align="center">
-        <ons-input
-          id="shiftEditPageStartTime"
-          placeholder="必須"
-          type="time"
-          value="18:00"
-        ></ons-input>
+        <ons-select id="shiftEditPageStartTime">
+          <option>12:00</option>
+          <option>13:00</option>
+          <option>14:00</option>
+          <option>15:00</option>
+          <option>16:00</option>
+          <option>17:00</option>
+          <option selected>18:00</option>
+          <option>19:00</option>
+          <option>20:00</option>
+          <option>21:00</option>
+          <option>22:00</option>
+          <option>23:00</option>
+          <option>24:00</option>
+          <option>25:00</option>
+          <option>26:00</option>
+          <option>27:00</option>
+        </ons-select>
       </ons-col>
     </ons-row>
   </ons-list-item>
@@ -36,12 +48,24 @@
         終了時刻
       </ons-col>
       <ons-col vertical-align="center" width="70%" style="text-align: right;">
-        <ons-input
-          id="shiftEditPageEndTime"
-          placeholder="必須"
-          type="time"
-          value="23:00"
-        ></ons-input>
+        <ons-select id="shiftEditPageEndTime">
+          <option>13:00</option>
+          <option>14:00</option>
+          <option>15:00</option>
+          <option>16:00</option>
+          <option>17:00</option>
+          <option>18:00</option>
+          <option>19:00</option>
+          <option>20:00</option>
+          <option>21:00</option>
+          <option>22:00</option>
+          <option selected>23:00</option>
+          <option>24:00</option>
+          <option>25:00</option>
+          <option>26:00</option>
+          <option>27:00</option>
+          <option>28:00</option>
+        </ons-select>
       </ons-col>
     </ons-row>
   </ons-list-item>
@@ -86,10 +110,7 @@
     function getSchedule(selectDate) {
       $("#shiftEditPageTitle").html(selectDate);
       $("#shiftEditPageSelectDate").val(selectDate.replace(/-/g, ""));
-
       $("#shiftList").empty();
-
-      console.log(selectDate.replace(/-/g, ""));
       db.collection("users")
         .doc(user.uid)
         .collection("shift")
@@ -243,10 +264,13 @@
         .get()
         .then(function(shiftStartCheck) {
           if (shiftStartCheck.size > 0) {
-            hideLoad();
-            ons.notification.alert({
-              message: date + "日は既に予定が登録されています。"
-            });
+            if (nowDataCount == roopSize) {
+              hideLoad();
+            }
+
+            // ons.notification.alert({
+            //   message: date + "日は既に予定が登録されています。"
+            // });
           } else {
             shiftDB
               .orderBy("endTime")
@@ -255,10 +279,13 @@
               .get()
               .then(function(shiftEndCheck) {
                 if (shiftEndCheck.size > 0) {
-                  hideLoad();
-                  ons.notification.alert({
-                    message: date + "日は既に予定が登録されています。"
-                  });
+                  if (nowDataCount == roopSize) {
+                    hideLoad();
+                  }
+
+                  // ons.notification.alert({
+                  //   message: date + "日は既に予定が登録されています。"
+                  // });
                 } else {
                   shiftDB
                     .where("startTime", "<=", startTime)
@@ -267,10 +294,13 @@
                       if (shiftChecks.size > 0) {
                         shiftChecks.forEach(shiftCheck => {
                           if (endTime <= shiftCheck.data().endTime) {
-                            hideLoad();
-                            ons.notification.alert({
-                              message: date + "日は既に予定が登録されています。"
-                            });
+                            if (nowDataCount == roopSize) {
+                              hideLoad();
+                            }
+
+                            // ons.notification.alert({
+                            //   message: date + "日は既に予定が登録されています。"
+                            // });
                           } else {
                             shiftInput(
                               date,

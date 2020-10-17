@@ -23,9 +23,7 @@
             partyRooms.forEach(partyRoom => {
               var list =
                 `
-                <ons-list-item id="partylist_` +
-                nowDataCounter +
-                `">
+                <ons-list-item>
                   <div class="left" onclick="">
                     <img
                       id="partylistImage_` +
@@ -35,7 +33,9 @@
                       style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
                     />
                   </div>
-                  <div
+                  <div id="partylist_` +
+                nowDataCounter +
+                `"
                     class="center"
                     style="width:50%;"
                   >
@@ -90,7 +90,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + partnerId)
+            .child("profilePicture/" + partnerId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -98,7 +98,12 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+
+              if (userResult.data().sex == "woman") {
+                var url = "img/userSampleImageWoman.png";
+              } else {
+                var url = "img/userSampleImageMan.png";
+              }
               return url;
             })
             .then(function(url) {
@@ -131,6 +136,9 @@
               }
 
               $("#partylistImage_" + nowDataCounter).attr("src", url);
+              $("#partylistImage_" + nowDataCounter).click(function() {
+                otherPageJump(partnerId);
+              });
               $("#partylistUserName_" + nowDataCounter).html(userName);
 
               $("#partylistTime_" + nowDataCounter).html(

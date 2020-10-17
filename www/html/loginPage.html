@@ -16,12 +16,12 @@
       style="position:absolute;top:0;left:0;background-color:rgba(0,0,0,0.6);height:100%;width:100%;"
     >
       <div
-        style="height:40%;display:flex;align-items: center;text-align: center;"
+        style="height:35%;display:flex;align-items: center;text-align: center;"
       >
         <img
           src="img/LCALL.png"
           alt=""
-          style="width:40%;height:auto;margin:0 auto;"
+          style="width:40%;height:auto;margin:0 auto;margin-top:10%;"
         />
       </div>
       <div class="cp_iptxt">
@@ -50,7 +50,7 @@
           style="padding:13px 20px;color:white;"
         ></i>
       </div>
-      <div class="cp_iptxt">
+      <div class="cp_iptxt" style="margin-top:5px;">
         <p
           style="text-align: right;color:white;font-weight: 300;"
           onclick="showPasswordReminderModal();"
@@ -58,7 +58,7 @@
           パスワードを忘れた方 >
         </p>
       </div>
-      <div class="cp_iptxt" style="margin-top:10%;">
+      <div class="cp_iptxt" style="margin-top:5%;">
         <ons-button
           class="button--large--cta"
           style="margin: 0 auto;border-radius: 35px;padding:0.5em;background-color:#ff9831;"
@@ -103,7 +103,7 @@
               id="newMailaddress"
               modifier="underbar"
               type="email"
-              placeholder="MailAddress"
+              placeholder="メールアドレス"
               style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
@@ -113,7 +113,7 @@
               id="newPassword"
               modifier="underbar"
               type="password"
-              placeholder="Password"
+              placeholder="パスワード"
               style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
@@ -157,7 +157,7 @@
               id="updateMailaddress"
               modifier="underbar"
               type="email"
-              placeholder="MailAddress"
+              placeholder="メールアドレス"
               style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
@@ -212,65 +212,87 @@
     }
     function loginCheck(email, password) {
       showLoad();
-      firebase
-        .auth()
-        .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(function() {
+      console.log(email, password);
+      if (email == "" || email == null) {
+        hideLoad();
+        ons.notification.alert({
+          message: "メールアドレスが未入力です"
+        });
+      } else if (password.trim() == "") {
+        hideLoad();
+        ons.notification.alert({
+          message: "パスワードが未入力です。"
+        });
+      } else {
+        var mailcheck = MailCheck(email);
+        if (mailcheck) {
           firebase
             .auth()
-            .signInWithEmailAndPassword(email, password)
-            .then(function(user) {
-              if (firebase.auth().currentUser.emailVerified) {
-                // メールアドレスの認証ができている
-                // 永続性を持たせる
-                var user = firebase.auth().currentUser;
-                db.collection("users")
-                  .doc(user.uid)
-                  .get()
-                  .then(function(user) {
-                    if (user.data().sex == "man") {
-                      myNavigator.replacePage("html/homePage.html");
-                    } else if (user.data().sex == "woman") {
-                      myNavigator.replacePage("html/womanHomePage.html");
-                    } else {
-                      ons.notification.alert({
-                        title: "ログイン失敗",
-                        message: "性別が取得できませんでした。"
+            .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(function() {
+              firebase
+                .auth()
+                .signInWithEmailAndPassword(email, password)
+                .then(function(user) {
+                  if (firebase.auth().currentUser.emailVerified) {
+                    // メールアドレスの認証ができている
+                    // 永続性を持たせる
+                    var user = firebase.auth().currentUser;
+                    db.collection("users")
+                      .doc(user.uid)
+                      .get()
+                      .then(function(user) {
+                        if (user.data().sex == "man") {
+                          myNavigator.replacePage("html/homePage.html");
+                        } else if (user.data().sex == "woman") {
+                          myNavigator.replacePage("html/womanHomePage.html");
+                        } else {
+                          ons.notification.alert({
+                            title: "ログイン失敗",
+                            message: "性別が取得できませんでした。"
+                          });
+                        }
                       });
-                    }
+                    hideLoad();
+                  } else {
+                    // メルアド認証ができていない場合
+                    firebase.auth().currentUser.sendEmailVerification();
+                    // もう一度メールを送信して、認証アラートを出す
+                    ons.notification.alert({
+                      title: "ログイン失敗",
+                      message:
+                        "メールアドレス認証が済んでおりません。登録したメールアドレスに認証メールが届いておりますので、ご確認ください。"
+                    });
+                    hideLoad();
+                  }
+                })
+                .catch(function(error) {
+                  // Handle Errors here.
+                  var errorCode = error.code;
+                  var errorMessage = error.message;
+                  console.log(errorCode);
+                  console.log(errorMessage);
+                  // ...
+                  ons.notification.alert({
+                    title: "ログイン失敗",
+                    message: "メールアドレスかパスワードが間違っております。"
                   });
-                hideLoad();
-              } else {
-                // メルアド認証ができていない場合
-                firebase.auth().currentUser.sendEmailVerification();
-                // もう一度メールを送信して、認証アラートを出す
-                ons.notification.alert({
-                  title: "ログイン失敗",
-                  message:
-                    "メールアドレス認証が済んでおりません。登録したメールアドレスに認証メールが届いておりますので、ご確認ください。"
+                  hideLoad();
                 });
-                hideLoad();
-              }
             })
             .catch(function(error) {
               // Handle Errors here.
               var errorCode = error.code;
               var errorMessage = error.message;
-              console.log(errorCode);
-              console.log(errorMessage);
-              // ...
-              ons.notification.alert({
-                title: "ログイン失敗",
-                message: "メールアドレスかパスワードが間違っております。"
-              });
-              hideLoad();
             });
-        })
-        .catch(function(error) {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-        });
+        } else {
+          ons.notification.alert({
+            title: "失敗",
+            message: "メールアドレスの形式が正しくありません。"
+          });
+          hideLoad();
+        }
+      }
     }
     function showCreateUserModal() {
       var modal = document.querySelector("#newAccountCreate");
@@ -343,6 +365,7 @@
                         rank: "",
                         salaly: 0,
                         point: 0,
+                        karaoke: "",
                         ginkoukind: "普通",
                         ginkoumeigi: "",
                         ginkouname: "",
@@ -354,12 +377,14 @@
                       { merge: true }
                     )
                     .then(function() {
+                      hideLoad();
                       ons.notification.alert({
                         title: "メール送信",
-                        message: "認証メールを送信しました。"
+                        message: "認証メールを送信しました。",
+                        callback: function() {
+                          window.location = "index.html";
+                        }
                       });
-                      hideCreateUserModal();
-                      hideLoad();
                     })
                     .catch(function(error) {
                       // An error happened.

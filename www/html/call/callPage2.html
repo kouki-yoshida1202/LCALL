@@ -20,7 +20,7 @@
     <ons-row>
       <ons-col>
         <p class="light-navy-font" style="padding-left:5px;">
-          あなたに最適なキャストをマッチングします。キャストに希望があればマッチング希望をしてください。<br />※マッチングできない場合もございます。
+          あなたに最適なキャストをマッチングします。キャストに希望があればマッチング希望をしてください。<br />※マッチングできない場合もございます。<br />※選択しないで次に進むとランダムで選択されます。
         </p>
       </ons-col>
     </ons-row>
@@ -53,16 +53,26 @@
       var callPlace = $("#callPage2CallPlace").val();
       var callNumberPeople = $("#callPage2CallNumberPeople").val();
       var callHours = Number($("#callPage2CallHours").val());
-      var startTime = new Date();
-      var endTime = new Date();
 
       if (callTime == "afterCustomHour") {
+        var date = $("#afterCustomDate").val();
+        var time = $("#afterCustomTime").val();
+        var startTime = new Date(date + " " + time);
+        var endTime = new Date(date + " " + time);
+        startTime.setHours(startTime.getHours());
+        endTime.setHours(endTime.getHours() + callHours);
+        startTime = Number(getCurrentTime(startTime));
+        endTime = Number(getCurrentTime(endTime));
+        console.log(startTime, endTime);
       } else {
+        var startTime = new Date();
+        var endTime = new Date();
         callTime = Number(callTime);
         startTime.setHours(startTime.getHours() + callTime);
         endTime.setHours(endTime.getHours() + callTime + callHours);
         startTime = Number(getCurrentTime(startTime));
         endTime = Number(getCurrentTime(endTime));
+        console.log(startTime, endTime);
       }
       $("#callPage2StartTime").val(startTime);
       $("#callPage2EndTime").val(endTime);
@@ -80,13 +90,13 @@
             womanUsers.forEach(womanUser => {
               call2Counter++;
 
-              if (womanUser.data().startTime < startTime) {
+              if (womanUser.data().startTime <= startTime) {
                 var womanlist =
                   `
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="callPage2Image_` +
                   nowDataCount +
-                  `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                  `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="callPage2UserName_` +
                   nowDataCount +
@@ -106,7 +116,9 @@
                 callPage2WomanIndicate(
                   womanUser.data().userId,
                   nowDataCount,
-                  womanUsers.size
+                  womanUsers.size,
+                  startTime,
+                  endTime
                 );
                 nowDataCount++;
               }
@@ -131,7 +143,13 @@
         });
     }
 
-    function callPage2WomanIndicate(womanUserId, nowDataCount, dataSize) {
+    function callPage2WomanIndicate(
+      womanUserId,
+      nowDataCount,
+      dataSize,
+      startTime,
+      endTime
+    ) {
       db.collection("users")
         .doc(womanUserId)
         .get()
@@ -139,7 +157,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + womanUserId)
+            .child("profilePicture/" + womanUserId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -147,39 +165,200 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              url = "img/userSampleImageWoman.png";
               return url;
             })
             .then(function(url) {
               $("#callPage2Image_" + nowDataCount).attr("src", url);
-              $("#callPage2Image_" + nowDataCount).click(function() {
-                if (!$(this).hasClass("clickON")) {
-                  $(this).addClass("clickON");
-                  $(this)
-                    .parent()
-                    .css("background", "#333333");
-                  $(this).animate({ opacity: "0.6" }, 250);
-                  $("#checkMark_" + nowDataCount).fadeIn(250);
-                  womanUserIdArray.push(womanUserId);
-                } else {
-                  $(this)
-                    .parent()
-                    .css("background", "none");
-                  $(this).animate({ opacity: "1.0" }, 250);
-                  $(this).removeClass("clickON");
-                  $("#checkMark_" + nowDataCount).fadeOut(250);
-                  var idx = womanUserIdArray.indexOf(womanUserId);
-                  if (idx >= 0) {
-                    womanUserIdArray.splice(idx, 1);
+
+              db.collection("partyRoom")
+                .where("joinUsersId", "array-contains-any", [womanUserId])
+                .where("partyStatus", "==", "still")
+                .get()
+                .then(function(partyResults) {
+                  if (partyResults.size > 0) {
+                    partyResults.forEach(partyResult => {
+                      if (
+                        startTime > partyResult.data().startTime &&
+                        startTime < partyResult.data().endTime
+                      ) {
+                        var endHour = String(partyResult.data().endTime).substr(
+                          8,
+                          2
+                        );
+                        var endHour = Number(endHour) + 1;
+                        $("#callPage2Image_" + nowDataCount).get(0).onclick =
+                          "";
+                        $("#callPage2Image_" + nowDataCount)
+                          .parent()
+                          .css("background", "#333333");
+                        $("#callPage2Image_" + nowDataCount).animate(
+                          { opacity: "0.4" },
+                          250
+                        );
+                        $("#callPage2Salaly_" + nowDataCount).html("合流中");
+                        $("#callPage2UserName_" + nowDataCount).html(
+                          endHour + "時まで"
+                        );
+                      } else {
+                        var rank = womanUserResult.data().rank;
+                        if (rank == "VIP") {
+                          var hourlyWage = 10000;
+                        } else if (rank == "プレミアム") {
+                          var hourlyWage = 7500;
+                        } else if (rank == "スタンダード") {
+                          var hourlyWage = 5000;
+                        }
+                        $("#callPage2Salaly_" + nowDataCount).html(
+                          "¥" + hourlyWage + "/h"
+                        );
+                        $("#callPage2UserName_" + nowDataCount).html(
+                          womanUserResult.data().username
+                        );
+                        $("#callPage2Image_" + nowDataCount).click(function() {
+                          if (!$(this).hasClass("clickON")) {
+                            $(this).addClass("clickON");
+                            $(this)
+                              .parent()
+                              .css("background", "#333333");
+                            $(this).animate({ opacity: "0.4" }, 250);
+                            $("#checkMark_" + nowDataCount).fadeIn(250);
+                            womanUserIdArray.push(womanUserId);
+                          } else {
+                            $(this)
+                              .parent()
+                              .css("background", "none");
+                            $(this).animate({ opacity: "1.0" }, 250);
+                            $(this).removeClass("clickON");
+                            $("#checkMark_" + nowDataCount).fadeOut(250);
+                            var idx = womanUserIdArray.indexOf(womanUserId);
+                            if (idx >= 0) {
+                              womanUserIdArray.splice(idx, 1);
+                            }
+                          }
+                        });
+                      }
+                    });
+                  } else {
+                    db.collection("partyRoom")
+                      .where("joinUsersId", "array-contains-any", [womanUserId])
+                      .where("partyStatus", "==", "start")
+                      .get()
+                      .then(function(partyResults) {
+                        if (partyResults.size > 0) {
+                          partyResults.forEach(partyResult => {
+                            if (
+                              startTime > partyResult.data().startTime &&
+                              startTime < partyResult.data().endTime
+                            ) {
+                              var endHour = String(
+                                partyResult.data().endTime
+                              ).substr(8, 2);
+                              var endHour = Number(endHour) + 1;
+                              $("#callPage2Image_" + nowDataCount).get(
+                                0
+                              ).onclick = "";
+                              $("#callPage2Image_" + nowDataCount)
+                                .parent()
+                                .css("background", "#333333");
+                              $("#callPage2Image_" + nowDataCount).animate(
+                                { opacity: "0.4" },
+                                250
+                              );
+                              $("#callPage2Salaly_" + nowDataCount).html(
+                                "合流中"
+                              );
+                              $("#callPage2UserName_" + nowDataCount).html(
+                                endHour + "時まで"
+                              );
+                            } else {
+                              var rank = womanUserResult.data().rank;
+                              if (rank == "VIP") {
+                                var hourlyWage = 10000;
+                              } else if (rank == "プレミアム") {
+                                var hourlyWage = 7500;
+                              } else if (rank == "スタンダード") {
+                                var hourlyWage = 5000;
+                              }
+                              $("#callPage2Salaly_" + nowDataCount).html(
+                                "¥" + hourlyWage + "/h"
+                              );
+                              $("#callPage2UserName_" + nowDataCount).html(
+                                womanUserResult.data().username
+                              );
+                              $("#callPage2Image_" + nowDataCount).click(
+                                function() {
+                                  if (!$(this).hasClass("clickON")) {
+                                    $(this).addClass("clickON");
+                                    $(this)
+                                      .parent()
+                                      .css("background", "#333333");
+                                    $(this).animate({ opacity: "0.4" }, 250);
+                                    $("#checkMark_" + nowDataCount).fadeIn(250);
+                                    womanUserIdArray.push(womanUserId);
+                                  } else {
+                                    $(this)
+                                      .parent()
+                                      .css("background", "none");
+                                    $(this).animate({ opacity: "1.0" }, 250);
+                                    $(this).removeClass("clickON");
+                                    $("#checkMark_" + nowDataCount).fadeOut(
+                                      250
+                                    );
+                                    var idx = womanUserIdArray.indexOf(
+                                      womanUserId
+                                    );
+                                    if (idx >= 0) {
+                                      womanUserIdArray.splice(idx, 1);
+                                    }
+                                  }
+                                }
+                              );
+                            }
+                          });
+                        } else {
+                          var rank = womanUserResult.data().rank;
+                          if (rank == "VIP") {
+                            var hourlyWage = 10000;
+                          } else if (rank == "プレミアム") {
+                            var hourlyWage = 7500;
+                          } else if (rank == "スタンダード") {
+                            var hourlyWage = 5000;
+                          }
+                          $("#callPage2Salaly_" + nowDataCount).html(
+                            "¥" + hourlyWage + "/h"
+                          );
+                          $("#callPage2UserName_" + nowDataCount).html(
+                            womanUserResult.data().username
+                          );
+                          $("#callPage2Image_" + nowDataCount).click(
+                            function() {
+                              if (!$(this).hasClass("clickON")) {
+                                $(this).addClass("clickON");
+                                $(this)
+                                  .parent()
+                                  .css("background", "#333333");
+                                $(this).animate({ opacity: "0.4" }, 250);
+                                $("#checkMark_" + nowDataCount).fadeIn(250);
+                                womanUserIdArray.push(womanUserId);
+                              } else {
+                                $(this)
+                                  .parent()
+                                  .css("background", "none");
+                                $(this).animate({ opacity: "1.0" }, 250);
+                                $(this).removeClass("clickON");
+                                $("#checkMark_" + nowDataCount).fadeOut(250);
+                                var idx = womanUserIdArray.indexOf(womanUserId);
+                                if (idx >= 0) {
+                                  womanUserIdArray.splice(idx, 1);
+                                }
+                              }
+                            }
+                          );
+                        }
+                      });
                   }
-                }
-              });
-              $("#callPage2Salaly_" + nowDataCount).html(
-                "¥" + womanUserResult.data().salaly + "/h"
-              );
-              $("#callPage2UserName_" + nowDataCount).html(
-                womanUserResult.data().username
-              );
+                });
               hideLoad();
               setTimeout(function() {
                 syoryaku("callPageUserName", 6);

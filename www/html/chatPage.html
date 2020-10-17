@@ -59,9 +59,7 @@
             messages.forEach(message => {
               var list =
                 `
-                <ons-list-item id="chatlist_` +
-                nowDataCounter +
-                `">
+                <ons-list-item>
                   <div class="left" onclick="">
                     <img
                       id="chatlistImage_` +
@@ -71,7 +69,9 @@
                       style="width:45px;height:45px;border-radius: 50%;object-fit:cover;"
                     />
                   </div>
-                  <div
+                  <div  id="chatlist_` +
+                nowDataCounter +
+                `"
                     class="center"
                     style="width:50%;"
                   >
@@ -121,7 +121,7 @@
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + partnerId)
+            .child("profilePicture/" + partnerId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた
@@ -129,14 +129,21 @@
             })
             .catch(function() {
               // 画像取得できないとき
-              url = "img/userSampleImageMan.png";
+              if (userResult.data().sex == "woman") {
+                var url = "img/userSampleImageWoman.png";
+              } else {
+                var url = "img/userSampleImageMan.png";
+              }
               return url;
             })
             .then(function(url) {
               $("#chatlistImage_" + nowDataCounter).attr("src", url);
+              $("#chatlistImage_" + nowDataCounter).click(function() {
+                otherPageJump(partnerId);
+              });
               $("#chatlistUserName_" + nowDataCounter).html(userName);
               $("#chatlistText_" + nowDataCounter).html(
-                message.data().newestText
+                message.data().newestText.replace(/<5060>/g, "<br>")
               );
               $("#chatlistTime_" + nowDataCounter).html(
                 jikanCulc(message.data().newestTime)
