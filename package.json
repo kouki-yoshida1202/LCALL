@@ -12,7 +12,10 @@
         "cordova-plugin-customurlscheme": "file:res/custom_plugins/cordova-plugin-customurlscheme",
         "cordova-plugin-camera": "4.0.3",
         "cordova-plugin-wkwebview-engine": "1.2.1",
-        "monaca-plugin-customscheme": "1.0.2"
+        "monaca-plugin-customscheme": "1.0.2",
+        "ncmb-push-monaca-plugin": "3.0.9",
+        "cordova-plugin-androidx": "file:res/custom_plugins/cordova-plugin-androidx",
+        "cordova-plugin-androidx-adapter": "file:res/custom_plugins/cordova-plugin-androidx-adapter"
     },
     "cordova": {
         "plugins": {
@@ -27,7 +30,10 @@
             },
             "cordova-plugin-camera": {},
             "cordova-plugin-wkwebview-engine": {},
-            "monaca-plugin-customscheme": {}
+            "monaca-plugin-customscheme": {},
+            "ncmb-push-monaca-plugin": {},
+            "cordova-plugin-androidx": {},
+            "cordova-plugin-androidx-adapter": {}
         }
     },
     "scripts": {

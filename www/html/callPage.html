@@ -59,10 +59,18 @@
         </ons-row>
         <ons-row id="customDateTime" style="display:none;">
           <ons-col width="50%" style="padding:1em;">
-            <ons-input id="afterCustomDate" placeholder="必須" type="date" value=""></ons-input>
+            <ons-input id="afterCustomDate" placeholder="必須" type="date" value="" style="display: flex;align-items: center;"></ons-input>
+            <style>
+              #afterCustomDate input{
+                display: flex;
+                align-items: center;
+                font-size:0.8em;
+              }
+            </style>
           </ons-col>
           <ons-col width="50%" style="padding:1em;">
             <ons-select id="afterCustomTime">
+              <option>11:00</option>
               <option>12:00</option>
               <option>13:00</option>
               <option>14:00</option>
@@ -80,6 +88,8 @@
               <option>26:00</option>
               <option>27:00</option>
               <option>28:00</option>
+              <option>29:00</option>
+              <option>30:00</option>
             </ons-select>
           </ons-col>
         </ons-row>
@@ -166,26 +176,20 @@
   <div style="margin-top:25px;margin-bottom:7px;">
     <ons-row>
       <ons-col>
-        <img src="img/LCALLBUTTON.png" style="width:100%;">
+        <img src="img/LCALLBUTTON.png" style="width:100%;" onclick='window.open("https://lcall.jp/", "_system", "usewkwebview=yes");'>
         </img>
       </ons-col>
     </ons-row>
   </div>
   <script>
-    document.addEventListener(
-        "init",
-        function (event) {
-          if (event.target.matches("#call-page")) {
-            todayCastGet();
-            var dt = new Date();
-            var y = dt.getFullYear();
-            var m = ('00' + (dt.getMonth() + 1)).slice(-2);
-            var d = ('00' + dt.getDate()).slice(-2);
-            $('#afterCustomDate').val(y+"-"+m+"-"+d);
-          }
-        }
-    );
-
+    setTimeout(function(){
+      todayCastGet();
+      var dt = new Date();
+      var y = dt.getFullYear();
+      var m = ('00' + (dt.getMonth() + 1)).slice(-2);
+      var d = ('00' + dt.getDate()).slice(-2);
+      $('#afterCustomDate').val(y + "-" + m + "-" + d);
+    },1000);
     $("#callTime").change(function(){
       var callTime = $(this).val();
       if(callTime=="afterCustomHour"){
@@ -203,40 +207,24 @@
       }
 
     
-    function todayCastGet(){
+    function todayCastGet(){  
       
-      $(".todayCastList").empty();
+      
       var todayDate = Number(formatDate(new Date()));
+      
       db.collectionGroup("shift")
-        // .orderBy("endTime")
-        .orderBy("loginDate", "desc")
+      
         .where("date", "==", todayDate)
         .limit(4)
         .get()
-        .then(function (womanUsers) {
+        .then(function (womanUsers){
           if (womanUsers.size > 0) {
             var nowDataCount = 1;
-            womanUsers.forEach(womanUser => {
-                var womanlist =
-                  `
-                <ons-carousel-item style="margin:5px;">
-                  <div style="height:200px;position: relative;">
-                    <img id="callPage1Image_`+nowDataCount+`"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-                      <p id="callPage1UserName_`+nowDataCount+`"style="margin:0px;color:white;"> </p>
-                      <p id="callPage1Salaly_`+nowDataCount+`"style="margin:0px;color:white;">¥0/h</sp>
-                    </div>
-                  </div>
-                </ons-carousel-item>
-              `;
-                $(".todayCastList").append(womanlist);
-                callPage1WomanIndicate(
-                  womanUser.data().userId,
-                  nowDataCount,
-                  womanUsers.size
-                );
-                nowDataCount++;
+            womanUsers.forEach(woman => {
+              var womanPath = woman.ref.path.split("/");
               
+              todayCast(womanPath[1],nowDataCount,womanUsers.size);
+              nowDataCount++;
             });
           }
         })
@@ -244,7 +232,33 @@
           console.log(error);
         });
     }
-
+    function todayCast(womanPath,nowDataCount,size){
+      
+      db
+        .collection("users")
+        .doc(womanPath)
+        .get()
+        .then(function (womanUser) {
+          var womanlist =
+            `
+                <ons-carousel-item style="margin:5px;">
+                  <div style="height:200px;position: relative;">
+                    <img class="callPage1Image_`+ nowDataCount + `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
+                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
+                      <p class="callPage1UserName_`+ nowDataCount + `"style="margin:0px;color:white;"> </p>
+                      <p class="callPage1Salaly_`+ nowDataCount + `"style="margin:0px;color:white;">¥0/h</sp>
+                    </div>
+                  </div>
+                </ons-carousel-item>
+              `;
+          $(".todayCastList").append(womanlist);
+          callPage1WomanIndicate(
+            womanPath,
+            nowDataCount,
+            size
+          );
+        });
+    }
     function callPage2Jump(){
       myNavigator.bringPageTop('html/call/callPage2.html');
       showLoad();
@@ -273,10 +287,12 @@
     
 
     function callPage1WomanIndicate(womanUserId, nowDataCount, dataSize) {
+      
         db.collection("users")
           .doc(womanUserId)
           .get()
           .then(function (womanUserResult) {
+      
             firebase
               .storage()
               .ref()
@@ -292,16 +308,16 @@
                 return url;
               })
               .then(function (url) {
-                $("#callPage1Image_" + nowDataCount).attr("src", url);
+                $(".callPage1Image_" + nowDataCount).attr("src", url);
                 // $("#callPage1Image_" + nowDataCount).click(function () {
                 // });
-                $("#callPage1Image_" + nowDataCount).click(function () {
+                $(".callPage1Image_" + nowDataCount).click(function () {
                   otherPageJump(womanUserId);
                 });
-                $("#callPage1Salaly_" + nowDataCount).html(
+                $(".callPage1Salaly_" + nowDataCount).html(
                   "¥" + womanUserResult.data().salaly + "/h"
                 );
-                $("#callPage1UserName_" + nowDataCount).html(
+                $(".callPage1UserName_" + nowDataCount).html(
                   womanUserResult.data().username
                 );
                 if (nowDataCount == dataSize) {

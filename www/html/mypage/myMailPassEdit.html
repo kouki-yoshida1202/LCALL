@@ -134,16 +134,26 @@
                       .auth()
                       .currentUser.sendEmailVerification()
                       .then(function() {
-                        // Update successful.
-                        hideLoad();
-                        ons.notification.alert({
-                          title: "ログアウトします",
-                          message:
-                            "認証メールを送信しました。ご確認くださいませ。",
-                          callback: function() {
-                            window.location.href = "index.html";
-                          }
-                        });
+                        db.collection("users")
+                          .doc(user.uid)
+                          .set(
+                            {
+                              email: mailAddress
+                            },
+                            { merge: true }
+                          )
+                          .then(function() {
+                            // Update successful.
+                            hideLoad();
+                            ons.notification.alert({
+                              title: "ログアウトします",
+                              message:
+                                "認証メールを送信しました。ご確認くださいませ。",
+                              callback: function() {
+                                window.location.href = "index.html";
+                              }
+                            });
+                          });
                       });
                   });
               })

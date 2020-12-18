@@ -7,6 +7,12 @@
     .cp_iptxt {
       margin: 12px 7%;
     }
+
+    .alert-dialog-content input {
+      border: 1px solid grey;
+      border-radius: 5px;
+      padding: 5px;
+    }
   </style>
   <div
     class="content"
@@ -80,6 +86,19 @@
           </span>
         </p>
       </div>
+      <div class="cp_iptxt" style="margin-top:20px;">
+        <p style="text-align:center;color:white;">
+          続行することにより、<span
+            style="color:#0799d7;"
+            onclick='window.open("https://lcall-test.web.app/riyouKiyaku.html", "_system", "usewkwebview=yes");'
+            >利用規約</span
+          >および<span
+            style="color:#0799d7;"
+            onclick='window.open("https://lcall-test.web.app/privacyPolicy.html", "_system", "usewkwebview=yes");'
+            >プライバシーポリシー</span
+          >に同意したものとみなされます。
+        </p>
+      </div>
     </div>
   </div>
   <ons-modal id="newAccountCreate" direction="up" animation="fade">
@@ -118,20 +137,25 @@
               float
             ></ons-input>
           </p>
-          <p style="margin-top: 2em;">
+          <p style="margin-top: 2em;margin-bottom:2rem;">
             <ons-button
               class="button--cta"
               onclick="newUserCreate($('#newMailaddress').val(),$('#newPassword').val())"
               style="border-radius: 35px;padding:0.5em 1em;width:80%;"
               ripple
-              >新規アカウント登録</ons-button
+              >男性でアカウント登録する</ons-button
             >
           </p>
-          <p
-            style="text-align: right;color:#0799d7;"
-            onclick="womanUserCreatePageJump()"
-          >
-            ※女性ユーザーの新規登録はこちら >
+
+          <hr />
+          <p style="margin-top:2rem;">
+            <ons-button
+              class="button--cta"
+              onclick="womanUserCreatePageJump()"
+              style="border-radius: 35px;padding:0.5em 1em;width:80%;background: pink"
+              ripple
+              >女性の登録はこちらから ></ons-button
+            >
           </p>
         </div>
       </div>
@@ -352,6 +376,7 @@
                       {
                         username: "男性ユーザー",
                         address: "",
+                        email: email,
                         alcohol: "",
                         birthplace: "",
                         haircolor: "",

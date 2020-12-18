@@ -37,6 +37,16 @@
         style="font-size:0.8em;transform:translate(2px,-1px);"
       ></ons-icon>
     </ons-speed-dial-item>
+    <ons-speed-dial-item
+      id="adminButton"
+      onclick="adminPage();"
+      style="display:none;background-color: red;"
+    >
+      <ons-icon
+        icon="fa-lock"
+        style="font-size:0.8em;transform:translate(0px,-2px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
   </ons-speed-dial>
   <div style="height:350px;position: relative;">
     <img
@@ -223,6 +233,10 @@
       },
       false
     );
+
+    function adminPage() {
+      myNavigator.bringPageTop("html/adminPage.html");
+    }
     function myImageArray(userId, noUrl) {
       $("#myImageArray").empty();
       ref = firebase
@@ -358,6 +372,9 @@
             $("#myPageHairStyle").html(doc.data().hairstyle);
             $("#myPageWork").html(doc.data().work);
             $("#myPageKaraoke").html(doc.data().karaoke);
+            if (doc.data().admin) {
+              $("#adminButton").show();
+            }
             var user = firebase.auth().currentUser;
             ref = firebase
               .storage()

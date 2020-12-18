@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "25727766698",
+    "firebase_url": "https://lcall-test.firebaseio.com",
+    "project_id": "lcall-test",
+    "storage_bucket": "lcall-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25727766698:android:94b31c90c4b4489a7380d3",
+        "android_client_info": {
+          "package_name": "com.monaca.LCALL.TEST"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25727766698-v5mhnabkbq3f8jaab9tr2qb89hds6c72.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGxVfVr8wcZks9KFUVU_B7IMn3oM5qFts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "25727766698-v5mhnabkbq3f8jaab9tr2qb89hds6c72.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

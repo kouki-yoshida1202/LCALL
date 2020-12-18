@@ -144,6 +144,8 @@
         hideLoad();
       } else {
         var user = firebase.auth().currentUser;
+        var userId = user.uid;
+        var email = user.email;
         var afterPoint = uriageNow - hurikomiShinsei;
         db.collection("users")
           .doc(user.uid)
@@ -166,13 +168,41 @@
                 ginkouMeigi: ginkouMeigi
               })
               .then(function() {
-                hideLoad();
-                ons.notification.alert({
-                  message: "申請が完了しました。",
-                  callback: function() {
-                    window.location = "index.html";
-                  }
-                });
+                db.collection("users")
+                  .doc(userId)
+                  .get()
+                  .then(function(myUser) {
+                    var userName = myUser.data().username;
+                    $.ajax({
+                      type: "post",
+                      url:
+                        "https://www.paystripe.info/LCALL_stripe/hurikomiShinsei.php",
+                      data: {
+                        userId: userId,
+                        userName: userName,
+                        email: email,
+                        myHurikomiKakuninUriageNow: uriageNow,
+                        myHurikomiKakuninShinseiKingaku: hurikomiShinsei,
+                        myHurikomiKakuninHurikomiKingaku: hurikomiKingaku,
+                        myHurikomiKakuninGinkouName: ginkouName,
+                        myHurikomiKakuninGinkouShiten: ginkouShiten,
+                        myHurikomiKakuninGinkouNumber: ginkouNumber,
+                        myHurikomiKakuninGinkouMeigi: ginkouMeigi
+                      },
+                      success: function(data) {
+                        hideLoad();
+                        ons.notification.alert({
+                          message: "申請が完了しました。",
+                          callback: function() {
+                            window.location = "index.html";
+                          }
+                        });
+                      }
+                    });
+                  })
+                  .catch(function(error) {
+                    console.log(error);
+                  });
               });
           })
           .catch(function(error) {

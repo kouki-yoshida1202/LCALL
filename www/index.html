@@ -15,7 +15,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src * lcall data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"
+      content="default-src * lcall data: gap: https://ssl.gstatic.com; img-src * 'self' blob: data:;style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'"
     />
     <script src="components/loader.js"></script>
     <script src="lib/onsenui/js/onsenui.min.js"></script>
@@ -51,6 +51,12 @@
     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-storage.js"></script>
 
     <script>
+      //ncmbのAPIキーの設定とSDKの初期化
+      var appKey =
+        "02a457f48d68b825b137494489c8f26fdaa17bbac69fc5e2719871efd52ff66d";
+      var clientKey =
+        "6390930120b540b3a929534b03612cc5a55fd796f6a8250d646a0ca2cf3160c4";
+      var ncmb = new NCMB(appKey, clientKey);
       // Your web app's Firebase configuration
       var firebaseConfig = {
         apiKey: "AIzaSyB9J4lT9H_4i5y5qhXGJLvytpgZ1eYZa0g",
@@ -93,6 +99,7 @@
       ons.ready(function() {
         var myNavigator = document.getElementById("myNavigator");
         // ログインチェック
+        // myNavigator.pushPage("html/adminPage.html");
         firebase.auth().onAuthStateChanged(user => {
           if (user) {
             if (!user.emailVerified) {
@@ -147,6 +154,82 @@
           hideLoad();
         }, 5000);
       }
+
+      function sendPush(catchUserId, message) {
+        var push = new ncmb.Push();
+        push
+          .set("immediateDeliveryFlag", true)
+          .set("message", message)
+          .set("target", ["ios", "android"])
+          .set("searchCondition", {
+            userId: catchUserId
+          })
+          // .set("badgeSetting", 0)
+          .send();
+      }
+
+      function sendPushMail(sendUserID, catchUserID, situation) {
+        db.collection("users")
+          .doc(sendUserID)
+          .get()
+          .then(function(sendUserInfo) {
+            var sendUserName = sendUserInfo.data().username;
+            db.collection("users")
+              .doc(catchUserID)
+              .get()
+              .then(function(catchUserInfo) {
+                var catchUserMail = catchUserInfo.data().email;
+
+                if (situation == "message") {
+                  var title =
+                    "【LCALL】" +
+                    sendUserName +
+                    "さんからメッセージが届きました。";
+                  var mainContent = "";
+                  var content =
+                    "\r\n" +
+                    sendUserName +
+                    "さんからメッセージが届きました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                } else if (situation == "shimeiYoyaku") {
+                  var title =
+                    "【LCALL】" +
+                    sendUserName +
+                    "さんがあなたを指名予約しました。";
+                  var mainContent = "";
+                  var content =
+                    "\r\n" +
+                    sendUserName +
+                    "さんがあなたを指名予約しました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                } else if (situation == "partyStart") {
+                  var title = "【LCALL】食事会が開始されました。";
+                  var mainContent = "";
+                  var content =
+                    "\r\n食事会が開始されました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                } else if (situation == "partyEnd") {
+                  var title = "【LCALL】食事会が終了しました。";
+                  var mainContent = "";
+                  var content =
+                    "\r\n食事会が終了しました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                } else if (situation == "review") {
+                  var title = "【LCALL】レビューが届きました";
+                  var mainContent = "";
+                  var content =
+                    "\r\nレビューが届きました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                }
+                $.ajax({
+                  type: "post",
+                  url:
+                    "https://www.paystripe.info/LCALL_stripe/sendPushMail.php",
+                  data: {
+                    email: catchUserMail,
+                    title: title,
+                    content: content
+                  },
+                  success: function(data) {}
+                });
+              });
+          });
+      }
       function handleOpenURL(url) {
         setTimeout(function() {
           var user = firebase.auth().currentUser;
@@ -159,6 +242,7 @@
           }
         }, 100);
       }
+
       function hideLoad() {
         $("body").LoadingOverlay("hide");
       }
@@ -368,11 +452,12 @@
           .then(url => {
             var image =
               `
-            <ons-col style="text-align: center;" vertical-align="center">
+            <ons-col style="text-align: center;position:relative;" vertical-align="center">
+              
               <img id="myImageEdit_1" src="` +
               url +
               `" alt=""
-                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                 onclick="profileCamera(1);"/>
             </ons-col>
           `;
@@ -385,11 +470,11 @@
               .then(url => {
                 var image =
                   `
-                  <ons-col style="text-align: center;" vertical-align="center">
+                  <ons-col style="text-align: center;position:relative;" vertical-align="center">
                     <img id="myImageEdit_2" src="` +
                   url +
                   `" alt=""
-                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                       onclick="profileCamera(2);"/>
                   </ons-col>
                 `;
@@ -406,7 +491,7 @@
                         <img id="myImageEdit_3" src="` +
                       url +
                       `" alt=""
-                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                           onclick="profileCamera(3);"/>
                       </ons-col>
                     `;
@@ -423,7 +508,7 @@
                               <img id="myImageEdit_4" src="` +
                           url +
                           `" alt=""
-                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                                 onclick="profileCamera(4);"/>
                             </ons-col>
                           `;
@@ -440,7 +525,7 @@
                                 <img id="myImageEdit_5" src="` +
                               url +
                               `" alt=""
-                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                                   onclick="profileCamera(5);"/>
                               </ons-col>
                             `;
@@ -450,7 +535,7 @@
                             var image = `
                               <ons-col style="text-align: center;" vertical-align="center">
                                 <img id="myImageEdit_5" src="img/plusIcon.png" alt=""
-                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                                   onclick="profileCamera(5);"/>
                               </ons-col>
                             `;
@@ -461,7 +546,7 @@
                         var image = `
                             <ons-col style="text-align: center;" vertical-align="center">
                               <img id="myImageEdit_4" src="img/plusIcon.png" alt=""
-                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                                 onclick="profileCamera(4);"/>
                             </ons-col>
                           `;
@@ -472,7 +557,7 @@
                     var image = `
                       <ons-col style="text-align: center;" vertical-align="center">
                         <img id="myImageEdit_3" src="img/plusIcon.png" alt=""
-                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                           onclick="profileCamera(3);"/>
                       </ons-col>
                     `;
@@ -483,7 +568,7 @@
                 var image = `
                   <ons-col style="text-align: center;" vertical-align="center">
                     <img id="myImageEdit_2" src="img/plusIcon.png" alt=""
-                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                       onclick="profileCamera(2);"/>
                   </ons-col>
                 `;
@@ -494,12 +579,77 @@
             var image = `
             <ons-col style="text-align: center;" vertical-align="center">
               <img id="myImageEdit_1" src="img/plusIcon.png" alt=""
-                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;" 
+                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
                 onclick="profileCamera(1);"/>
             </ons-col>
           `;
             $("#profileEditPageImage").append(image);
           });
+      }
+
+      function imageDeleteCheck() {
+        ons.notification.confirm({
+          message: "削除しますか？",
+          title: "確認",
+          buttonLabels: ["Cancel", "OK"],
+          callback: function(buttonIndex) {
+            if (buttonIndex == 1) {
+              imageDelete();
+            }
+          }
+        });
+      }
+      function imageDelete() {
+        var user = firebase.auth().currentUser;
+        console.log(user.uid);
+        for (var number = 1; number < 6; number++) {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + user.uid + "/" + number)
+            .delete()
+            .then(function() {
+              // File deleted successfully
+
+              if (number == 6) {
+                window.location = "index.html";
+              }
+            })
+            .catch(function(error) {
+              // Uh-oh, an error occurred!
+              if (number == 6) {
+                window.location = "index.html";
+              }
+            });
+        }
+      }
+      function otherAlert(otherID) {
+        ons.notification.confirm({
+          message: "通報しますか?およびブロックしますか？",
+          title: "確認",
+          buttonLabels: ["Cancel", "OK"],
+          callback: function(buttonIndex) {
+            if (buttonIndex == 1) {
+              var myUserId = firebase.auth().currentUser.uid;
+              db.collection("users")
+                .doc(otherID)
+                .get()
+                .then(function(otherInfo) {
+                  var otherName = otherInfo.data().username;
+                  db.collection("reports")
+                    .add({
+                      senderUserID: myUserId,
+                      receiverUserID: otherID,
+                      receiverName: otherName,
+                      createTime: new Date()
+                    })
+                    .then(function() {
+                      alert("完了しました。");
+                    });
+                });
+            }
+          }
+        });
       }
     </script>
   </body>

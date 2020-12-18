@@ -57,13 +57,13 @@
       if (callTime == "afterCustomHour") {
         var date = $("#afterCustomDate").val();
         var time = $("#afterCustomTime").val();
+        date = date.replace(/-/g, "/");
         var startTime = new Date(date + " " + time);
         var endTime = new Date(date + " " + time);
         startTime.setHours(startTime.getHours());
         endTime.setHours(endTime.getHours() + callHours);
         startTime = Number(getCurrentTime(startTime));
         endTime = Number(getCurrentTime(endTime));
-        console.log(startTime, endTime);
       } else {
         var startTime = new Date();
         var endTime = new Date();
@@ -72,7 +72,6 @@
         endTime.setHours(endTime.getHours() + callTime + callHours);
         startTime = Number(getCurrentTime(startTime));
         endTime = Number(getCurrentTime(endTime));
-        console.log(startTime, endTime);
       }
       $("#callPage2StartTime").val(startTime);
       $("#callPage2EndTime").val(endTime);
@@ -96,7 +95,7 @@
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="callPage2Image_` +
                   nowDataCount +
-                  `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                  `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="callPage2UserName_` +
                   nowDataCount +

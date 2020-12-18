@@ -149,6 +149,7 @@
       var endTime = $("#callPage4EndTime").val();
       var needPoint = $("#callPage4NeedPoint").val();
       var myUserId = firebase.auth().currentUser.uid;
+      var womanUserIdArrayPush = womanUserIdArray;
       womanUserIdArray.push(myUserId);
       womanUserIdArray.sort();
       var joinUsersId = womanUserIdArray;
@@ -156,6 +157,7 @@
         .doc(myUserId)
         .get()
         .then(function(myResult) {
+          var myUserName = myResult.data().username;
           var myPointNow = myResult.data().point;
           var myPointAfter = Number(myPointNow) - Number(needPoint);
           if (myPointAfter >= 0) {
@@ -193,6 +195,13 @@
               },
               { merge: true }
             )
+            .then(function() {
+              womanUserIdArrayPush.forEach(catchUserId => {
+                var message = myUserName + "があなたを指名予約しました。";
+                sendPush(catchUserId, message);
+                sendPushMail(myUserId, catchUserId, "shimeiYoyaku");
+              });
+            })
             .then(function() {
               ons.notification.alert({
                 message: "予約が完了しました",
@@ -243,7 +252,7 @@
           `"
             class="list-item__thumbnail"
             src="img/userSampleImageWoman.png"
-            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;"
+            style="width:45px;height:45px;border-radius: 50%;object-fit:cover;float:right;margin-left:5px;background:darkgrey;"
           />
         `;
         $("#callCastImage").append(callCastList);

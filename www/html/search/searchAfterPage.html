@@ -71,7 +71,7 @@
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="searchAfterPageImage_` +
                 nowDataCount +
-                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="searchAfterPageUserName_` +
                 nowDataCount +
@@ -103,36 +103,42 @@
       var todayDate = Number(formatDate(new Date()));
       db.collectionGroup("shift")
         // .orderBy("endTime")
-        .orderBy("loginDate", "desc")
+        // .orderBy("loginDate", "desc")
         .where("date", "==", todayDate)
         .get()
         .then(function(womanUsers) {
           if (womanUsers.size > 0) {
             var nowDataCount = 1;
             womanUsers.forEach(womanUser => {
-              var womanlist =
-                `
+              var womanPath = womanUser.ref.path.split("/");
+              db.collection("users")
+                .doc(womanPath[1])
+                .get()
+                .then(function(womanInfo) {
+                  var womanlist =
+                    `
                   <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                     <img id="searchAfterPageImage_` +
-                nowDataCount +
-                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    nowDataCount +
+                    `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="searchAfterPageUserName_` +
-                nowDataCount +
-                `"style="margin:0px;color:white;"> </p>
+                    nowDataCount +
+                    `"style="margin:0px;color:white;"> </p>
                       <p id="searchAfterPageSalaly_` +
-                nowDataCount +
-                `"style="margin:0px;color:white;">¥0/h</sp>
+                    nowDataCount +
+                    `"style="margin:0px;color:white;">¥0/h</sp>
                     </div>
                   </div>
               `;
-              $("#searchAfterPageList").append(womanlist);
-              searchPageWomanIndicate(
-                womanUser.data().userId,
-                nowDataCount,
-                womanUsers.size
-              );
-              nowDataCount++;
+                  $("#searchAfterPageList").append(womanlist);
+                  searchPageWomanIndicate(
+                    womanPath[1],
+                    nowDataCount,
+                    womanUsers.size
+                  );
+                  nowDataCount++;
+                });
             });
           } else {
             hideLoad();
@@ -163,7 +169,7 @@
                   <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                     <img id="searchAfterPageImage_` +
                 nowDataCount +
-                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="searchAfterPageUserName_` +
                 nowDataCount +
@@ -185,15 +191,15 @@
         });
     }
     function searchPageWomanIndicate(userId, nowDataCount, dataSize) {
+      console.log(userId, nowDataCount, dataSize);
       db.collection("users")
         .doc(userId)
         .get()
         .then(function(womanUserResult) {
-          console.log(womanUserResult.data());
           firebase
             .storage()
             .ref()
-            .child("profilePicture/" + userId)
+            .child("profilePicture/" + userId + "/1")
             .getDownloadURL()
             .then(url => {
               // 画像取得できた

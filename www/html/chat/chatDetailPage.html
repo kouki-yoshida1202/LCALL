@@ -62,7 +62,14 @@
           日時
         </ons-col>
         <ons-col vertical-align="center" width="70%" style="text-align: right;">
-          <ons-input id="suggestDay" type="date" style="margin-bottom:5px;"></ons-input>
+          <ons-input id="suggestDay" type="date" style="margin-bottom:5px;display: flex;align-items: center;"></ons-input>
+          <style>
+            #suggestDay input {
+              display: flex;
+              align-items: center;
+              font-size:0.8em;
+            }
+          </style>
           <br>
           <ons-input id="suggestTime"type="time"></ons-input>
         </ons-col>
@@ -185,6 +192,7 @@
           .then(function(myInfo){
             var pointNow = Number(myInfo.data().point);
             var needPoint = Number($('#needPoint').html());
+            var myUserName = myInfo.data().username;
             if(needPoint>pointNow){
               ons.notification.alert({
                 "message": "ポイントが足りません。マイページからチャージしてください。"
@@ -231,6 +239,12 @@
                               hideChatPopover();
                             });
                         })
+                        .then(function(){
+                          var message = myUserName+"からメッセージが届きました";
+                          sendPush(catchUserId, message);
+                          
+                          sendPushMail(sendUserId, catchUserId,"message");
+                        })
                         .catch(function (error) {
                           console.log(error);
                         });
@@ -262,6 +276,12 @@
                             $('#chatCommentInput').val("");
                             hideChatPopover();
                           });
+                      })
+                      .then(function () {
+                        var message = myUserName + "からメッセージが届きました";
+                        sendPush(catchUserId, message);
+                        
+                        sendPushMail(sendUserId, catchUserId, "message");
                       })
                       .catch(function (error) {
                         console.log(error);
@@ -495,6 +515,7 @@
                                   $('#chatCommentInput').val("");
                                 });
                             })
+                            
                             .catch(function (error) {
                               console.log(error);
                             });
@@ -528,6 +549,17 @@
                           { merge: true }
                         );
                     })
+                })
+                .then(function () {
+                  db.collection("users")
+                    .doc(sendUserId)
+                    .get()
+                    .then(function (sendUserInfo) {
+                      var myUserName = sendUserInfo.data().username;
+                      var message = myUserName + "からメッセージが届きました";
+                      sendPush(catchUserId, message);
+                      sendPushMail(sendUserId, catchUserId, "message");
+                    });
                 })
                 .catch(function(error){
                   console.log(error);
@@ -584,6 +616,18 @@
                 });
               
             }
+          })
+          .then(function () {
+            db.collection("users")
+              .doc(sendUserId)
+              .get()
+              .then(function (sendUserInfo) {
+                var myUserName = sendUserInfo.data().username;
+                var message = myUserName + "からメッセージが届きました";
+                sendPush(catchUserId, message);
+                
+                sendPushMail(sendUserId, catchUserId, "message");
+              });
           });
         
       }

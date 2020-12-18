@@ -19,5 +19,50 @@
     <ons-tab label="マイページ" page="html/myPage.html" icon="fa-user">
     </ons-tab>
   </ons-tabbar>
-  <script></script>
+  <script>
+    setTimeout(function() {
+      document.addEventListener("deviceready", function() {
+        var applicationKey =
+          "02a457f48d68b825b137494489c8f26fdaa17bbac69fc5e2719871efd52ff66d";
+        var clientKey =
+          "6390930120b540b3a929534b03612cc5a55fd796f6a8250d646a0ca2cf3160c4";
+        // デバイストークンの取得処理
+        setTimeout(function() {
+          if (NCMB.monaca) {
+            NCMB.monaca.setDeviceToken(
+              applicationKey,
+              clientKey,
+              result => {
+                console.log(result);
+              },
+              err => alert("通知設定エラー：" + JSON.stringify(err))
+            );
+          }
+        }, 500);
+      });
+    }, 2000);
+    document.addEventListener("deviceready", function() {
+      setTimeout(function() {
+        getInstallationId();
+      }, 500);
+      setTimeout(function() {
+        getInstallationId();
+      }, 5000);
+      setTimeout(function() {
+        getInstallationId();
+      }, 10000);
+    });
+
+    function getInstallationId() {
+      NCMB.monaca.getInstallationId(id => {
+        ncmb.Installation.equalTo("objectId", id)
+          .fetch()
+          .then(installation => {
+            var user = firebase.auth().currentUser;
+            installation.set("userId", user.uid).update();
+          })
+          .catch(err => console.log("通知設定エラー：" + JSON.stringify(err)));
+      });
+    }
+  </script>
 </ons-page>

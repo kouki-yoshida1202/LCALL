@@ -190,7 +190,7 @@
                   <div style="height:200px;position: relative;">
                     <img id="callPage1Image_` +
                 nowDataCount +
-                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                `"src="img/userSampleImageMan.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                     <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                       <p id="callPage1UserName_` +
                 nowDataCount +
@@ -213,96 +213,7 @@
           console.log(error);
         });
     }
-    function todayCastGet() {
-      $(".todayCastList").empty();
-      var todayDate = Number(formatDate(new Date()));
-      db.collectionGroup("shift")
-        // .orderBy("endTime")
-        .orderBy("loginDate", "desc")
-        .where("date", "==", todayDate)
-        .limit(4)
-        .get()
-        .then(function(womanUsers) {
-          if (womanUsers.size > 0) {
-            var nowDataCount = 1;
-            womanUsers.forEach(womanUser => {
-              var womanlist =
-                `
-                <ons-carousel-item style="margin:5px;">
-                  <div style="height:200px;position: relative;">
-                    <img id="callPage1Image_` +
-                nowDataCount +
-                `"src="img/userSampleImageWoman.png" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
-                    <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
-                      <p id="callPage1UserName_` +
-                nowDataCount +
-                `"style="margin:0px;color:white;"> </p>
-                      <p id="callPage1Salaly_` +
-                nowDataCount +
-                `"style="margin:0px;color:white;">¥0/h</sp>
-                    </div>
-                  </div>
-                </ons-carousel-item>
-              `;
-              $(".todayCastList").append(womanlist);
-              callPage1WomanIndicate(
-                womanUser.data().userId,
-                nowDataCount,
-                womanUsers.size
-              );
-              nowDataCount++;
-            });
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    }
-    function callPage1WomanIndicate(womanUserId, nowDataCount, dataSize) {
-      db.collection("users")
-        .doc(womanUserId)
-        .get()
-        .then(function(womanUserResult) {
-          firebase
-            .storage()
-            .ref()
-            .child("profilePicture/" + womanUserId + "/1")
-            .getDownloadURL()
-            .then(url => {
-              // 画像取得できた
-              return url;
-            })
-            .catch(function() {
-              // 画像取得できないとき
-              url = "img/userSampleImageWoman.png";
-              return url;
-            })
-            .then(function(url) {
-              $("#callPage1Image_" + nowDataCount).attr("src", url);
-              // $("#callPage1Image_" + nowDataCount).click(function () {
-              // });
-              $("#callPage1Image_" + nowDataCount).click(function() {
-                otherPageJump(womanUserId);
-              });
-              $("#callPage1Salaly_" + nowDataCount).html(
-                "¥" + womanUserResult.data().salaly + "/h"
-              );
-              $("#callPage1UserName_" + nowDataCount).html(
-                womanUserResult.data().username
-              );
-              if (nowDataCount == dataSize) {
-                hideLoad();
-                syoryaku("callPageUserName", 6);
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    }
+
     function callPage1ManIndicate(manUserId, nowDataCount, dataSize) {
       db.collection("users")
         .doc(manUserId)
@@ -386,7 +297,6 @@
           db.collection("users")
             .where("sex", "==", searchSex)
             .orderBy("loginDate", "desc")
-            .limit(20)
             .get()
             .then(function(userWomanResults) {
               if (userWomanResults.size > 0) {
@@ -397,7 +307,7 @@
                 <div style="height:200px;position: relative;width:30%;border-radius: 10px;margin:1%;">
                   <img id="searchPageImage_` +
                     nowDataCount +
-                    `"src="" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;" />
+                    `"src="" alt="" style="width:100%;height:200px;object-fit:cover;border-radius: 10px;background:darkgrey;" />
                   <div style="position: absolute;bottom:10px;left:10px;color:white;font-weight: bold;">
                     <p id="searchPageUserName_` +
                     nowDataCount +

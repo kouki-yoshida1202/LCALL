@@ -1,0 +1,295 @@
+<ons-page id="adminPage">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">ユーザー情報管理</div>
+  </ons-toolbar>
+  <ons-list>
+    <ons-list-header>検索するユーザーのメールアドレス</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: center;"
+        >
+          <ons-input
+            id="mailSearchValue"
+            placeholder="設定ユーザーのメールアドレス"
+            type="email"
+          ></ons-input>
+        </ons-col>
+      </ons-row>
+      <ons-row style="margin-top:1em;">
+        <ons-col
+          vertical-align="center"
+          width="100%"
+          style="text-align: center;margin-bottom:0.5em;"
+        >
+          <ons-button
+            modifier="large"
+            class="large-button-orange"
+            style="background: #0799d7;"
+            onclick="mailSearchUser()"
+            >検索</ons-button
+          >
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <div
+    id="mailSearchAfterZone"
+    style="width:100%;display:none;text-align: center;background: white;padding-top:30px;padding-bottom:30px;"
+  >
+    <div style="display:flex;justify-content:center;align-content: center;">
+      <div
+        style="width:40%;display: flex;align-items: center;justify-content: center;"
+      >
+        <img
+          id="mailSearchUserImage"
+          src=""
+          alt=""
+          style="width:90px;height:90px;object-fit: cover;border-radius: 50%;"
+        />
+      </div>
+      <div style="width:60%;font-size: 0.9em;">
+        <p id="mailSearchUserName" style="text-align: left;"></p>
+        <p id="mailSearchUserSex" style="text-align: left;"></p>
+        <p id="mailSearchUserRank" style="text-align: left;"></p>
+      </div>
+    </div>
+    <div style="width:100%;">
+      <ons-button
+        modifier="large"
+        class="large-button-orange"
+        style="width:90%;margin:0 auto;margin-top:20px;"
+        onclick="rankChangeModal.show()"
+      >
+        ランク変更
+      </ons-button>
+      <ons-button
+        modifier="large"
+        class="large-button-gray"
+        style="width:90%;margin:0 auto;margin-top:20px;"
+        onclick="userStop()"
+      >
+        アカウント削除
+      </ons-button>
+    </div>
+  </div>
+  <!-- <button onclick="testButton()">テスト</button> -->
+  <ons-modal id="rankChangeModal">
+    <ons-card>
+      <p
+        style="text-align: center;font-size:1.2em;margin-top:0px;margin-bottom:20px;"
+      >
+        <span
+          style="float:right;padding-right:0.5em;"
+          onclick="rankChangeModal.hide()"
+          ><i class="fas fa-times"></i
+        ></span>
+      </p>
+      <ons-select id="rankChange" style="margin-top:10px;">
+        <option>スタンダード</option>
+        <option>プレミアム</option>
+        <option>VIP</option>
+      </ons-select>
+      <ons-button
+        modifier="large"
+        class="large-button-orange"
+        style="width:90%;margin:0 auto;margin-top:20px;"
+        onclick="rankChangeSubmit()"
+      >
+        ランク変更
+      </ons-button>
+    </ons-card>
+  </ons-modal>
+  <input type="hidden" id="hiddenSex" />
+  <input type="hidden" id="hiddenUserName" />
+  <input type="hidden" id="hiddenRank" />
+  <input type="hidden" id="hiddenUserId" />
+  <script>
+    function userStop() {
+      var userId = $("#hiddenUserId").val();
+      db.collection("users")
+        .doc(userId)
+        .delete()
+        .then(function() {
+          firebase
+            .storage()
+            .ref()
+            .child("profilePicture/" + userId)
+            .delete()
+            .then(function() {
+              ons.notification.alert({
+                title: "削除しました",
+                message:
+                  "続けて、FirebaseのAuthentication画面でも該当ユーザーを削除してください"
+              });
+            })
+            .catch(function() {
+              ons.notification.alert({
+                title: "削除しました",
+                message:
+                  "続けて、FirebaseのAuthentication画面でも該当ユーザーを削除してください"
+              });
+            });
+        });
+    }
+
+    function testButton() {
+      // db.collection("users")
+      //   .doc("fY9TZJ4U5JaMabzsAeglCIRurmi1")
+      //   .collection("shift")
+      //   .get()
+      //   .then(function(misakiInfo) {
+      //     misakiInfo.forEach(element => {
+      //       console.log(element.id);
+      //       console.log(element.data().date);
+      //       db.collection("users")
+      //         .doc("OXnfSkUSQrT5VrMpQZxiMO6kEFe2")
+      //         .collection("shift")
+      //         .doc(element.id)
+      //         .set({
+      //           date: element.data().date,
+      //           endTime: element.data().endTime,
+      //           startTime: element.data().startTime,
+      //           userId: element.data().userId
+      //         });
+      //     });
+      db.collection("users")
+        .doc("fY9TZJ4U5JaMabzsAeglCIRurmi1")
+        .collection("reviews")
+        .get()
+        .then(function(misakiInfo) {
+          misakiInfo.forEach(element => {
+            db.collection("users")
+              .doc("OXnfSkUSQrT5VrMpQZxiMO6kEFe2")
+              .collection("reviews")
+              .doc(element.id)
+              .set({
+                createTime: element.data().createTime,
+                partyRoomId: element.data().partyRoomId,
+                reviewComment: element.data().reviewComment,
+                reviewCount: element.data().reviewCount,
+                writeUserId: element.data().writeUserId
+              });
+          });
+          // db.collection("users")
+          //   .doc("OXnfSkUSQrT5VrMpQZxiMO6kEFe2")
+          //   .update({
+          //     reviews: misakiInfo.data().reviews,
+          //     shift: misakiInfo.data().shift
+          //   });
+          // db.collection("users")
+          //   .doc("OXnfSkUSQrT5VrMpQZxiMO6kEFe2")
+          //   .set({
+          //     username: misakiInfo.data().username,
+          //     address: misakiInfo.data().address,
+          //     email: misakiInfo.data().email,
+          //     alcohol: misakiInfo.data().alcohol,
+          //     birthplace: misakiInfo.data().birthplace,
+          //     haircolor: misakiInfo.data().haircolor,
+          //     hairstyle: misakiInfo.data().hairstyle,
+          //     height: misakiInfo.data().height,
+          //     old: misakiInfo.data().old,
+          //     sex: misakiInfo.data().sex,
+          //     text: misakiInfo.data().text,
+          //     tobacco: misakiInfo.data().tobacco,
+          //     work: misakiInfo.data().work,
+          //     salaly: misakiInfo.data().salaly,
+          //     point: misakiInfo.data().point,
+          //     karaoke: misakiInfo.data().karaoke,
+          //     rank: misakiInfo.data().rank,
+          //     ginkoukind: misakiInfo.data().ginkoukind,
+          //     ginkoumeigi: misakiInfo.data().ginkoumeigi,
+          //     ginkouname: misakiInfo.data().ginkouname,
+          //     ginkounumber: misakiInfo.data().ginkounumber,
+          //     ginkoushiten: misakiInfo.data().ginkoushiten,
+          //     createDate: misakiInfo.data().createDate,
+          //     loginDate: misakiInfo.data().loginDate
+          //   });
+        });
+    }
+
+    function rankChangeSubmit() {
+      showLoad();
+      var changeRank = $("#rankChange").val();
+      if (changeRank == "VIP") {
+        var salaly = 10000;
+      } else if (changeRank == "プレミアム") {
+        var salaly = 7500;
+      } else if (changeRank == "スタンダード") {
+        var salaly = 5000;
+      }
+      db.collection("users")
+        .doc($("#hiddenUserId").val())
+        .update({
+          rank: changeRank,
+          salaly: salaly
+        })
+        .then(function() {
+          hideLoad();
+          ons.notification.alert({
+            message: "ランクを変更しました"
+          });
+          $("#mailSearchUserRank").html("現在のランク：" + changeRank);
+          $("#hiddenRank").val(changeRank);
+        })
+        .catch(function() {
+          hideLoad();
+          ons.notification.alert({
+            message: "失敗しました"
+          });
+        });
+    }
+    function mailSearchUser() {
+      showLoad();
+      var email = $("#mailSearchValue").val();
+      db.collection("users")
+        .where("email", "==", email)
+        .get()
+        .then(function(userInfo) {
+          if (userInfo.size > 0) {
+            $("#mailSearchAfterZone").show();
+            userInfo.forEach(user => {
+              $("#mailSearchUserName").html("名前：" + user.data().username);
+              $("#mailSearchUserSex").html("性別：" + user.data().sex);
+              $("#mailSearchUserRank").html(
+                "現在のランク：" + user.data().rank
+              );
+              $("#hiddenSex").val(user.data().sex);
+              $("#hiddenRank").val(user.data().rank);
+              $("#hiddenUserName").val(user.data().username);
+              $("#hiddenUserId").val(user.id);
+              ref = firebase
+                .storage()
+                .ref()
+                .child("profilePicture/" + user.id + "/1")
+                .getDownloadURL()
+                .then(url => {
+                  $("#mailSearchUserImage").attr("src", url);
+                })
+                .catch(function() {
+                  $("#mailSearchUserImage").attr(
+                    "src",
+                    "img/userImageSampleWoman.png"
+                  );
+                });
+            });
+            hideLoad();
+          } else {
+            hideLoad();
+            ons.notification.alert({
+              message: "ユーザーが見つかりません"
+            });
+            $("#mailSearchAfterZone").hide();
+          }
+        })
+        .catch(function() {
+          hideLoad();
+        });
+    }
+  </script>
+</ons-page>

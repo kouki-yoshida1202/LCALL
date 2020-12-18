@@ -51,6 +51,7 @@
       var myUserId = firebase.auth().currentUser.uid;
       db.collection("message")
         .where("usersId", "array-contains-any", [myUserId])
+        .orderBy("newestTime", "desc")
         .onSnapshot(function(messages) {
           $("#chatList").empty();
           if (messages.size > 0) {
