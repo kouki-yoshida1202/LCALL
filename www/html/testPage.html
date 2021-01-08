@@ -1,0 +1,158 @@
+<ons-page id="adminlist-page">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">to doリスト</div>
+    <div class="right" onclick="showTestModal()">
+      <ons-icon
+        icon="md-plus"
+        size="20px"
+        style="color: red;margin-right:10%;"
+      ></ons-icon>
+    </div>
+  </ons-toolbar>
+  <ons-speed-dial
+    id="myPageFab"
+    position="bottom right"
+    direction="up"
+    style="z-index: 100000 !important;"
+  >
+    <ons-fab modifier="mini" ripple>
+      <ons-icon icon="fa-ellipsis-h"></ons-icon>
+    </ons-fab>
+
+    <ons-speed-dial-item
+      onclick="myNavigator.bringPageTop('html/testpageInformation.html');"
+    >
+      <ons-icon
+        icon="fa-info"
+        style="font-size:0.8em;transform:translate(0px,-1px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
+    <ons-speed-dial-item onclick="logoutOpen();">
+      <ons-icon
+        icon="fa-sign-out-alt"
+        style="font-size:0.8em;transform:translate(2px,-1px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
+    <ons-speed-dial-item
+      id="adminButton"
+      onclick="adminPage();"
+      style="display:none;background-color: red;"
+    >
+      <ons-icon
+        icon="fa-lock"
+        style="font-size:0.8em;transform:translate(0px,-2px);"
+      ></ons-icon>
+    </ons-speed-dial-item>
+  </ons-speed-dial>
+  <ons-list id="todoList"> </ons-list>
+  <ons-modal id="testModal" direction="up" animation="fade">
+    <ons-card>
+      <ons-icon
+        icon="fa-times-circle"
+        style="color:gray;float:right;font-size: 1.5em;"
+        onclick="hideTestModal();"
+      >
+      </ons-icon>
+      <div class="title"></div>
+      <div class="content">
+        <div style="text-align: center; margin-top: 30px;">
+          <p>
+            <style>
+              #newMailaddress input,
+              #newPassword input {
+                border-bottom: none;
+              }
+            </style>
+            <ons-input
+              id="todoTitle"
+              modifier="underbar"
+              type="text"
+              placeholder="todoタイトル"
+              style="padding:0.7em 1.0em;width:80%;"
+              float
+            ></ons-input>
+          </p>
+          <p style="margin-top: 2em;margin-bottom:2rem;">
+            <ons-button
+              class="button--cta"
+              onclick="todoCreate()"
+              style="border-radius: 35px;padding:0.5em 1em;width:80%;"
+              ripple
+              >登録する</ons-button
+            >
+          </p>
+        </div>
+      </div>
+    </ons-card>
+  </ons-modal>
+  <script>
+    function showTestModal() {
+      var modal = document.querySelector("#testModal");
+      modal.show();
+    }
+
+    function hideTestModal() {
+      var modal = document.querySelector("#testModal");
+      modal.hide();
+    }
+
+    setTimeout(function() {
+      var user = firebase.auth().currentUser;
+      todoListGet(user.uid);
+    }, 500);
+
+    function todoListGet(myUserID) {
+      db.collection("todo")
+        .where("userID", "==", myUserID)
+        .onSnapshot(function(querySnapshot) {
+          $("#todoList").empty();
+          querySnapshot.forEach(element => {
+            var list =
+              `
+            <ons-list-item>
+            <ons-row>
+            <ons-col width="85%">
+            <p>題名:` +
+              element.data().title +
+              `</p>
+            <p>作成日:` +
+              element.data().createTime.toDate() +
+              `</p>
+              </ons-col>
+            <ons-col width="15%"vertical-align="center">
+            
+              <ons-button onclick="deleteTodo('` +
+              element.id +
+              `')">
+              削除
+              </ons-button>
+              </ons-col>
+              </ons-row>
+            </ons-list-item>
+            `;
+            $("#todoList").append(list);
+          });
+        });
+    }
+
+    function deleteTodo(todoID) {
+      console.log(todoID);
+      db.collection("todo")
+        .doc(todoID)
+        .delete();
+    }
+
+    function todoCreate() {
+      var myUserID = firebase.auth().currentUser.uid;
+      var title = $("#todoTitle").val();
+      db.collection("todo").add({
+        title: title,
+        createTime: new Date(),
+        userID: myUserID
+      });
+    }
+  </script>
+</ons-page>

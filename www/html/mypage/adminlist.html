@@ -1,0 +1,22 @@
+<ons-page id="adminlist-page">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">管理者メニュー</div>
+  </ons-toolbar>
+  <ons-list>
+    <ons-list-item
+      modifier="chevron"
+      tappable
+      onclick="myNavigator.bringPageTop('html/adminPage.html');"
+      >ユーザー情報編集
+    </ons-list-item>
+    <ons-list-item
+      modifier="chevron"
+      tappable
+      onclick="myNavigator.bringPageTop('html/mypage/adminPartyListPage.html');"
+      >食事会リスト</ons-list-item
+    >
+  </ons-list>
+</ons-page>

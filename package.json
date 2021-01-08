@@ -15,7 +15,9 @@
         "monaca-plugin-customscheme": "1.0.2",
         "ncmb-push-monaca-plugin": "3.0.9",
         "cordova-plugin-androidx": "file:res/custom_plugins/cordova-plugin-androidx",
-        "cordova-plugin-androidx-adapter": "file:res/custom_plugins/cordova-plugin-androidx-adapter"
+        "cordova-plugin-androidx-adapter": "file:res/custom_plugins/cordova-plugin-androidx-adapter",
+        "cordova-plugin-x-socialsharing": "file:res/custom_plugins/cordova-plugin-x-socialsharing",
+        "cordova-plugin-geolocation": "4.0.1"
     },
     "cordova": {
         "plugins": {
@@ -33,7 +35,9 @@
             "monaca-plugin-customscheme": {},
             "ncmb-push-monaca-plugin": {},
             "cordova-plugin-androidx": {},
-            "cordova-plugin-androidx-adapter": {}
+            "cordova-plugin-androidx-adapter": {},
+            "cordova-plugin-x-socialsharing": {},
+            "cordova-plugin-geolocation": {}
         }
     },
     "scripts": {

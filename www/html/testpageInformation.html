@@ -1,0 +1,50 @@
+<ons-page id="adminlist-page">
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">アカウント設定</div>
+  </ons-toolbar>
+  <ons-list>
+    <ons-list-item
+      modifier="chevron"
+      tappable
+      onclick="myNavigator.bringPageTop('html/mypage/myMailPassEdit.html');"
+    >
+      メルアド・パスワード変更</ons-list-item
+    >
+    <ons-list-item modifier="chevron" tappable onclick="logoutOpen()">
+      ログアウト</ons-list-item
+    >
+  </ons-list>
+  <script>
+    function logoutOpen() {
+      ons.notification.confirm({
+        message: "ログアウトしますか？",
+        title: "確認",
+        buttonLabels: ["Cancel", "OK"],
+        callback: function(buttonIndex) {
+          if (buttonIndex == 1) {
+            logout();
+          }
+        }
+      });
+    }
+    function logout() {
+      firebase.auth().onAuthStateChanged(user => {
+        firebase
+          .auth()
+          .signOut()
+          .then(() => {
+            window.location = "index.html";
+          })
+          .catch(error => {
+            ons.notification.alert({
+              title: "ログイン失敗",
+              message: `ログアウト時にエラーが発生しました (${error})`
+            });
+          });
+      });
+    }
+  </script>
+</ons-page>

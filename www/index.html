@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="lib/onsenui/css/main.min.css" />
     <script src="lib/onsenui/js/locales-all.min.js"></script>
     <script src="lib/onsenui/js/ja.js"></script>
-    <script></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9yxDvpkj5JDPL_hor05NlQy7PdFMR9iQ&language=ja"></script> -->
   </head>
   <body>
     <ons-navigator id="myNavigator"></ons-navigator>
@@ -80,63 +80,92 @@
           .get()
           .then(function(user) {
             var sex = user.data().sex;
-            if (sex == "woman") {
-              var calendarEl = document.getElementById("calendar");
-              var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: "dayGridMonth",
-                locale: "ja",
-                selectable: true, // 選択不可
-                height: 450,
-                selectLongPressDelay: 0,
-                dateClick: function(info) {
-                  $("#selectDate").val(info.dateStr);
-                }
-              });
-              calendar.render();
-            }
+
+            var calendarEl = document.getElementById("calendar");
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: "dayGridMonth",
+              locale: "ja",
+              selectable: true, // 選択不可
+              height: 450,
+              selectLongPressDelay: 0,
+              dateClick: function(info) {
+                $("#selectDate").val(info.dateStr);
+              }
+            });
+            calendar.render();
           });
       });
       ons.ready(function() {
-        var myNavigator = document.getElementById("myNavigator");
         // ログインチェック
-        // myNavigator.pushPage("html/adminPage.html");
-        firebase.auth().onAuthStateChanged(user => {
-          if (user) {
-            if (!user.emailVerified) {
-              // メアド確認終わってない
-              myNavigator.pushPage("html/loginPage.html");
+        var osVer = "Android";
+        var osVer2 = "iPhone";
+        var osVer3 = "iPad";
+        $.ajax({
+          type: "post",
+          url: "https://www.paystripe.info/LCALL_stripe/test10100.php",
+          async: true,
+          dataType: "text",
+          success: function(data) {
+            console.log(data);
+            var myNavigator = document.getElementById("myNavigator");
+            if (
+              data == "test" &&
+              (navigator.userAgent.indexOf(osVer2) > 0 ||
+                navigator.userAgent.indexOf(osVer3) > 0)
+            ) {
+              firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                  myNavigator.replacePage("html/testPage.html");
+                } else {
+                  myNavigator.pushPage("html/testLoginPage.html");
+                }
+              });
             } else {
-              // メアド確認終わってる
-              db.collection("users")
-                .doc(user.uid)
-                .set(
-                  {
-                    loginDate: formatDateYYYYMMDDHHMM(new Date())
-                  },
-                  { merge: true }
-                )
-                .then(function() {
-                  var user = firebase.auth().currentUser;
-                  db.collection("users")
-                    .doc(user.uid)
-                    .get()
-                    .then(function(user) {
-                      if (user.data().sex == "man") {
-                        myNavigator.replacePage("html/homePage.html");
-                      } else if (user.data().sex == "woman") {
-                        myNavigator.replacePage("html/womanHomePage.html");
-                      } else {
-                        ons.notification.alert({
-                          title: "ログイン失敗",
-                          message: "性別が取得できませんでした。"
-                        });
-                        myNavigator.pushPage("html/loginPage.html");
-                      }
-                    });
-                });
+              firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                  if (!user.emailVerified) {
+                    myNavigator.pushPage("html/loginPage.html");
+                  } else {
+                    // メアド確認終わってる
+                    db.collection("users")
+                      .doc(user.uid)
+                      .set(
+                        {
+                          loginDate: formatDateYYYYMMDDHHMM(new Date())
+                        },
+                        { merge: true }
+                      )
+                      .then(function() {
+                        var user = firebase.auth().currentUser;
+                        db.collection("users")
+                          .doc(user.uid)
+                          .get()
+                          .then(function(user) {
+                            if (user.data().sex == "man") {
+                              myNavigator.replacePage("html/homePage.html");
+                            } else if (user.data().sex == "woman") {
+                              myNavigator.replacePage(
+                                "html/womanHomePage.html"
+                              );
+                            } else {
+                              ons.notification.alert({
+                                title: "ログイン失敗",
+                                message: "性別が取得できませんでした。"
+                              });
+                              myNavigator.pushPage("html/loginPage.html");
+                            }
+                          });
+                      });
+                  }
+                } else {
+                  myNavigator.pushPage("html/loginPage.html");
+                }
+              });
             }
-          } else {
-            myNavigator.pushPage("html/loginPage.html");
+          },
+          error: function(response) {
+            console.log("error");
+            console.log(response);
           }
         });
       });
@@ -167,7 +196,24 @@
           // .set("badgeSetting", 0)
           .send();
       }
+      function AutoLink(str) {
+        var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
+        var regexp_makeLink = function(all, url, h, href) {
+          return (
+            `<a style="border-bottom:1px solid;" onclick="windowOpen('` +
+            url +
+            `')">` +
+            url +
+            `</a>`
+          );
+        };
+        str = String(str);
+        return str.replace(regexp_url, regexp_makeLink);
+      }
 
+      function windowOpen(url) {
+        window.open(url, "_system", "usewkwebview=yes");
+      }
       function sendPushMail(sendUserID, catchUserID, situation) {
         db.collection("users")
           .doc(sendUserID)
@@ -452,15 +498,15 @@
           .then(url => {
             var image =
               `
-            <ons-col style="text-align: center;position:relative;" vertical-align="center">
-              
-              <img id="myImageEdit_1" src="` +
+              <ons-col style="text-align: center;position:relative;" vertical-align="center">
+
+                <img id="myImageEdit_1" src="` +
               url +
               `" alt=""
-                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                onclick="profileCamera(1);"/>
-            </ons-col>
-          `;
+                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                  onclick="profileCamera(1);"/>
+              </ons-col>
+            `;
             $("#profileEditPageImage").append(image);
             ref = firebase
               .storage()
@@ -470,14 +516,14 @@
               .then(url => {
                 var image =
                   `
-                  <ons-col style="text-align: center;position:relative;" vertical-align="center">
-                    <img id="myImageEdit_2" src="` +
+                    <ons-col style="text-align: center;position:relative;" vertical-align="center">
+                      <img id="myImageEdit_2" src="` +
                   url +
                   `" alt=""
-                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                      onclick="profileCamera(2);"/>
-                  </ons-col>
-                `;
+                        style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                        onclick="profileCamera(2);"/>
+                    </ons-col>
+                  `;
                 $("#profileEditPageImage").append(image);
                 ref = firebase
                   .storage()
@@ -487,14 +533,14 @@
                   .then(url => {
                     var image =
                       `
-                      <ons-col style="text-align: center;" vertical-align="center">
-                        <img id="myImageEdit_3" src="` +
+                        <ons-col style="text-align: center;" vertical-align="center">
+                          <img id="myImageEdit_3" src="` +
                       url +
                       `" alt=""
-                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                          onclick="profileCamera(3);"/>
-                      </ons-col>
-                    `;
+                            style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                            onclick="profileCamera(3);"/>
+                        </ons-col>
+                      `;
                     $("#profileEditPageImage").append(image);
                     ref = firebase
                       .storage()
@@ -504,14 +550,14 @@
                       .then(url => {
                         var image =
                           `
-                            <ons-col style="text-align: center;" vertical-align="center">
-                              <img id="myImageEdit_4" src="` +
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img id="myImageEdit_4" src="` +
                           url +
                           `" alt=""
-                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                                onclick="profileCamera(4);"/>
-                            </ons-col>
-                          `;
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                                  onclick="profileCamera(4);"/>
+                              </ons-col>
+                            `;
                         $("#profileEditPageImage").append(image);
                         ref = firebase
                           .storage()
@@ -521,68 +567,68 @@
                           .then(url => {
                             var image =
                               `
-                              <ons-col style="text-align: center;" vertical-align="center">
-                                <img id="myImageEdit_5" src="` +
+                                <ons-col style="text-align: center;" vertical-align="center">
+                                  <img id="myImageEdit_5" src="` +
                               url +
                               `" alt=""
-                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                                  onclick="profileCamera(5);"/>
-                              </ons-col>
-                            `;
+                                    style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                                    onclick="profileCamera(5);"/>
+                                </ons-col>
+                              `;
                             $("#profileEditPageImage").append(image);
                           })
                           .catch(function(err) {
                             var image = `
-                              <ons-col style="text-align: center;" vertical-align="center">
-                                <img id="myImageEdit_5" src="img/plusIcon.png" alt=""
-                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                                  onclick="profileCamera(5);"/>
-                              </ons-col>
-                            `;
+                                <ons-col style="text-align: center;" vertical-align="center">
+                                  <img id="myImageEdit_5" src="img/plusIcon.png" alt=""
+                                    style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                                    onclick="profileCamera(5);"/>
+                                </ons-col>
+                              `;
                             $("#profileEditPageImage").append(image);
                           });
                       })
                       .catch(function(err) {
                         var image = `
-                            <ons-col style="text-align: center;" vertical-align="center">
-                              <img id="myImageEdit_4" src="img/plusIcon.png" alt=""
-                                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                                onclick="profileCamera(4);"/>
-                            </ons-col>
-                          `;
+                              <ons-col style="text-align: center;" vertical-align="center">
+                                <img id="myImageEdit_4" src="img/plusIcon.png" alt=""
+                                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                                  onclick="profileCamera(4);"/>
+                              </ons-col>
+                            `;
                         $("#profileEditPageImage").append(image);
                       });
                   })
                   .catch(function(err) {
                     var image = `
-                      <ons-col style="text-align: center;" vertical-align="center">
-                        <img id="myImageEdit_3" src="img/plusIcon.png" alt=""
-                          style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                          onclick="profileCamera(3);"/>
-                      </ons-col>
-                    `;
+                        <ons-col style="text-align: center;" vertical-align="center">
+                          <img id="myImageEdit_3" src="img/plusIcon.png" alt=""
+                            style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                            onclick="profileCamera(3);"/>
+                        </ons-col>
+                      `;
                     $("#profileEditPageImage").append(image);
                   });
               })
               .catch(function(err) {
                 var image = `
-                  <ons-col style="text-align: center;" vertical-align="center">
-                    <img id="myImageEdit_2" src="img/plusIcon.png" alt=""
-                      style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                      onclick="profileCamera(2);"/>
-                  </ons-col>
-                `;
+                    <ons-col style="text-align: center;" vertical-align="center">
+                      <img id="myImageEdit_2" src="img/plusIcon.png" alt=""
+                        style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                        onclick="profileCamera(2);"/>
+                    </ons-col>
+                  `;
                 $("#profileEditPageImage").append(image);
               });
           })
           .catch(function(err) {
             var image = `
-            <ons-col style="text-align: center;" vertical-align="center">
-              <img id="myImageEdit_1" src="img/plusIcon.png" alt=""
-                style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
-                onclick="profileCamera(1);"/>
-            </ons-col>
-          `;
+              <ons-col style="text-align: center;" vertical-align="center">
+                <img id="myImageEdit_1" src="img/plusIcon.png" alt=""
+                  style="width:100px;height:100px;object-fit:cover;border-radius: 10px;"
+                  onclick="profileCamera(1);"/>
+              </ons-col>
+            `;
             $("#profileEditPageImage").append(image);
           });
       }
@@ -652,5 +698,7 @@
         });
       }
     </script>
+    <script src="lib/onsenui/js/jquery.longpress.js"></script>
+    <script src="http://rawgit.com/pisi/Longclick/master/jquery.longclick-min.js"></script>
   </body>
 </html>

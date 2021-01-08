@@ -161,28 +161,16 @@
           var myPointNow = myResult.data().point;
           var myPointAfter = Number(myPointNow) - Number(needPoint);
           if (myPointAfter >= 0) {
-            return myPointAfter;
-          } else {
-            ons.notification.alert({
-              message:
-                "所持ポイントが足りません。マイページからチャージしてください。"
-            });
-            return;
-          }
-        })
-        .then(function(myPointAfter) {
-          db.collection("users")
-            .doc(myUserId)
-            .set(
-              {
-                point: myPointAfter
-              },
-              { merge: true }
-            );
-          db.collection("partyRoom")
-            .doc()
-            .set(
-              {
+            db.collection("users")
+              .doc(myUserId)
+              .set(
+                {
+                  point: myPointAfter
+                },
+                { merge: true }
+              );
+            db.collection("partyRoom")
+              .add({
                 startTime: startTime,
                 endTime: endTime,
                 callNumberPeople: callNumberPeople,
@@ -192,30 +180,35 @@
                 joinUsersId: joinUsersId,
                 createTime: new Date(),
                 partyStatus: "still"
-              },
-              { merge: true }
-            )
-            .then(function() {
-              womanUserIdArrayPush.forEach(catchUserId => {
-                var message = myUserName + "があなたを指名予約しました。";
-                sendPush(catchUserId, message);
-                sendPushMail(myUserId, catchUserId, "shimeiYoyaku");
+              })
+              .then(function() {
+                womanUserIdArrayPush.forEach(catchUserId => {
+                  var message = myUserName + "があなたを指名予約しました。";
+                  sendPush(catchUserId, message);
+                  sendPushMail(myUserId, catchUserId, "shimeiYoyaku");
+                });
+              })
+              .then(function() {
+                ons.notification.alert({
+                  message: "予約が完了しました",
+                  callback: function() {
+                    window.location = "index.html";
+                  }
+                });
+              })
+              .catch(function(error) {
+                console.log(error);
+                ons.notification.alert({
+                  message: "失敗しました"
+                });
               });
-            })
-            .then(function() {
-              ons.notification.alert({
-                message: "予約が完了しました",
-                callback: function() {
-                  window.location = "index.html";
-                }
-              });
-            })
-            .catch(function(error) {
-              console.log(error);
-              ons.notification.alert({
-                message: "失敗しました"
-              });
+          } else {
+            ons.notification.alert({
+              message:
+                "所持ポイントが足りません。マイページからチャージしてください。"
             });
+            return;
+          }
         })
         .catch(function(error) {
           console.log(error);
@@ -258,7 +251,9 @@
         $("#callCastImage").append(callCastList);
       }
       var womanUserIdArrayCounter = 1;
+      console.log(womanUserIdArray);
       womanUserIdArray.forEach(womanUserId => {
+        callWomanPhotoIndicate(womanUserId, womanUserIdArrayCounter);
         db.collection("users")
           .doc(womanUserId)
           .get()
@@ -277,7 +272,10 @@
               womanUserId,
               hourlyWage * Number(callHours)
             ]);
+            console.log(needPointArray);
             // console.log(needPointArray, j, womanUserIdArray.length);
+            console.log(womanUserIdArrayCounter);
+            console.log(womanUserIdArray.length);
             if (womanUserIdArrayCounter == womanUserIdArray.length) {
               var sum = 0;
               needPointArray.forEach(function(elm) {
@@ -287,28 +285,30 @@
               $("#needPoint").html(sum + "P");
               hideLoad();
             }
-          })
-          .then(function() {
-            firebase
-              .storage()
-              .ref()
-              .child("profilePicture/" + womanUserId + "/1")
-              .getDownloadURL()
-              .then(url => {
-                // 画像取得できた
-                return url;
-              })
-              .catch(function() {
-                // 画像取得できないとき
-                url = "img/userSampleImageWoman.png";
-                return url;
-              })
-              .then(function(url) {
-                $("#callCastImage_" + womanUserIdArrayCounter).attr("src", url);
-                womanUserIdArrayCounter++;
-              });
+
+            womanUserIdArrayCounter++;
           });
       });
+    }
+
+    function callWomanPhotoIndicate(womanUserId, womanUserIdArrayCounter) {
+      firebase
+        .storage()
+        .ref()
+        .child("profilePicture/" + womanUserId + "/1")
+        .getDownloadURL()
+        .then(url => {
+          // 画像取得できた
+          return url;
+        })
+        .catch(function() {
+          // 画像取得できないとき
+          url = "img/userSampleImageWoman.png";
+          return url;
+        })
+        .then(function(url) {
+          $("#callCastImage_" + womanUserIdArrayCounter).attr("src", url);
+        });
     }
   </script>
 </ons-page>

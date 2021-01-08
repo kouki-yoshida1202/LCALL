@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="com.monaca.LCALL.TEST" version="1.0.16" ios-CFBundleVersion="1.0.15.1">
+<widget xmlns="http://www.w3.org/ns/widgets" id="com.monaca.LCALL.TEST" version="1.0.19" ios-CFBundleVersion="1.0.19.12">
   <name>LCALL</name>
   <description>Made with Monaca (http://monaca.mobi)</description>
   <author/>
@@ -101,16 +101,16 @@
   <preference name="monaca:MonacaBackendUrl" value="https://cloud.monaca.mobi/json-rpc/"/>
   <preference name="monaca:MonacaBackendId" value="5f8c090be788851976b6577c"/>
   <preference name="monaca:MonacaBackendApiKey" value="cdeff556de760ffba4a4cff55db84c73eaed85951356072ccbe8e74ac02ed599"/>
+  <preference name="KeepRunning" value="true"/>
+  <preference name="monaca:AndroidIsPackageNameSeparate" value="false"/>
+  <preference name="Orientation" value="portrait"/>
+  <preference name="SplashScreenDelay" value="2000"/>
+  <preference name="Fullscreen" value="false"/>
   <preference name="ios-XCBuildConfiguration-TARGETED_DEVICE_FAMILY" value="1,2"/>
   <preference name="AutoHideSplashScreen" value="true"/>
   <preference name="FadeSplashScreen" value="true"/>
   <preference name="ShowSplashScreenSpinner" value="false"/>
-  <preference name="EnableViewportScale" value="false"/>
   <access origin="*"/>
-  <preference name="KeepRunning" value="true"/>
-  <preference name="monaca:AndroidIsPackageNameSeparate" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
-  <preference name="Orientation" value="portrait"/>
-  <preference name="SplashScreenDelay" value="2000"/>
-  <preference name="Fullscreen" value="false"/>
+  <preference name="EnableViewportScale" value="false"/>
 </widget>

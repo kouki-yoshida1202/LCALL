@@ -14,6 +14,7 @@
       padding: 5px;
     }
   </style>
+
   <div
     class="content"
     style="text-align: center;background-image: url(img/login_backimage.jpg) !important;height:100% !important;background-size: cover !important;"
@@ -86,19 +87,6 @@
           </span>
         </p>
       </div>
-      <div class="cp_iptxt" style="margin-top:20px;">
-        <p style="text-align:center;color:white;">
-          続行することにより、<span
-            style="color:#0799d7;"
-            onclick='window.open("https://lcall-test.web.app/riyouKiyaku.html", "_system", "usewkwebview=yes");'
-            >利用規約</span
-          >および<span
-            style="color:#0799d7;"
-            onclick='window.open("https://lcall-test.web.app/privacyPolicy.html", "_system", "usewkwebview=yes");'
-            >プライバシーポリシー</span
-          >に同意したものとみなされます。
-        </p>
-      </div>
     </div>
   </div>
   <ons-modal id="newAccountCreate" direction="up" animation="fade">
@@ -143,18 +131,7 @@
               onclick="newUserCreate($('#newMailaddress').val(),$('#newPassword').val())"
               style="border-radius: 35px;padding:0.5em 1em;width:80%;"
               ripple
-              >男性でアカウント登録する</ons-button
-            >
-          </p>
-
-          <hr />
-          <p style="margin-top:2rem;">
-            <ons-button
-              class="button--cta"
-              onclick="womanUserCreatePageJump()"
-              style="border-radius: 35px;padding:0.5em 1em;width:80%;background: pink"
-              ripple
-              >女性の登録はこちらから ></ons-button
+              >アカウント登録する</ons-button
             >
           </p>
         </div>
@@ -266,16 +243,7 @@
                       .doc(user.uid)
                       .get()
                       .then(function(user) {
-                        if (user.data().sex == "man") {
-                          myNavigator.replacePage("html/homePage.html");
-                        } else if (user.data().sex == "woman") {
-                          myNavigator.replacePage("html/womanHomePage.html");
-                        } else {
-                          ons.notification.alert({
-                            title: "ログイン失敗",
-                            message: "性別が取得できませんでした。"
-                          });
-                        }
+                        myNavigator.replacePage("html/testPage.html");
                       });
                     hideLoad();
                   } else {
@@ -308,7 +276,6 @@
               // Handle Errors here.
               var errorCode = error.code;
               var errorMessage = error.message;
-              console.log(error);
             });
         } else {
           ons.notification.alert({

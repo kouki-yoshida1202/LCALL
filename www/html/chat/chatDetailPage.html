@@ -8,7 +8,6 @@
       height: 40px;
     }
   </style>
-  
   <ons-toolbar>
     <div class="left" style="padding-left:8px;">
       <ons-back-button></ons-back-button>
@@ -31,6 +30,12 @@
   </div>
   <ons-bottom-toolbar id="chatDetailBottom" style="line-height: 40px;height:55px">
     <ons-row style="padding-top:5px;">
+      <ons-col width="7%" vertical-align="center" style="text-align: end;">
+        <ons-icon icon="fa-plus-circle" style="color:grey;font-size:1.2em;"
+        onclick="talkOption();"
+        >
+      </ons-icon>
+      </ons-col>
       <ons-col width="80%" style="text-align: center;font-size:1.0em;" vertical-align="center">
         <!-- <ons-input id="chatCommentInput"
           style="background-color: #efeff4;width:90%;line-height: 40px;padding-top:0px;padding-bottom:0px;"
@@ -39,7 +44,7 @@
         <textarea id="chatCommentInput" class="textarea textarea--transparent" rows="1" placeholder="コメント入力欄"
           style="background-color: #efeff4;width:90%;height: 40px;padding-top:6px;padding-bottom:0px;"></textarea>
       </ons-col>
-      <ons-col width="20%" style="text-align: center;" vertical-align="center">
+      <ons-col width="13%" style="text-align: center;" vertical-align="center">
         <ons-button class="large-button-orange" style="font-size:1.0em;padding-top:0px;padding-bottom:0px;line-height:40px;"
           onclick="chatSubmit()">送信
         </ons-button>
@@ -108,10 +113,181 @@
       
     </div>
   </ons-popover>
+  <ons-modal id="talkOption">
+    <ons-card>
+      <p style="text-align: center;font-size:1.2em;margin-top:0px;margin-bottom:40px;">
+        <span style="float:right;padding-right:0.5em;" onclick="hideTalkOptionModal();"><i
+            class="fas fa-times"></i></span>
+      </p>
+      <ons-button modifier="large" class="large-button-orange"onclick="talkPhoto()">
+        写真を送信する
+      </ons-button>
+      <hr style="margin-top:50px;margin-bottom:50px;">
+      <ons-button modifier="large" class="large-button-blue" onclick="getPosition()">
+        位置情報を送信する
+      </ons-button>
+    </ons-card>
+  </ons-modal>
   <input type="hidden" id="chatDetailPageUserId">
   <input type="hidden" id="chatDetailPageUserRank">
   <input type="hidden" id="chatDetailPageMessageId">
+  <img id="talkPhotoZone" style="display:none;"></img>
+  
   <script>
+    function talkPhoto() {
+        window.navigator.camera.getPicture((imageData) => {
+          //成功時
+          document.getElementById('talkPhotoZone').src = 'data:image/jpeg;base64,' + imageData;
+          setTimeout(function () {
+            alert("aiueo");
+            var img = document.getElementById('talkPhotoZone');
+            var dataURI = img.getAttribute('src');
+            // dataURIをBlobに変換する
+            alert("aiueo2");
+            alert(dataURI);
+            var blob = toBlob(dataURI);
+            alert(blob);
+            var strong = 1000;
+            var uid =  new Date().getTime().toString(16) + Math.floor(strong * Math.random()).toString(16);
+            firebase
+              .storage()
+              .ref("talkPicture/" + uid)
+              .put(blob)
+              .then(function(){
+                firebase
+                  .storage()
+                  .ref("talkPicture/" + uid).getDownloadURL().then(function(downloadURL){
+                    send(downloadURL);
+                  });
+              });
+          }, 500);
+
+        }, (error) => {
+          // 失敗時
+          alertNew("写真取得に失敗しました", "", "");
+        }, {
+          // 各種設定
+          sourceType: window.navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
+          destinationType: window.navigator.camera.DestinationType.DATA_URL,
+          targetWidth: 800,
+          targetHeight: 800
+        });
+      }
+    function talkOption(){
+      showTalkOptionModal();
+    }
+
+    function getPosition(){
+      // Geolocation APIに対応している
+      if (navigator.geolocation) {
+        // 現在位置を取得できる場合の処理
+        console.log("ok");
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+      }
+
+      // Geolocation APIに対応していない
+      else {
+        // 現在位置を取得できない場合の処理
+        alert("あなたの端末では、現在位置を取得できません。");
+      }
+      
+    }
+
+    // 3. 現在地取得に成功した場合の処理
+    function onSuccess(position) {
+      // 4. Google Maps APIの位置情報オブジェクトを生成
+      console.log(position);
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      var chatText = "https://www.google.com/maps?q="+latitude+","+longitude;
+      // var latlng = new google.maps.LatLng(latitude, longitude);
+      // // 5. 地図を表示
+      // map = new google.maps.Map(document.getElementById("mapCanvas"), {
+      //   zoom: 14,       // ズームレベル
+      //   center: latlng 	// 中心地を指定
+      // });
+      // // 6. マーカーを置く
+      // var marker = new google.maps.Marker({ position: latlng, map: map });
+      send(chatText);
+      hideTalkOptionModal();
+      alert("現在の位置情報を送信しました。");
+    }
+    function send(chatText){
+      var catchUserId = $('#chatDetailPageUserId').val();
+      var sendUserId = firebase.auth().currentUser.uid;
+      var usersArray = [catchUserId, sendUserId];
+      usersArray.sort();
+      db.collection("message")
+        .where("usersId", "==", usersArray)
+        .get()
+        .then(function (messageRoom) {
+          if (messageRoom.size > 0) {
+            // 既にチャットルームが存在する場合
+            chatAddCreate(messageRoom, sendUserId, catchUserId, chatText);
+          } else {
+            db.collection("message")
+              .add({
+                usersId: usersArray,
+                newestTime: new Date(),
+                newestText: chatText
+              })
+              .then(function (setResult) {
+                db.collection("message")
+                  .doc(setResult.id)
+                  .collection("chatContents")
+                  .doc()
+                  .set({
+                    sendChat: sendUserId,
+                    catchChat: catchUserId,
+                    createTime: new Date(),
+                    text: chatText,
+                    suggest: false
+                  }, { merge: true })
+                  .then(function () {
+                    $('#chatCommentInput').val("");
+                  });
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+
+          }
+        })
+        .then(function () {
+          db.collection("users")
+            .doc(sendUserId)
+            .get()
+            .then(function (sendUserInfo) {
+              var myUserName = sendUserInfo.data().username;
+              var message = myUserName + "からメッセージが届きました";
+              sendPush(catchUserId, message);
+
+              sendPushTalkMail(sendUserId, catchUserId, "message", chatText);
+            });
+        });
+    }
+    // 7. 現在地取得に失敗した場合の処理
+    function onError(error) {
+      console.log(error);
+      alert(JSON.stringify(error));
+    }
+
+    function showTalkOptionModal() {
+      var modal = document.querySelector("#talkOption");
+      modal.show();
+      // setTimeout(function() {
+      //   modal.hide();
+      // }, 2000);
+    }
+
+    function hideTalkOptionModal() {
+      var modal = document.querySelector("#talkOption");
+      modal.hide();
+    }
+    $('.chatCard').click(function(){
+      console.log($(this).html());
+    });
+    
     setTimeout(function () {
       let chatDetailPage = document.querySelector("#chatDetailPage");
       original_main_height = chatDetailPage.clientHeight;
@@ -124,8 +300,28 @@
       // year + "-" + month + "-" + day + "" + hours + "" + minute);
       $('#suggestDay input').val(year+"-"+month+"-"+day);
       $('#suggestTime input').val(hours + ":" + minute);
-    }, 100);
+  }, 100);
+    setTimeout(function(){
+      // how many milliseconds is a long press?
+      var longpress = 500;
+      // holds the start time
+      var start;
+      jQuery(".chatCard").on('mousedown', function (e) {
+        start = new Date().getTime();
+      });
 
+      jQuery(".chatCard").on('mouseleave', function (e) {
+        start = 0;
+      });
+
+      jQuery(".chatCard").on('mouseup', function (e) {
+        if (new Date().getTime() >= (start + longpress)) { 
+          window.plugins.socialsharing.share(
+            $(this).text().trim()
+          );
+        }
+      });
+    },1500);
     //ソフトウェアキーボード表示処理
     window.addEventListener("keyboardWillShow", event => {
       //画面の高さをキーボードの高さを差し引いた値とする
@@ -243,7 +439,7 @@
                           var message = myUserName+"からメッセージが届きました";
                           sendPush(catchUserId, message);
                           
-                          sendPushMail(sendUserId, catchUserId,"message");
+                          sendPushTalkMail(sendUserId, catchUserId,"message", chatText);
                         })
                         .catch(function (error) {
                           console.log(error);
@@ -281,7 +477,7 @@
                         var message = myUserName + "からメッセージが届きました";
                         sendPush(catchUserId, message);
                         
-                        sendPushMail(sendUserId, catchUserId, "message");
+                        sendPushTalkMail(sendUserId, catchUserId, "message",chatText);
                       })
                       .catch(function (error) {
                         console.log(error);
@@ -301,7 +497,6 @@
       usersArray.sort();
       db.collection("message")
         .where("usersId", "==", usersArray)
-        // .get()
         .onSnapshot(function (messages) {
           if (messages.size > 0) {
             chatIndicate(messages);
@@ -327,14 +522,14 @@
             messages.forEach(message => {
               var sendChat = message.data().sendChat;
               var catchChat = message.data().catchChat;
-              var text = message.data().text.replace(/<5060>/g, "<br>");
+              var text = AutoLink(message.data().text.replace(/<5060>/g, "<br>"));
               var createTime = jikanCulc(message.data().createTime);
               if (sendChat == myUserId) {
                 // 自分の投稿
                 var messagelist = `
                         <ons-list-item modifier="nodivider">
                           <div class="right" style="width:100%;padding-bottom:0px;justify-content:flex-end;">
-                            <ons-card style="background-color:#1DA1F2;color:white;margin-bottom:0px;">
+                            <ons-card class="chatCard"style="background-color:#1DA1F2;color:white;margin-bottom:0px;">
                               `+ text + `
                             </ons-card>
                           </div>
@@ -353,7 +548,7 @@
                   var messagelist = `
                         <ons-list-item modifier="nodivider">
                           <div class="left" style="width:100%;padding-bottom:0px;justify-content:flex-start;">
-                            <ons-card style="background-color:#f5f6f8;margin-bottom:0px;"
+                            <ons-card class="chatCard"style="background-color:#f5f6f8;margin-bottom:0px;"
                               >
                               `+ text + `
                             </ons-card>
@@ -371,7 +566,7 @@
                   var messagelist = `
                         <ons-list-item modifier="nodivider">
                           <div class="left" style="width:100%;padding-bottom:0px;justify-content:flex-start;">
-                            <ons-card style="background-color:#f5f6f8;margin-bottom:0px;"
+                            <ons-card class="chatCard" style="background-color:#f5f6f8;margin-bottom:0px;"
                               >
                               `+ text;
                   if(message.data().status=="complete"){
@@ -558,7 +753,7 @@
                       var myUserName = sendUserInfo.data().username;
                       var message = myUserName + "からメッセージが届きました";
                       sendPush(catchUserId, message);
-                      sendPushMail(sendUserId, catchUserId, "message");
+                      sendPushTalkMail(sendUserId, catchUserId, "message", chatText);
                     });
                 })
                 .catch(function(error){
@@ -626,7 +821,7 @@
                 var message = myUserName + "からメッセージが届きました";
                 sendPush(catchUserId, message);
                 
-                sendPushMail(sendUserId, catchUserId, "message");
+                sendPushTalkMail(sendUserId, catchUserId, "message", chatText);
               });
           });
         
@@ -663,5 +858,41 @@
           });
       });
     }
+
+    function sendPushTalkMail(sendUserID, catchUserID, situation,message) {
+        db.collection("users")
+          .doc(sendUserID)
+          .get()
+          .then(function (sendUserInfo) {
+            var sendUserName = sendUserInfo.data().username;
+            db.collection("users")
+              .doc(catchUserID)
+              .get()
+              .then(function (catchUserInfo) {
+                var catchUserMail = catchUserInfo.data().email;
+                var title =
+                  "【LCALL】" +
+                  sendUserName +
+                  "さんからメッセージが届きました。";
+                var mainContent = "";
+                var content =
+                  "\r\n" +
+                  sendUserName +
+                  "さんからメッセージが届きました。\r\n\r\n<内容>\r\n"+message+"\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+
+                $.ajax({
+                  type: "post",
+                  url:
+                    "https://www.paystripe.info/LCALL_stripe/sendPushMail.php",
+                  data: {
+                    email: catchUserMail,
+                    title: title,
+                    content: content
+                  },
+                  success: function (data) { }
+                });
+              });
+          });
+      }
   </script>
 </ons-page>

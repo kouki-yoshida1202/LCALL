@@ -1,0 +1,110 @@
+<ons-page id="adminpartylist-page">
+  <style>
+    #adminpartylist-page p {
+      margin: 0px;
+    }
+  </style>
+  <ons-toolbar>
+    <div class="left">
+      <ons-back-button> </ons-back-button>
+    </div>
+    <div class="center">食事会リスト(新しい順)</div>
+  </ons-toolbar>
+  <ons-list id="adminpartylist"> </ons-list>
+  <script>
+    setTimeout(function() {
+      partyAllGet();
+      console.log("aiueo");
+    }, 500);
+
+    function partyAllGet() {
+      db.collection("partyRoom")
+        .orderBy("createTime", "desc")
+        .limit(30)
+        .onSnapshot(function(snap) {
+          $("#adminpartylist").empty();
+          var partyNumber = 0;
+          snap.forEach(element => {
+            console.log(element);
+            var list =
+              `
+              <ons-list-item>
+                <ons-col width="85%" id="partylist_` +
+              partyNumber +
+              `">
+                  <p id="partylist1_` +
+              partyNumber +
+              `">
+                  </p><p id="partylist2_` +
+              partyNumber +
+              `">
+                  </p><p id="partylist3_` +
+              partyNumber +
+              `">
+                  </p>
+                  <p id="partylist4_` +
+              partyNumber +
+              `">
+                  </p>
+                  <p id="partylist5_` +
+              partyNumber +
+              `">
+                  </p>
+                  <p id="partylist6_` +
+              partyNumber +
+              `">
+                  </p>
+                  <p id="partylist7_` +
+              partyNumber +
+              `">
+                  </p>
+                </ons-col>
+                <ons-col width="10%">
+                  <ons-button id="partylistbutton_` +
+              partyNumber +
+              `">削除</ons-button>
+                </ons-col>
+              </ons-list-item>
+            `;
+
+            $("#adminpartylist").append(list);
+            partyListIndicate(element, partyNumber);
+            partyNumber++;
+          });
+        });
+    }
+
+    function partyListIndicate(element, partyNumber) {
+      $("#partylist1_" + partyNumber).html(
+        `開始予定日時:` + element.data().startTime
+      );
+      $("#partylist2_" + partyNumber).html(
+        `終了予定日時:` + element.data().endTime
+      );
+      $("#partylist3_" + partyNumber).html(`場所：` + element.data().callPlace);
+      $("#partylistbutton_" + partyNumber).click(function() {
+        deleteParty(element.id);
+      });
+      var joinUsersId = element.data().joinUsersId;
+      var number = 4;
+      joinUsersId.forEach(joinUser => {
+        db.collection("users")
+          .doc(joinUser)
+          .get()
+          .then(function(user) {
+            $("#partylist" + number + "_" + partyNumber).html(
+              "参加者: " + user.data().username
+            );
+            number++;
+          });
+      });
+    }
+
+    function deleteParty(partyId) {
+      console.log("delete");
+      db.collection("partyRoom")
+        .doc(partyId)
+        .delete();
+    }
+  </script>
+</ons-page>
