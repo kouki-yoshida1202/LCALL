@@ -266,6 +266,33 @@
                       .doc(user.uid)
                       .get()
                       .then(function(user) {
+                        document.addEventListener("deviceready", function() {
+                          FirebasePlugin.grantPermission(function(
+                            hasPermission
+                          ) {
+                            console.log(
+                              "Permission was " +
+                                (hasPermission ? "granted" : "denied")
+                            );
+                          });
+
+                          // デバイストークン取得
+                          FirebasePlugin.getToken(
+                            function(fcmToken) {
+                              console.log(fcmToken);
+                              db.collection("users")
+                                .doc(user.id)
+                                .set({ fcmToken: fcmToken }, { merge: true })
+                                .then(function() {})
+                                .catch(function(error) {
+                                  alert(error);
+                                });
+                            },
+                            function(error) {
+                              console.log(error);
+                            }
+                          );
+                        });
                         if (user.data().sex == "man") {
                           myNavigator.replacePage("html/homePage.html");
                         } else if (user.data().sex == "woman") {

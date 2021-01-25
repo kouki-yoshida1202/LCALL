@@ -23,7 +23,7 @@
       style="position:absolute;top:0;left:0;background-color:rgba(0,0,0,0.6);height:100%;width:100%;"
     >
       <div
-        style="height:35%;display:flex;align-items: center;text-align: center;"
+        style="height:25%;display:flex;align-items: center;text-align: center;"
       >
         <img
           src="img/LCALL.png"
@@ -31,6 +31,17 @@
           style="width:40%;height:auto;margin:0 auto;margin-top:10%;"
         />
       </div>
+      <div class="cp_iptxt" style="margin-top:5%;">
+        <ons-button
+          class="button--large--cta"
+          style="margin: 0 auto;border-radius: 35px;padding:0.5em;"
+          ripple
+          onclick="secretAccount()"
+        >
+          ログインせずに始める
+        </ons-button>
+      </div>
+      <hr />
       <div class="cp_iptxt">
         <input
           type="email"
@@ -75,6 +86,7 @@
           Login
         </ons-button>
       </div>
+
       <div class="cp_iptxt">
         <p
           style="text-align:center;color:white;"
@@ -211,6 +223,35 @@
           }
         });
     }
+
+    function secretAccount() {
+      firebase
+        .auth()
+        .signInAnonymously()
+        .then(() => {
+          // Signed in..
+          console.log("success");
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              // User is signed in, see docs for a list of available properties
+              // https://firebase.google.com/docs/reference/js/firebase.User
+              var uid = user.uid;
+              console.log(uid);
+              // ...
+            } else {
+              // User is signed out
+              // ...
+            }
+          });
+        })
+        .catch(error => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          console.log(error);
+          // ...
+        });
+    }
+
     function loginCheck(email, password) {
       showLoad();
       console.log(email, password);

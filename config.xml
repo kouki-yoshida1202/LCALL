@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="com.monaca.LCALL.TEST" version="1.0.19" ios-CFBundleVersion="1.0.19.12">
+<widget xmlns="http://www.w3.org/ns/widgets" id="com.monaca.LCALL.TEST" version="1.2.9">
   <name>LCALL</name>
   <description>Made with Monaca (http://monaca.mobi)</description>
   <author/>
@@ -53,6 +53,9 @@
     <feature name="CDVWKWebViewEngine">
       <param name="ios-package" value="CDVWKWebViewEngine"/>
     </feature>
+    <config-file platform="ios" target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+      <string>どの場所にいるのかを確認するために位置情報を取得します。</string>
+    </config-file>
     <config-file platform="ios" parent="CFBundleLocalizations" target="*-Info.plist">
       <array>
         <string>ja</string>
@@ -60,6 +63,7 @@
     </config-file>
   </platform>
   <platform name="android">
+    <preference name="android-minSdkVersion" value="21"/>
     <preference name="android-targetSdkVersion" value="29"/>
     <resource-file src="google-services.json" target="app/google-services.json"/>
     <icon src="/res/android/icon/ldpi.png" density="ldpi"/>
@@ -97,6 +101,9 @@
   </edit-config>
   <edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="merge">
     <string>need to photo library access to save pictures there</string>
+  </edit-config>
+  <edit-config target="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
+    <string>どの場所にいるのかを確認するために位置情報を取得します。</string>
   </edit-config>
   <preference name="monaca:MonacaBackendUrl" value="https://cloud.monaca.mobi/json-rpc/"/>
   <preference name="monaca:MonacaBackendId" value="5f8c090be788851976b6577c"/>

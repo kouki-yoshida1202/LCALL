@@ -149,6 +149,7 @@
               $("#chatlistTime_" + nowDataCounter).html(
                 jikanCulc(message.data().newestTime)
               );
+              console.log("注目:" + nowDataCounter);
               $("#chatlist_" + nowDataCounter).click(function() {
                 chatPageJump(partnerId);
               });

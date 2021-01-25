@@ -143,10 +143,9 @@
             var img = document.getElementById('talkPhotoZone');
             var dataURI = img.getAttribute('src');
             // dataURIをBlobに変換する
-            alert("aiueo2");
-            alert(dataURI);
+            
             var blob = toBlob(dataURI);
-            alert(blob);
+            
             var strong = 1000;
             var uid =  new Date().getTime().toString(16) + Math.floor(strong * Math.random()).toString(16);
             firebase
@@ -181,7 +180,6 @@
       // Geolocation APIに対応している
       if (navigator.geolocation) {
         // 現在位置を取得できる場合の処理
-        console.log("ok");
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
       }
 
@@ -499,6 +497,7 @@
         .where("usersId", "==", usersArray)
         .onSnapshot(function (messages) {
           if (messages.size > 0) {
+            console.log(messages.size);
             chatIndicate(messages);
           }else{
             hideLoad();
@@ -507,6 +506,7 @@
     }
 
     function chatIndicate(messages){
+      
       $('#chats').empty();
       var myUserId = firebase.auth().currentUser.uid;
       messages.forEach(message => {
@@ -518,7 +518,9 @@
           .orderBy("createTime", "asc")
           .get()
           .then(function (messages) {
+            console.log(messages.size);
             var nowDataCounter = 0;
+            $('#chats').empty();
             messages.forEach(message => {
               var sendChat = message.data().sendChat;
               var catchChat = message.data().catchChat;
@@ -774,7 +776,18 @@
       }else{
         var catchUserId = $('#chatDetailPageUserId').val();
         var sendUserId = firebase.auth().currentUser.uid;
-        var usersArray = [catchUserId,sendUserId];
+        var usersArray = [catchUserId, sendUserId];
+        // db.collection("users").doc(sendUserId).get().then(function(sender){
+        //   var userName = sender.data().username;
+        //   db.collection("messageAll").add({
+        //     "content": chatText,
+        //     "createTime": new Date(),
+        //     "receiverId": catchUserId,
+        //     "senderId": sendUserId,
+        //     "senderName":userName+"からDMが届きました",
+        //   });
+        // });
+        
         usersArray.sort();
         db.collection("message")
           .where("usersId", "==", usersArray)
@@ -879,7 +892,13 @@
                   "\r\n" +
                   sendUserName +
                   "さんからメッセージが届きました。\r\n\r\n<内容>\r\n"+message+"\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
-
+                db.collection("messageAll").add({
+                  "content": message,
+                  "createTime": new Date(),
+                  "receiverId": catchUserID,
+                  "senderId": sendUserID,
+                  "senderName": sendUserName + "からDMが届きました",
+                });
                 $.ajax({
                   type: "post",
                   url:

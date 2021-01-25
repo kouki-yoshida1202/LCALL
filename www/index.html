@@ -80,7 +80,6 @@
           .get()
           .then(function(user) {
             var sex = user.data().sex;
-
             var calendarEl = document.getElementById("calendar");
             var calendar = new FullCalendar.Calendar(calendarEl, {
               initialView: "dayGridMonth",
@@ -102,16 +101,17 @@
         var osVer3 = "iPad";
         $.ajax({
           type: "post",
-          url: "https://www.paystripe.info/LCALL_stripe/test10100.php",
+          url: "https://www.paystripe.info/LCALL_stripe/test128.php",
           async: true,
           dataType: "text",
           success: function(data) {
             console.log(data);
             var myNavigator = document.getElementById("myNavigator");
             if (
-              data == "test" &&
-              (navigator.userAgent.indexOf(osVer2) > 0 ||
-                navigator.userAgent.indexOf(osVer3) > 0)
+              data == "test"
+              //  &&
+              // (navigator.userAgent.indexOf(osVer2) > 0 ||
+              //   navigator.userAgent.indexOf(osVer3) > 0)
             ) {
               firebase.auth().onAuthStateChanged(user => {
                 if (user) {
@@ -141,6 +141,41 @@
                           .doc(user.uid)
                           .get()
                           .then(function(user) {
+                            console.log(user.id);
+                            // プッシュ通知のパーミッションをリクエスト
+                            document.addEventListener(
+                              "deviceready",
+                              function() {
+                                FirebasePlugin.grantPermission(function(
+                                  hasPermission
+                                ) {
+                                  console.log(
+                                    "Permission was " +
+                                      (hasPermission ? "granted" : "denied")
+                                  );
+                                });
+
+                                // デバイストークン取得
+                                FirebasePlugin.getToken(
+                                  function(fcmToken) {
+                                    db.collection("users")
+                                      .doc(user.id)
+                                      .set(
+                                        { fcmToken: fcmToken },
+                                        { merge: true }
+                                      )
+                                      .then(function() {})
+                                      .catch(function(error) {
+                                        alert(error);
+                                      });
+                                  },
+                                  function(error) {
+                                    console.log(error);
+                                  }
+                                );
+                              }
+                            );
+
                             if (user.data().sex == "man") {
                               myNavigator.replacePage("html/homePage.html");
                             } else if (user.data().sex == "woman") {
@@ -246,6 +281,13 @@
                     "\r\n" +
                     sendUserName +
                     "さんがあなたを指名予約しました。\r\n\r\n───────────────────────────────────\r\n\r\nby LCALL\r\n\r\n───────────────────────────────────\r\n";
+                  db.collection("partyAll").add({
+                    content: sendUserName + "さんがあなたを指名予約しました。",
+                    createTime: new Date(),
+                    receiverId: catchUserID,
+                    senderId: sendUserID,
+                    senderName: "食事予約が入りました。"
+                  });
                 } else if (situation == "partyStart") {
                   var title = "【LCALL】食事会が開始されました。";
                   var mainContent = "";
@@ -413,10 +455,10 @@
                             '"style="width:30px;height:30px;border-radius: 50%;object-fit:cover;margin-right:5px;"/>' +
                             partnerName
                         );
+                        setTimeout(function() {
+                          chatDetailGet();
+                        }, 200);
                       });
-                    setTimeout(function() {
-                      chatDetailGet();
-                    }, 200);
                   }, 500);
                 }
               });
