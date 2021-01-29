@@ -1,4 +1,9 @@
 <ons-page id="adminlist-page">
+  <script src="http://www.google.com/jsapi"></script>
+  <script
+    type="text/javascript"
+    src="http://www.google.com/jsapi?key=4ac0b373e778440d875ca64992c1f6e1"
+  ></script>
   <style>
     .item-label {
       text-align: center;
@@ -18,12 +23,19 @@
         <option value="title">題名順</option>
       </ons-select>
     </div>
-    <div class="center">todo & SNS</div>
-    <div class="right" onclick="showTestModal()">
+    <div class="center">リスト</div>
+    <div class="right">
+      <ons-icon
+        icon="fa-list"
+        size="20px"
+        style="color: red;margin-right:10%;"
+        onclick="showListAddModal()"
+      ></ons-icon>
       <ons-icon
         icon="md-plus"
         size="20px"
         style="color: red;margin-right:10%;"
+        onclick="showTestModal()"
       ></ons-icon>
     </div>
   </ons-toolbar>
@@ -34,7 +46,7 @@
       overscrollable
       auto-scroll
       var="carousel"
-      item-width="50%"
+      item-width="25%"
       centerd
       initial-index="0"
       style="height:33px;border-bottom:1px solid #f0f0f0;padding-top:5px;font-size:0.8em;background-color: white;"
@@ -44,10 +56,16 @@
         id="carousel1"
         onclick="mainTapCarouselChange(0)"
       >
-        <div class="item-label">みんなのtodo</div>
+        <div class="item-label">未完了</div>
       </ons-carousel-item>
       <ons-carousel-item id="carousel2" onclick="mainTapCarouselChange(1)">
-        <div class="item-label">マイtodo</div>
+        <div class="item-label">完了済み</div>
+      </ons-carousel-item>
+      <ons-carousel-item id="carousel3" onclick="mainTapCarouselChange(2)">
+        <div class="item-label">天気</div>
+      </ons-carousel-item>
+      <ons-carousel-item id="carousel4" onclick="mainTapCarouselChange(3)">
+        <div class="item-label">ニュース</div>
       </ons-carousel-item>
     </ons-carousel>
   </div>
@@ -77,6 +95,7 @@
     </ons-speed-dial-item>
   </ons-speed-dial>
   <ons-list id="todoList"> </ons-list>
+
   <ons-modal id="testModal" direction="up" animation="fade">
     <ons-card>
       <ons-icon
@@ -85,16 +104,15 @@
         onclick="hideTestModal();"
       >
       </ons-icon>
-      <div class="title"><p>みんなに公開して強制力を高めよう!!</p></div>
+
       <div class="content">
         <div style="text-align: center; margin-top: 30px;">
           <p>
-            <style>
-              #newMailaddress input,
-              #newPassword input {
-                border-bottom: none;
-              }
-            </style>
+            <ons-select style="padding:0.7em 1.0em;width:80%;">
+              <select id="listChoose" class="select-input"></select>
+            </ons-select>
+          </p>
+          <p>
             <ons-input
               id="todoTitle"
               modifier="underbar"
@@ -105,17 +123,21 @@
             ></ons-input>
           </p>
           <p>
-            <style>
-              #newMailaddress input,
-              #newPassword input {
-                border-bottom: none;
-              }
-            </style>
             <ons-input
               id="todoDeadTime"
               modifier="underbar"
               type="Date"
               placeholder="期日"
+              style="padding:0.7em 1.0em;width:80%;"
+              float
+            ></ons-input>
+          </p>
+          <p>
+            <ons-input
+              id="todoUrl"
+              modifier="underbar"
+              type="text"
+              placeholder="参考URL"
               style="padding:0.7em 1.0em;width:80%;"
               float
             ></ons-input>
@@ -133,10 +155,71 @@
       </div>
     </ons-card>
   </ons-modal>
+  <ons-modal id="listModal" direction="up" animation="fade">
+    <ons-card>
+      <ons-icon
+        icon="fa-times-circle"
+        style="color:gray;float:right;font-size: 1.5em;"
+        onclick="hideListAddModal();"
+      >
+      </ons-icon>
+      <div class="title">カテゴリーを登録</div>
+      <div class="content">
+        <div style="text-align: center; margin-top: 30px;">
+          <p>
+            <ons-input
+              id="listTitle"
+              modifier="underbar"
+              type="text"
+              placeholder="listタイトル"
+              style="padding:0.7em 1.0em;width:80%;"
+              float
+            ></ons-input>
+          </p>
+          <p style="margin-top: 2em;margin-bottom:2rem;">
+            <ons-button
+              class="button--cta"
+              onclick="listCreate()"
+              style="border-radius: 35px;padding:0.5em 1em;width:80%;"
+              ripple
+              >登録する</ons-button
+            >
+          </p>
+        </div>
+        <hr />
+        <div id="createdList"></div>
+      </div>
+    </ons-card>
+  </ons-modal>
+
   <script>
     function showTestModal() {
       var modal = document.querySelector("#testModal");
       modal.show();
+      var myUserID = firebase.auth().currentUser.uid;
+      db.collection("listTitle")
+        .where("userID", "==", myUserID)
+        .get()
+        .then(function(result) {
+          console.log(result.size);
+          $("#listChoose").empty();
+          $("#listChoose").append(
+            $("<option>")
+              .html("TODO")
+              .val("TODO")
+          );
+          if (result.size > 0) {
+            result.forEach(element => {
+              var title = element.data().title;
+              console.log(title);
+              $("#listChoose").append(
+                $("<option>")
+                  .html(title)
+                  .val(title)
+              );
+            });
+          }
+        });
     }
 
     function hideTestModal() {
@@ -144,32 +227,118 @@
       modal.hide();
     }
 
+    function showListAddModal() {
+      var modal = document.querySelector("#listModal");
+      modal.show();
+      var myUserID = firebase.auth().currentUser.uid;
+      db.collection("listTitle")
+        .where("userID", "==", myUserID)
+        .get()
+        .then(function(result) {
+          $("#createdList").empty();
+          if (result.size > 0) {
+            result.forEach(element => {
+              var title = element.data().title;
+              var list =
+                `<ons-row>
+              <ons-col width="85%"style="text-align:center;">` +
+                title +
+                `</ons-col>
+              <ons-col width="15%" onclick="deleteList('` +
+                element.id +
+                `','` +
+                title +
+                `');">
+                <ons-icon icon="fa-times-circle" style="color:gray;float:right;font-size: 1.5em;"></ons-icon>
+              </ons-col>
+            </ons-row>`;
+              $("#createdList").append(list);
+            });
+          }
+        });
+    }
+
+    function hideListAddModal() {
+      var modal = document.querySelector("#listModal");
+      modal.hide();
+    }
+    function deleteList(listID, title) {
+      db.collection("listTitle")
+        .doc(listID)
+        .delete();
+      var myUserID = firebase.auth().currentUser.uid;
+      db.collection("todo")
+        .where("userID", "==", myUserID)
+        .where("category", "==", title)
+        .get()
+        .then(function(result) {
+          result.forEach(element => {
+            db.collection("todo")
+              .doc(element.id)
+              .delete();
+          });
+        });
+    }
     setTimeout(function() {
       var user = firebase.auth().currentUser;
-      // todoListGet(user.uid);
-      todoAllListGet();
+      myListTitleGet(user.uid, "still");
+      // todoAllListGet();
     }, 500);
 
     $("#choose-sel").change(function() {
       var select = $(this).val();
       console.log(select);
     });
-
-    function todoListGet(myUserID, orderStatus) {
-      if (orderStatus == "" || orderStatus == null) {
-        orderStatus = "createTime";
-      }
-      db.collection("todo")
+    function myListTitleGet(myUserID, status) {
+      db.collection("listTitle")
         .where("userID", "==", myUserID)
-        .orderBy(orderStatus, "desc")
+        // .orderBy("createTime", "asc")
         .onSnapshot(function(querySnapshot) {
           $("#todoList").empty();
+          $("#todoList").append(`
+          <ons-list-title style="background-color:#0076ff;color:white;font-weight: bold;border-bottom:2px solid grey;">TODO</ons-list-title><div id="TODO"></div>
+          `);
+          todoListGet(myUserID, "TODO", status);
+          querySnapshot.forEach(element => {
+            var title = element.data().title;
+            $("#todoList").append(
+              `
+          <ons-list-title style="background-color:#0076ff;color:white;font-weight: bold;border-bottom:2px solid grey;">` +
+                title +
+                `</ons-list-title><div id="` +
+                title +
+                `"></div>
+          `
+            );
+            todoListGet(myUserID, title, status);
+          });
+        });
+    }
+    function todoListGet(myUserID, category, status) {
+      console.log(myUserID, category);
+      // if (orderStatus == "" || orderStatus == null) {
+      //   orderStatus = "createTime";
+      // }
+      db.collection("todo")
+        .where("userID", "==", myUserID)
+        .where("category", "==", category)
+        .where("status", "==", status)
+        // .orderBy(orderStatus, "desc")
+        .onSnapshot(function(querySnapshot) {
+          $("#" + category).empty();
           querySnapshot.forEach(element => {
             var list =
               `
             <ons-list-item>
             <ons-row>
-            <ons-col width="85%">
+            <ons-col width="10%"vertical-align="center">
+              <ons-icon icon="fa-check" style="color:grey;font-weight:bold;"onclick="deleteTodo('` +
+              element.id +
+              `','` +
+              status +
+              `')"></ons-icon>
+              </ons-col>
+            <ons-col width="80%">
             <p>題名:` +
               element.data().title +
               `</p>
@@ -185,34 +354,51 @@
                 .deadTime.toDate()
                 .toLocaleString("ja-JP") +
               `</p>
+              <p style="font-size:0.8em;margin:0px;color:blue;" onclick='window.open("` +
+              element.data().url +
+              `", "_system", "usewkwebview=yes");'">参考URL:` +
+              element.data().url +
+              `</p>
               </ons-col>
-            <ons-col width="15%"vertical-align="center">
-
-              <ons-button onclick="deleteTodo('` +
+            <ons-col width="10%"vertical-align="center">
+<ons-icon icon="fa-heart" style="color:pink;font-weight:bold;"onclick="favoTodo('` +
               element.id +
-              `')">
-              削除
-              </ons-button>
+              `',` +
+              element.data().favoCount +
+              `)"></ons-icon>
+                <p style="color:pink;margin:0px;">` +
+              element.data().favoCount +
+              `</p>
+              
               </ons-col>
               </ons-row>
             </ons-list-item>
             `;
-            $("#todoList").append(list);
+            $("#" + category).append(list);
           });
         });
     }
 
-    function deleteTodo(todoID) {
-      console.log(todoID);
+    function deleteTodo(todoID, status) {
+      if (status == "still") {
+        var changeStatus = "complete";
+      } else {
+        var changeStatus = "still";
+      }
+
       db.collection("todo")
         .doc(todoID)
-        .delete();
+        .update({
+          status: changeStatus
+        });
     }
 
     function todoCreate() {
       var myUserID = firebase.auth().currentUser.uid;
       var title = $("#todoTitle").val();
       var todoDeadTime = $("#todoDeadTime").val();
+      var url = $("#todoUrl").val();
+      var category = $("#listChoose").val();
       if (title == "" || todoDeadTime == "") {
         alert("未入力です");
       } else {
@@ -221,11 +407,30 @@
           createTime: new Date(),
           userID: myUserID,
           favoCount: 0,
-          deadTime: new Date(todoDeadTime)
+          deadTime: new Date(todoDeadTime),
+          url: url,
+          category: category,
+          status: "still"
         });
         $("#todoTitle").val("");
         $("#todoDeadTime").val("");
         hideTestModal();
+      }
+    }
+    function listCreate() {
+      var myUserID = firebase.auth().currentUser.uid;
+      var title = $("#listTitle").val();
+
+      if (title == "") {
+        alert("未入力です");
+      } else {
+        db.collection("listTitle").add({
+          title: title,
+          createTime: new Date(),
+          userID: myUserID
+        });
+        $("#listTitle").val("");
+        hideListAddModal();
       }
     }
 
@@ -259,58 +464,175 @@
         .addClass("active_tabCarousel");
       var mainCarousel = document.getElementById("mainCarousel");
       Load();
+      var user = firebase.auth().currentUser;
       if (carouselIndex == 0) {
-        todoAllListGet();
+        myListTitleGet(user.uid, "still");
+      } else if (carouselIndex == 1) {
+        myListTitleGet(user.uid, "complete");
+      } else if (carouselIndex == 2) {
+        // initialize();
+        $("#todoList").empty();
+        $(function() {
+          var API_KEY = "b20186241aba411b356ee00069ee1099";
+          var city = "Tokyo";
+          var url =
+            "http://api.openweathermap.org/data/2.5/forecast?q=" +
+            city +
+            ",jp&units=metric&APPID=" +
+            API_KEY;
+          $.ajax({
+            url: url,
+            dataType: "json",
+            type: "GET"
+          })
+            .done(function(data) {
+              var insertHTML = "";
+              var cityName = "<h2>" + data.city.name + "</h2>";
+              $("#todoList").append(cityName);
+              for (var i = 0; i <= 8; i = i + 2) {
+                insertHTML += buildHTML(data, i);
+              }
+              $("#todoList").append(insertHTML);
+            })
+            .fail(function(data) {
+              console.log(data);
+              console.log("失敗しました");
+            });
+        });
       } else {
-        var user = firebase.auth().currentUser;
-        todoListGet(user.uid);
+        $("#todoList").empty();
+        var url =
+          "http://newsapi.org/v2/top-headlines?country=jp&apiKey=4ac0b373e778440d875ca64992c1f6e1";
+        $.ajax({
+          url: url,
+          dataType: "json",
+          type: "GET"
+        })
+          .done(function(data) {
+            console.log(data.articles);
+            var articles = data.articles;
+            articles.forEach(element => {
+              console.log(element);
+              var title = element.title;
+              var image = element.urlToImage;
+              console.log(title, image);
+              var list =
+                `
+          <div><img src="` +
+                image +
+                `"style="width:100%;height:250px;object-fit:cover;"></img><h3 style="padding-right:10px;padding-left:10px;">` +
+                title +
+                `</h3></div>
+          `;
+              $("#todoList").append(list);
+            });
+            // var insertHTML = "";
+            // var cityName = "<h2>" + data.city.name + "</h2>";
+            // $("#todoList").append(cityName);
+            // for (var i = 0; i <= 8; i = i + 2) {
+            //   insertHTML += buildHTML(data, i);
+            // }
+            // $("#todoList").append(insertHTML);
+          })
+          .fail(function(data) {
+            console.log(data);
+            console.log("失敗しました");
+          });
       }
     }
 
-    function todoAllListGet() {
-      db.collection("todo")
-        .orderBy("createTime", "desc")
-        .onSnapshot(function(querySnapshot) {
-          $("#todoList").empty();
-          querySnapshot.forEach(element => {
-            var list =
-              `
-            <ons-list-item>
-            <ons-row>
-            <ons-col width="90%">
-            <p>題名:` +
-              element.data().title +
-              `</p>
-            <p style="font-size:0.8em;margin:0px;">作成日:` +
-              element
-                .data()
-                .createTime.toDate()
-                .toLocaleString("ja-JP") +
-              `</p>
-              <p style="font-size:0.8em;margin:0px;">期日:` +
-              element
-                .data()
-                .deadTime.toDate()
-                .toLocaleString("ja-JP") +
-              `</p>
-              </ons-col>
-              <ons-col width="10%"vertical-align="center">
-                <ons-icon icon="fa-heart" style="color:pink;font-weight:bold;"onclick="favoTodo('` +
-              element.id +
-              `',` +
-              element.data().favoCount +
-              `)"></ons-icon>
-                <p style="color:pink;margin:0px;">` +
-              element.data().favoCount +
-              `</p>
-              </ons-col>
-              </ons-row>
-            </ons-list-item>
-            `;
-            $("#todoList").append(list);
-          });
-        });
+    function buildHTML(data, i) {
+      var Week = new Array(
+        "（日）",
+        "（月）",
+        "（火）",
+        "（水）",
+        "（木）",
+        "（金）",
+        "（土）"
+      );
+      var date = new Date(data.list[i].dt_txt);
+      date.setHours(date.getHours() + 9);
+      var month = date.getMonth() + 1;
+      var day =
+        month +
+        "月" +
+        date.getDate() +
+        "日" +
+        Week[date.getDay()] +
+        date.getHours() +
+        "：00";
+      var icon = data.list[i].weather[0].icon;
+      var html =
+        '<div class="weather-report">' +
+        '<img src="http://openweathermap.org/img/w/' +
+        icon +
+        '.png">' +
+        '<div class="weather-date">' +
+        day +
+        "</div>" +
+        '<div class="weather-main">' +
+        data.list[i].weather[0].main +
+        "</div>" +
+        '<div class="weather-temp">' +
+        Math.round(data.list[i].main.temp) +
+        "℃</div>" +
+        "</div><hr>";
+      return html;
     }
+    // function todoAllListGet(myUserID,category,status) {
+    //   db.collection("todo")
+    //     .where("userID", "==", myUserID)
+    //     .where("category", "==", category)
+    //     .where("status", "==", status)
+    //     .onSnapshot(function(querySnapshot) {
+    //       $("#todoList").empty();
+    //       querySnapshot.forEach(element => {
+    //         var list =
+    //           `
+    //         <ons-list-item>
+    //         <ons-row>
+    //         <ons-col width="90%">
+    //         <p>題名:` +
+    //           element.data().title +
+    //           `</p>
+    //         <p style="font-size:0.8em;margin:0px;">作成日:` +
+    //           element
+    //             .data()
+    //             .createTime.toDate()
+    //             .toLocaleString("ja-JP") +
+    //           `</p>
+    //           <p style="font-size:0.8em;margin:0px;">期日:` +
+    //           element
+    //             .data()
+    //             .deadTime.toDate()
+    //             .toLocaleString("ja-JP") +
+    //           `</p>
+    //           <p style="font-size:0.8em;margin:0px;color:blue;" onclick='window.open("`+ element
+    //             .data()
+    //             .url + `", "_system", "usewkwebview=yes");'">参考URL:` +
+    //           element
+    //             .data()
+    //             .url +
+    //           `</p>
+    //           </ons-col>
+    //           <ons-col width="10%"vertical-align="center">
+    //             <ons-icon icon="fa-heart" style="color:pink;font-weight:bold;"onclick="favoTodo('` +
+    //           element.id +
+    //           `',` +
+    //           element.data().favoCount +
+    //           `)"></ons-icon>
+    //             <p style="color:pink;margin:0px;">` +
+    //           element.data().favoCount +
+    //           `</p>
+    //           </ons-col>
+    //           </ons-row>
+    //         </ons-list-item>
+    //         `;
+    //         $("#todoList").append(list);
+    //       });
+    //     });
+    // }
 
     function Load() {
       $("body").LoadingOverlay("show", {
